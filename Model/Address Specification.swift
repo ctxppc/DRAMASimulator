@@ -1,6 +1,9 @@
 // DRAMASimulator © 2018 Constantino Tsarouhas
 
-struct Address {
+/// An address specified in assembly code.
+///
+/// An address specification consists of one or more constants separated by `+`, optionally followed by an index register between parentheses.
+struct AddressSpecification {
 	
 	/// The constant parts of the address (separated by `+` in assembly code).
 	///
