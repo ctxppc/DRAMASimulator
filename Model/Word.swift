@@ -60,4 +60,23 @@ struct Word : RawRepresentable {
 		}
 	}
 	
+	/// The word's digits.
+	///
+	/// - Invariant: `digits` contains exactly 10 elements.
+	/// - Invariant: For all digits `d` in `digits`, 0 ≤ `d` ≤ 9.
+	var digits: [Int] {
+		
+		get {
+			let unpaddedDigits = String(rawValue).map { Int(String($0))! }
+			return Array(repeating: 0, count: 10 - unpaddedDigits.count) + unpaddedDigits
+		}
+		
+		set {
+			precondition(newValue.count == 10, "10 digits expected")
+			precondition(newValue.allSatisfy { (0..<10).contains($0) }, "Digits expected")
+			rawValue = digits.reduce(0) { product, digit in product * 10 + digit }
+		}
+		
+	}
+	
 }

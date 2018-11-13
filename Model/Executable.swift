@@ -4,7 +4,7 @@
 struct Executable {
 	
 	/// The executable's commands.
-	var commands: [Command] = []
+	var commands: [NativeCommand] = []
 	
 	/// The executable's globals.
 	var globals: [Global] = []

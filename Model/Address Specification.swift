@@ -1,22 +1,12 @@
 // DRAMASimulator © 2018 Constantino Tsarouhas
 
 /// An address specified in assembly code.
-///
-/// An address specification consists of one or more constants separated by `+`, optionally followed by an index register between parentheses.
 struct AddressSpecification {
 	
-	/// The constant parts of the address (separated by `+` in assembly code).
-	///
-	/// The constants are statically summed by the executable.
-	///
-	/// - Invariant: `constants` is not empty.
-	var constants: [Constant]
-	enum Constant {
-		case name(String)
-		case value(Int)
-	}
+	/// The base address.
+	var base: AddressWord
 	
-	/// The index to apply on the constant.
+	/// The index to apply on the constant, or `nil` if no indexing is to be applied.
 	var index: Index?
 	struct Index {
 		

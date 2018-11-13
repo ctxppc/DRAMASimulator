@@ -1,6 +1,7 @@
 // DRAMASimulator © 2018 Constantino Tsarouhas
 
-enum Instruction : String {
+/// A value that identifies the kind of operation a command performs.
+enum Instruction : String, Hashable {
 	
 	case load				= "HIA"
 	case store				= "BIG"
