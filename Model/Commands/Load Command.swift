@@ -1,32 +1,38 @@
 // DRAMASimulator © 2018 Constantino Tsarouhas
 
-struct LoadCommand : NativeCommand {
+struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	
-	static let mnemonic = "HIA"
-	static let code = 11
+	// See protocol.
+	static let supportedInstructions: Set = [Instruction.load]
 	
-	static func addressingMode(withCode: Int) -> AddressingMode? {
-		<#code#>
+	// See protocol.
+	init(instruction: Instruction, primaryRegister: Register, secondaryRegister: Register) throws {
+		source = .register(secondaryRegister)
+		destination = primaryRegister
 	}
 	
-	init(addressingMode: AddressingMode?, address: AddressSpecification) throws {
-		<#code#>
+	// See protocol.
+	init(instruction: Instruction, addressingMode: AddressingMode?, register: Register, address: AddressSpecification) throws {
+		source = .memory(address: address, mode: addressingMode ?? .direct)
+		destination = register
 	}
 	
-	init(addressingMode: AddressingMode?, register: Int, address: AddressSpecification) throws {
-		<#code#>
+	// See protocol.
+	let instruction = Instruction.load
+	
+	/// The register or memory address being loaded from.
+	let source: Source
+	enum Source {
+		case register(Register)
+		case memory(address: AddressSpecification, mode: AddressingMode)
 	}
 	
-	init(addressingMode: AddressingMode?, condition: Condition, address: AddressSpecification) throws {
-		<#code#>
-	}
+	/// The register being loaded into.
+	let destination: Register
 	
-	func replaceLabels(_ addressesByLabel: [String : AddressWord]) throws {
-		<#code#>
-	}
-	
+	// See protocol.
 	func execute(on machine: inout Machine) throws {
-		<#code#>
+		// TODO
 	}
 	
 }

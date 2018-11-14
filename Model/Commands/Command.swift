@@ -6,47 +6,30 @@ protocol Command {
 	/// The instructions supported by instances of this type.
 	static var supportedInstructions: Set<Instruction> { get }
 	
-	/// Initialises a command with given instruction and register (if any).
-	init(instruction: Instruction, register: Int?)
+	/// The instruction.
+	var instruction: Instruction { get }
 	
-	/// Initialises a command with given instruction, addressing mode (if any), register (if any), and address.
+	/// The native representation of `self`.
 	///
-	/// - Requires: `supportedInstructions.contains(instruction)`.
-	init(instruction: Instruction, addressingMode: AddressingMode?, register: Int?, address: AddressSpecification) throws
-	
-	/// Initialises a command with given instruction, addressing mode (if any), register, and address.
-	init(instruction: Instruction, addressingMode: AddressingMode?, condition: Condition, address: AddressSpecification) throws
-	
-	/// Replaces any instances of given labels by their assigned address.
+	/// - Invariant: `nativeRepresentation.instruction.opcode` is not `nil`.
 	///
-	/// This procedure must be performed before
-	mutating func replaceLabels(_ addressesByLabel: [String : AddressWord]) throws
+	/// The default implementation returns `self` and must be overridden by conforming types if `self.instruction.opcode` is `nil`.
+	var nativeRepresentation: Command { get }
 	
 	/// Executes the command on given machine.
-	///
-	/// - Throws: `ExecutionError.nontrivialAddress` if the command's address specification isn't a single address literal.
 	func execute(on machine: inout Machine) throws
 	
 }
 
-enum ArgumentError : Error {
-	
-	/// The addressing mode is invalid for this command or this command does not take an addressing mode.
-	case invalidAddressingMode
-	
-	/// This command does not take a register.
-	case nonnilRegister
-	
-	/// This command does not take a condition argument.
-	case nonnilCondition
-	
+extension Command {
+	var nativeRepresentation: Command {
+		return self
+	}
 }
 
-enum ExecutionError : Error {
+enum CommandArgumentError : Error {
 	
-	/// The command could not be executed because the address specification isn't a single address literal.
-	///
-	/// Replace any labels and fold any constants using the `replaceLabels(_:)` method.
-	case nontrivialAddress
+	/// The addressing mode is invalid for this command.
+	case invalidAddressingMode
 	
 }

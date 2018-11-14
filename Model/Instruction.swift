@@ -29,8 +29,9 @@ enum Instruction : String, Hashable {
 	
 	case halt				= "STP"
 	
-	init?(code: Int) {
-		switch code {
+	/// Returns the instruction represented by given opcode or `nil` if the opcode isn't known.
+	init?(opcode: Int) {
+		switch opcode {
 			case 11:	self = .load
 			case 12:	self = .store
 			case 21:	self = .add
@@ -49,12 +50,11 @@ enum Instruction : String, Hashable {
 		}
 	}
 	
-	var code: Int {
+	/// The opcode for the instruction, or `nil` if the instruction cannot be represented natively.
+	var opcode: Int? {
 		switch self {
 			case .load:				return 11
-			case .pop:				return 11
 			case .store:			return 12
-			case .push:				return 12
 			case .add:				return 21
 			case .subtract:			return 22
 			case .multiply:			return 23
@@ -67,8 +67,10 @@ enum Instruction : String, Hashable {
 			case .subroutineReturn:	return 42
 			case .read:				return 71
 			case .printInteger:		return 73
-			case .printNewline:		return 73
+			case .printNewline:		return nil
 			case .printString:		return 74
+			case .push:				return nil
+			case .pop:				return nil
 			case .halt:				return 99
 		}
 	}

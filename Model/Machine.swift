@@ -18,9 +18,9 @@ struct Machine {
 	
 	/// The values stored in the registers.
 	private var registers: [Word]
-	subscript (registerAt index: AddressWord) -> Word {
-		get { return registers[index.rawValue] }
-		set { registers[index.rawValue] = newValue }
+	subscript (registerAt register: Register) -> Word {
+		get { return registers[register.rawValue] }
+		set { registers[register.rawValue] = newValue }
 	}
 	
 	/// An array representing 10 empty registers.

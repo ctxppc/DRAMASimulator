@@ -29,7 +29,7 @@ enum AddressingMode : String {
 	///
 	/// Instructions that operate directly on memory use represent the addressing mode with the direct access code instead of the canonical one.
 	init?(directAccessCode: Int) {
-		switch canonicalCode {
+		switch directAccessCode {
 			case 1:	self = .value
 			case 2:	self = .direct
 			case 3:	self = .indirect
