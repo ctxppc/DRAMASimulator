@@ -63,7 +63,33 @@ struct ArithmeticCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	
 	// See protocol.
 	func execute(on machine: inout Machine) throws {
-		// TODO
+		
+		let secondOperandValue: Int
+		switch secondOperand {
+			
+			case .register(let register):
+			secondOperandValue = machine[registerAt: register].signedValue
+			
+			case .memory(address: let valueSpec, mode: .value):
+			secondOperandValue = machine.evaluate(valueSpec).signedValue
+			
+			case .memory(address: let addressSpec, mode: .address):
+			secondOperandValue = machine.evaluate(addressSpec).unsignedValue
+			
+			case .memory(address: let addressSpec, mode: .direct):
+			secondOperandValue = machine[memoryCellAt: machine.evaluate(addressSpec)].signedValue
+			
+			case .memory(address: let addressSpec, mode: .indirect):
+			let addressOfReference = machine.evaluate(addressSpec)
+			let referencedAddress = AddressWord(truncating: machine[memoryCellAt: addressOfReference])
+			secondOperandValue = machine[memoryCellAt: referencedAddress].signedValue
+			
+		}
+		
+		machine[registerAt: firstOperand].modifySignedValueWithWrapping { firstOperandValue in
+			primitiveOperation(&firstOperandValue, secondOperandValue)
+		}
+		
 	}
 	
 }

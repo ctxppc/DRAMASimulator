@@ -1,6 +1,6 @@
 // DRAMASimulator © 2018 Constantino Tsarouhas
 
-/// A 4-digit decimal.
+/// A 4-digit decimal, usually used to represent addresses.
 struct AddressWord : WordProtocol {
 	
 	// See protocol.

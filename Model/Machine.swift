@@ -36,11 +36,12 @@ struct Machine {
 		set { memoryCells[address.rawValue] = newValue }
 	}
 	
-	/// Evaluates an address specified by given address specification, and performs any pre-indexation or post-indexation before or after invoking a closure handler.
+	/// Evaluates an address specified by given address specification and performs any specified indexation.
 	///
-	/// - Parameter specification: A value specifying the address and any indexation on it.
-	/// - Parameter handler: A function that uses the evaluated and appropriately indexed address and the machine, a copy of `self` that is copied back upon completion.
-	mutating func useAddress(specifiedBy specification: AddressSpecification, handler: (AddressWord, inout Machine) -> ()) {
+	/// - Parameter specification: A value specifying a base address and any indexation on it.
+	///
+	/// - Returns: The effective address specified by `specification`.
+	mutating func evaluate(_ specification: AddressSpecification) -> AddressWord {
 		if let index = specification.index {
 			
 			switch index.modification {
@@ -49,9 +50,7 @@ struct Machine {
 				default:				break
 			}
 			
-			let computedAddressValue = specification.base.rawValue + self[registerAt: index.indexRegister].rawValue
-			let computedAddressWord = AddressWord(wrapping: computedAddressValue)
-			handler(computedAddressWord, &self)
+			let result = specification.address(atIndex: self[registerAt: index.indexRegister])
 			
 			switch index.modification {
 				case .postincrement?:	self[registerAt: index.indexRegister].increment()
@@ -59,50 +58,10 @@ struct Machine {
 				default:				break
 			}
 			
+			return result
+			
 		} else {
-			handler(specification.base, &self)
-		}
-	}
-	
-	/// Accesses a memory cell specified by given address specification.
-	///
-	/// - Parameter specification: A value specifying the address and any indexation on it.
-	/// - Parameter handler: A function that uses the accessed memory cell's value.
-	mutating func accessMemoryCell(specifiedBy specification: AddressSpecification, handler: (Word) -> ()) {
-		useAddress(specifiedBy: specification) { address, machine in
-			handler(machine[memoryCellAt: address])
-		}
-	}
-	
-	/// Accesses a memory cell specified by given address specification.
-	///
-	/// - Parameter specification: A value specifying the address and any indexation on it.
-	/// - Parameter handler: A function that uses and modifies the accessed memory cell's value.
-	mutating func accessMemoryCell(specifiedBy specification: AddressSpecification, handler: (inout Word) -> ()) {
-		useAddress(specifiedBy: specification) { address, machine in
-			handler(&machine[memoryCellAt: address])
-		}
-	}
-	
-	/// Accesses a memory cell reference in another memory cell specified by given address specification.
-	///
-	/// - Parameter referenceSpecification: A value specifying the address to the pointer and any indexation on the first address.
-	/// - Parameter handler: A function that uses the referenced memory cell's value (not the pointer).
-	mutating func accessReferencedMemoryCell(referenceSpecifiedBy referenceSpecification: AddressSpecification, handler: (Word) -> ()) {
-		useAddress(specifiedBy: referenceSpecification) { pointer, machine in
-			let truncatedPointer = AddressWord(truncating: machine[memoryCellAt: pointer])
-			handler(machine[memoryCellAt: truncatedPointer])
-		}
-	}
-	
-	/// Accesses a memory cell reference in another memory cell specified by given address specification.
-	///
-	/// - Parameter referenceSpecification: A value specifying the address to the pointer and any indexation on the first address.
-	/// - Parameter handler: A function that uses and modifies the referenced memory cell's value (not the pointer).
-	mutating func accessReferencedMemoryCell(referenceSpecifiedBy referenceSpecification: AddressSpecification, handler: (inout Word) -> ()) {
-		useAddress(specifiedBy: referenceSpecification) { pointer, machine in
-			let truncatedPointer = AddressWord(truncating: machine[memoryCellAt: pointer])
-			handler(&machine[memoryCellAt: truncatedPointer])
+			return specification.base
 		}
 	}
 	
@@ -148,13 +107,17 @@ struct Machine {
 	var halted: Bool = false
 	
 	/// Executes the next command.
+	///
+	/// - Requires: The machine is not halted.
 	mutating func executeCommand() throws {
-		guard !halted else { return }
+		precondition(!halted, "The machine is halted.")
 		// TODO
 	}
 	
 	/// The command types that machines natively support.
 	static let supportedCommands: [Command.Type] = [
+		LoadCommand.self,
+		StoreCommand.self,
 		ArithmeticCommand.self
 	]
 	

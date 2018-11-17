@@ -32,7 +32,26 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	
 	// See protocol.
 	func execute(on machine: inout Machine) throws {
-		// TODO
+		switch source {
+			
+			case .register(let register):
+			machine[registerAt: destination] = machine[registerAt: register]
+			
+			case .memory(address: let valueSpec, mode: .value):
+			machine[registerAt: destination] = Word(machine.evaluate(valueSpec))	// TODO: signed?
+			
+			case .memory(address: let addressSpec, mode: .address):
+			machine[registerAt: destination] = Word(machine.evaluate(addressSpec))	// TODO: unsigned?
+			
+			case .memory(address: let addressSpec, mode: .direct):
+			machine[registerAt: destination] = machine[memoryCellAt: machine.evaluate(addressSpec)]
+			
+			case .memory(address: let addressSpec, mode: .indirect):
+			let addressOfReference = machine.evaluate(addressSpec)
+			let referencedAddress = AddressWord(truncating: machine[memoryCellAt: addressOfReference])
+			machine[registerAt: destination] = machine[memoryCellAt: referencedAddress]
+			
+		}
 	}
 	
 }
