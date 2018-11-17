@@ -18,14 +18,14 @@ struct StoreCommand : RegisterAddressCommand {
 	// See protocol.
 	let instruction = Instruction.store
 	
+	/// The addressing mode.
+	let addressingMode: AddressingMode
+	
 	/// The register whose value is being stored.
 	let source: Register
 	
 	/// The memory address being stored into.
 	let destination: AddressSpecification
-	
-	/// The addressing mode.
-	let addressingMode: AddressingMode
 	
 	// See protocol.
 	func execute(on machine: inout Machine) throws {
@@ -40,6 +40,16 @@ struct StoreCommand : RegisterAddressCommand {
 		
 		machine[memoryCellAt: destinationAddress] = machine[registerAt: source, updatingConditionState: true]
 		
+	}
+	
+	// See protocol.
+	var registerOperand: Register? {
+		return source
+	}
+	
+	// See protocol.
+	var addressOperand: AddressSpecification? {
+		return destination
 	}
 	
 }

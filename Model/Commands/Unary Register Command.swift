@@ -8,4 +8,7 @@ protocol UnaryRegisterCommand : Command {
 	/// - Requires: `supportedInstructions.contains(instruction)`.
 	init(instruction: Instruction, register: Register) throws
 	
+	/// The register operand, or `nil` if no such operand has been set on this command.
+	var registerOperand: Register? { get }
+	
 }

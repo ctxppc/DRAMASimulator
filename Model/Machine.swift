@@ -98,18 +98,32 @@ struct Machine {
 	/// The machine does not use or modify the condition state but rather commands executed on the machine.
 	var conditionState: ConditionState
 	
-	/// Whether the machine is halted.
-	var halted: Bool = false
+	/// The state in which the machine is.
+	var state: State = .ready
+	enum State {
+		
+		/// The machine can perform the next command.
+		case ready
+		
+		/// The machine waits for input in register 0.
+		///
+		/// The client of a machine must request an input value (or use a predefined buffer), put it in register 0, and set the machine to the ready state before resuming execution.
+		case waiting
+		
+		/// The machine is stopped and can no longer perform commands.
+		case halted
+		
+	}
 	
 	/// Executes the next command.
 	///
-	/// - Requires: The machine is not halted.
+	/// - Requires: The machine is ready, i.e., `state == .ready`.
 	mutating func executeCommand() throws {
 		
-		precondition(!halted, "The machine is halted.")
+		precondition(state == .ready, "The machine is not ready.")
 		
 		let w = self[memoryCellAt: programCounter].digits
-		let (opcode, addrMode, indMode, reg, indReg, address) = (partialWord(from: w[0...1]), w[2], w[3], w[4], w[5], partialWord(from: w[6...9]))
+		let (opcode, addrMode, indMode, reg, indReg, addr) = (partialWord(from: w[0...1]), w[2], w[3], w[4], w[5], partialWord(from: w[6...9]))
 		programCounter.increment()
 		
 		guard let instruction = Instruction(opcode: opcode) else { throw ExecutionError.illegalInstruction(opcode: opcode) }
@@ -121,7 +135,7 @@ struct Machine {
 			return mode
 		}
 		
-		let addressSpecification = AddressSpecification(base: AddressWord(rawValue: address)!, indexRegister: Register(rawValue: indReg)!, mode: indMode)
+		let address = AddressSpecification(base: AddressWord(rawValue: addr)!, indexRegister: Register(rawValue: indReg)!, mode: indMode)
 		
 		let command: Command
 		switch commandType {
@@ -135,12 +149,15 @@ struct Machine {
 			case let type as BinaryRegisterCommand.Type where try addressingMode() == .value:
 			command = try type.init(instruction: instruction, primaryRegister: Register(rawValue: reg)!, secondaryRegister: Register(rawValue: indReg)!)
 			
+			case let type as AddressCommand.Type:
+			command = try type.init(instruction: instruction, addressingMode: addressingMode(), address: address)
+			
 			case let type as RegisterAddressCommand.Type:
-			command = try type.init(instruction: instruction, addressingMode: addressingMode(), register: Register(rawValue: reg)!, address: addressSpecification)
+			command = try type.init(instruction: instruction, addressingMode: addressingMode(), register: Register(rawValue: reg)!, address: address)
 			
 			case let type as ConditionAddressCommand.Type:
 			guard let condition = Condition(code: reg) else { throw ExecutionError.illegalCondition(code: reg) }
-			command = try type.init(instruction: instruction, addressingMode: addressingMode(), condition: condition, address: addressSpecification)
+			command = try type.init(instruction: instruction, addressingMode: addressingMode(), condition: condition, address: address)
 			
 			default:
 			throw ExecutionError.undecodableCommand(type: commandType)
@@ -178,6 +195,7 @@ struct Machine {
 		CompareCommand.self,
 		JumpCommand.self,
 		ConditionalJumpCommand.self,
+		ReadCommand.self,
 		HaltCommand.self
 	]
 	

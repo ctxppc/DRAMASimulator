@@ -59,4 +59,31 @@ struct CompareCommand : BinaryRegisterCommand, RegisterAddressCommand {
 		
 	}
 	
+	// See protocol.
+	var addressingMode: AddressingMode {
+		switch secondOperand {
+			case .register:								return .value
+			case .memory(address: _, mode: let mode):	return mode
+		}
+	}
+	
+	var registerOperand: Register? {
+		return firstOperand
+	}
+	
+	var secondaryRegisterOperand: Register? {
+		switch secondOperand {
+			case .register(let register):	return register
+			case .memory:					return nil
+		}
+	}
+	
+	// See protocol.
+	var addressOperand: AddressSpecification? {
+		switch secondOperand {
+			case .register:									return nil
+			case .memory(address: let address, mode: _):	return address
+		}
+	}
+	
 }

@@ -59,4 +59,33 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 		
 	}
 	
+	// See protocol.
+	var addressingMode: AddressingMode {
+		switch source {
+			case .register:								return .value
+			case .memory(address: _, mode: let mode):	return mode
+		}
+	}
+	
+	// See protocol.
+	var registerOperand: Register? {
+		return destination
+	}
+	
+	// See protocol.
+	var secondaryRegisterOperand: Register? {
+		switch source {
+			case .register(let register):	return register
+			case .memory:					return nil
+		}
+	}
+	
+	// See protocol.
+	var addressOperand: AddressSpecification? {
+		switch source {
+			case .register:									return nil
+			case .memory(address: let address, mode: _):	return address
+		}
+	}
+	
 }

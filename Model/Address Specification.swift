@@ -36,6 +36,7 @@ struct AddressSpecification {
 }
 
 extension AddressSpecification {
+	
 	init(base: AddressWord, indexRegister: Register, mode: Int) {
 		self.base = base
 		self.index = {
@@ -48,4 +49,10 @@ extension AddressSpecification {
 			}
 		}()
 	}
+	
+	var mode: Int {
+		guard let index = index else { return 1 }
+		return index.modification?.rawValue ?? 2
+	}
+	
 }

@@ -8,4 +8,10 @@ protocol AddressCommand : Command {
 	/// - Requires: `supportedInstructions.contains(instruction)`.
 	init(instruction: Instruction, addressingMode: AddressingMode?, address: AddressSpecification) throws
 	
+	/// The addressing mode.
+	var addressingMode: AddressingMode { get }
+	
+	/// The address operand, or `nil` if no such operand has been set on this command.
+	var addressOperand: AddressSpecification? { get }
+	
 }

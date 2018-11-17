@@ -37,4 +37,14 @@ struct ConditionalJumpCommand : ConditionAddressCommand {
 		}
 	}
 	
+	// See protocol.
+	var conditionOperand: Condition? {
+		return condition
+	}
+	
+	// See protocol.
+	var addressOperand: AddressSpecification? {
+		return destination
+	}
+	
 }

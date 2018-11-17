@@ -13,7 +13,7 @@ struct HaltCommand : NullaryCommand {
 	
 	// See protocol.
 	func execute(on machine: inout Machine) {
-		machine.halted = true
+		machine.state = .halted
 	}
 	
 }

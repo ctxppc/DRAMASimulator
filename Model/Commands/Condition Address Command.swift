@@ -8,4 +8,13 @@ protocol ConditionAddressCommand : Command {
 	/// - Requires: `supportedInstructions.contains(instruction)`.
 	init(instruction: Instruction, addressingMode: AddressingMode?, condition: Condition, address: AddressSpecification) throws
 	
+	/// The condition, or `nil` if no such operand has been set on this command.
+	var conditionOperand: Condition? { get }
+	
+	/// The addressing mode.
+	var addressingMode: AddressingMode { get }
+	
+	/// The address operand, or `nil` if no such operand has been set on this command.
+	var addressOperand: AddressSpecification? { get }
+	
 }

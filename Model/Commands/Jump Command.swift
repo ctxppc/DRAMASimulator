@@ -33,4 +33,9 @@ struct JumpCommand : AddressCommand {
 		}
 	}
 	
+	// See protocol.
+	var addressOperand: AddressSpecification? {
+		return destination
+	}
+	
 }
