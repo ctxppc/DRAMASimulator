@@ -11,7 +11,7 @@ struct AddressSpecification {
 	struct Index {
 		
 		/// The register that contains the index.
-		var indexRegister: Int
+		var indexRegister: Register
 		
 		/// The modification to perform on the index register before or after indexation.
 		var modification: Modification?
