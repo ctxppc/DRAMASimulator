@@ -14,46 +14,33 @@ enum AddressingMode : String {
 	/// The operand is to be interpreted as a location in memory whose value points to the desired location in memory.
 	case indirect	= "i"
 	
-	/// Returns the addressing mode associated with given canonical code.
-	init?(canonicalCode: Int) {
-		switch canonicalCode {
-			case 1:	self = .value
-			case 2:	self = .address
-			case 3:	self = .direct
-			case 4:	self = .indirect
-			case _:	return nil
-		}
-	}
-	
-	/// Returns the addressing mode associated with given direct access code.
+	/// Determines the addressing mode encoded by given code.
 	///
-	/// Instructions that operate directly on memory use represent the addressing mode with the direct access code instead of the canonical one.
-	init?(directAccessCode: Int) {
-		switch directAccessCode {
-			case 1:	self = .value
-			case 2:	self = .direct
-			case 3:	self = .indirect
-			case _:	return nil
+	/// - Parameter code: The encoded addressing mode.
+	/// - Parameter directAccessOnly: `true` if the applicable command only supports direct memory access.
+	init?(code: Int, directAccessOnly: Bool) {
+		switch (code, directAccessOnly) {
+			case (1, _):		self = .value
+			case (2, false):	self = .address
+			case (2, true):		self = .direct
+			case (3, false):	self = .direct
+			case (3, true):		self = .indirect
+			case (4, false):	self = .indirect
+			default:			return nil
 		}
 	}
 	
-	/// Returns the canonical code associated with this addressing mode.
-	var canonicalCode: Int {
-		switch self {
-			case .value:	return 1
-			case .address:	return 2
-			case .direct:	return 3
-			case .indirect:	return 4
-		}
-	}
-	
-	/// Returns the direct access code associated with this addressing mode.
-	var directAccessCode: Int {
-		switch self {
-			case .value:	return 1
-			case .address:	return 2
-			case .direct:	return 2
-			case .indirect:	return 3
+	/// Returns the code encoding this addressing mode.
+	///
+	/// - Parameter directAccessOnly: `true` if the applicable command only supports direct memory access.
+	func code(directAccessOnly: Bool) -> Int {
+		switch (self, directAccessOnly) {
+			case (.value, _):			return 1
+			case (.address, _):			return 2
+			case (.direct, false):		return 3
+			case (.direct, true):		return 2
+			case (.indirect, false):	return 4
+			case (.indirect, true):		return 3
 		}
 	}
 	

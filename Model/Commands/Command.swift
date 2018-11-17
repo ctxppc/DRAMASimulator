@@ -6,6 +6,13 @@ protocol Command {
 	/// The instructions supported by instances of this type.
 	static var supportedInstructions: Set<Instruction> { get }
 	
+	/// A Boolean value indicating whether commands of this type support direct memory access only.
+	///
+	/// This property is used to determine how the addressing mode is encoded.
+	///
+	/// The default implementation returns `false`.
+	static var directAccessOnly: Bool { get }
+	
 	/// The instruction.
 	var instruction: Instruction { get }
 	
@@ -22,9 +29,15 @@ protocol Command {
 }
 
 extension Command {
+	
+	static var directAccessOnly: Bool {
+		return false
+	}
+	
 	var nativeRepresentation: Command {
 		return self
 	}
+	
 }
 
 enum CommandArgumentError : Error {

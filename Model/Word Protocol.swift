@@ -3,7 +3,7 @@
 /// A value that represents a decimal value of some fixed number of digits.
 ///
 /// - Invariant: A raw value `v` is representable by `Self` iff `unsignedRange.contains(v)`.
-protocol WordProtocol : RawRepresentable where RawValue == Int {
+protocol WordProtocol : Equatable, RawRepresentable where RawValue == Int {
 	
 	/// The upper bound unsigned decimal value.
 	///

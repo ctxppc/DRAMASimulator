@@ -6,7 +6,10 @@ struct StoreCommand : RegisterAddressCommand {
 	static let supportedInstructions: Set = [Instruction.store]
 	
 	// See protocol.
-	init(instruction: Instruction, addressingMode mode: AddressingMode?, register: Register, address: AddressSpecification) throws {
+	static let directAccessOnly = true
+	
+	// See protocol.
+	init(instruction: Instruction, addressingMode mode: AddressingMode?, register: Register, address: AddressSpecification) {
 		source = register
 		destination = address
 		addressingMode = mode ?? .direct
@@ -26,7 +29,17 @@ struct StoreCommand : RegisterAddressCommand {
 	
 	// See protocol.
 	func execute(on machine: inout Machine) throws {
-		// TODO
+		
+		let destinationAddress: AddressWord
+		switch addressingMode {
+			case .value:	fallthrough
+			case .address:	fallthrough
+			case .direct:	destinationAddress = machine.evaluate(destination)
+			case .indirect:	destinationAddress = .init(truncating: machine[memoryCellAt: machine.evaluate(destination)])
+		}
+		
+		machine[memoryCellAt: destinationAddress] = machine[registerAt: source, updatingConditionState: true]
+		
 	}
 	
 }

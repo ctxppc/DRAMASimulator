@@ -17,11 +17,11 @@ struct AddressSpecification {
 		
 		/// The modification to perform on the index register before or after indexation, or `nil` if the index register is unaffected by indexing.
 		var modification: Modification?
-		enum Modification {
-			case preincrement
-			case postincrement
-			case predecrement
-			case postdecrement
+		enum Modification : Int {
+			case preincrement	= 3
+			case postincrement	= 4
+			case predecrement	= 5
+			case postdecrement	= 6
 		}
 		
 	}
@@ -33,4 +33,19 @@ struct AddressSpecification {
 		return AddressWord(truncating: base.rawValue + index.rawValue)
 	}
 	
+}
+
+extension AddressSpecification {
+	init(base: AddressWord, indexRegister: Register, mode: Int) {
+		self.base = base
+		self.index = {
+			if let m = Index.Modification(rawValue: mode) {
+				return .init(indexRegister: indexRegister, modification: m)
+			} else if mode == 2 {
+				return .init(indexRegister: indexRegister, modification: nil)
+			} else {
+				return nil
+			}
+		}()
+	}
 }

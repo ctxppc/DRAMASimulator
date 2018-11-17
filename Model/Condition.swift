@@ -21,6 +21,18 @@ enum Condition : String {
 		}
 	}
 	
+	init?(code: Int) {
+		switch code {
+			case 1:	self = .zero
+			case 2:	self = .nonnegative
+			case 3:	self = .nonpositive
+			case 6:	self = .positive
+			case 7:	self = .negative
+			case 8:	self = .nonzero
+			case _:	return nil
+		}
+	}
+	
 	var rawComparisonValue: String {
 		switch self {
 			case .positive:		return "GR"
@@ -29,6 +41,17 @@ enum Condition : String {
 			case .nonpositive:	return "KLG"
 			case .nonnegative:	return "GRG"
 			case .nonzero:		return "NGEL"
+		}
+	}
+	
+	var code: Int {
+		switch self {
+			case .zero:			return 1
+			case .nonnegative:	return 2
+			case .nonpositive:	return 3
+			case .positive:		return 6
+			case .negative:		return 7
+			case .nonzero:		return 8
 		}
 	}
 	

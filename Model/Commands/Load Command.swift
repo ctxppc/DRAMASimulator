@@ -6,13 +6,13 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	static let supportedInstructions: Set = [Instruction.load]
 	
 	// See protocol.
-	init(instruction: Instruction, primaryRegister: Register, secondaryRegister: Register) throws {
+	init(instruction: Instruction, primaryRegister: Register, secondaryRegister: Register) {
 		source = .register(secondaryRegister)
 		destination = primaryRegister
 	}
 	
 	// See protocol.
-	init(instruction: Instruction, addressingMode: AddressingMode?, register: Register, address: AddressSpecification) throws {
+	init(instruction: Instruction, addressingMode: AddressingMode?, register: Register, address: AddressSpecification) {
 		source = .memory(address: address, mode: addressingMode ?? .direct)
 		destination = register
 	}
@@ -31,27 +31,32 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	let destination: Register
 	
 	// See protocol.
-	func execute(on machine: inout Machine) throws {
+	func execute(on machine: inout Machine) {
+		
+		let value: Word
 		switch source {
 			
 			case .register(let register):
-			machine[registerAt: destination] = machine[registerAt: register]
+			value = machine[registerAt: register]
 			
 			case .memory(address: let valueSpec, mode: .value):
-			machine[registerAt: destination] = Word(machine.evaluate(valueSpec))	// TODO: signed?
+			value = Word(rawValue: machine.evaluate(valueSpec).signedValue)!
 			
 			case .memory(address: let addressSpec, mode: .address):
-			machine[registerAt: destination] = Word(machine.evaluate(addressSpec))	// TODO: unsigned?
+			value = Word(machine.evaluate(addressSpec))
 			
 			case .memory(address: let addressSpec, mode: .direct):
-			machine[registerAt: destination] = machine[memoryCellAt: machine.evaluate(addressSpec)]
+			value = machine[memoryCellAt: machine.evaluate(addressSpec)]
 			
 			case .memory(address: let addressSpec, mode: .indirect):
 			let addressOfReference = machine.evaluate(addressSpec)
 			let referencedAddress = AddressWord(truncating: machine[memoryCellAt: addressOfReference])
-			machine[registerAt: destination] = machine[memoryCellAt: referencedAddress]
+			value = machine[memoryCellAt: referencedAddress]
 			
 		}
+		
+		machine[registerAt: destination, updatingConditionState: true] = value
+		
 	}
 	
 }

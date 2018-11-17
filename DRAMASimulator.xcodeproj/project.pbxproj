@@ -25,6 +25,11 @@
 		4F820F30219B06AB004EE2C9 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F820F2F219B06AB004EE2C9 /* Command.swift */; };
 		4F820F35219B1CD6004EE2C9 /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E790B219A1FBE008E3E9B /* Instruction.swift */; };
 		4FA7EB9821A0493C00C52F98 /* Word Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EB9721A0493C00C52F98 /* Word Protocol.swift */; };
+		4FA7EB9A21A0682100C52F98 /* Jump Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EB9921A0682100C52F98 /* Jump Command.swift */; };
+		4FA7EB9C21A0691800C52F98 /* Conditional Jump Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EB9B21A0691800C52F98 /* Conditional Jump Command.swift */; };
+		4FA7EBA021A06B0D00C52F98 /* Halt Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EB9F21A06B0D00C52F98 /* Halt Command.swift */; };
+		4FA7EBA221A06B8400C52F98 /* Compare Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EBA121A06B8400C52F98 /* Compare Command.swift */; };
+		4FA7EBA421A06C4C00C52F98 /* Condition State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EBA321A06C4C00C52F98 /* Condition State.swift */; };
 		4FFEB7D4219C6C480049D0A5 /* Nullary Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFEB7D3219C6C480049D0A5 /* Nullary Command.swift */; };
 		4FFEB7D6219C6ED50049D0A5 /* Unary Register Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFEB7D5219C6ED50049D0A5 /* Unary Register Command.swift */; };
 		4FFEB7D8219C6EDD0049D0A5 /* Binary Register Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFEB7D7219C6EDD0049D0A5 /* Binary Register Command.swift */; };
@@ -59,6 +64,11 @@
 		4F820F2F219B06AB004EE2C9 /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		4F820F33219B1614004EE2C9 /* Load Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Load Command.swift"; sourceTree = "<group>"; };
 		4FA7EB9721A0493C00C52F98 /* Word Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Word Protocol.swift"; sourceTree = "<group>"; };
+		4FA7EB9921A0682100C52F98 /* Jump Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Jump Command.swift"; sourceTree = "<group>"; };
+		4FA7EB9B21A0691800C52F98 /* Conditional Jump Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conditional Jump Command.swift"; sourceTree = "<group>"; };
+		4FA7EB9F21A06B0D00C52F98 /* Halt Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Halt Command.swift"; sourceTree = "<group>"; };
+		4FA7EBA121A06B8400C52F98 /* Compare Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Compare Command.swift"; sourceTree = "<group>"; };
+		4FA7EBA321A06C4C00C52F98 /* Condition State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Condition State.swift"; sourceTree = "<group>"; };
 		4FFEB7D3219C6C480049D0A5 /* Nullary Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Nullary Command.swift"; sourceTree = "<group>"; };
 		4FFEB7D5219C6ED50049D0A5 /* Unary Register Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Unary Register Command.swift"; sourceTree = "<group>"; };
 		4FFEB7D7219C6EDD0049D0A5 /* Binary Register Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binary Register Command.swift"; sourceTree = "<group>"; };
@@ -129,13 +139,14 @@
 				4F44C7F3219A4BBE003798AF /* Word.swift */,
 				4F44C7F5219A4C40003798AF /* Address Word.swift */,
 				4FFEB7E0219C73650049D0A5 /* Register.swift */,
-				4F3E7917219A2722008E3E9B /* Executable.swift */,
 				4F820F2E219AFF71004EE2C9 /* Commands */,
 				4F3E790B219A1FBE008E3E9B /* Instruction.swift */,
 				4F3E790F219A2221008E3E9B /* Addressing Mode.swift */,
 				4F3E7913219A2324008E3E9B /* Address Specification.swift */,
 				4F3E7915219A25B7008E3E9B /* Condition.swift */,
+				4FA7EBA321A06C4C00C52F98 /* Condition State.swift */,
 				4F3E791D219A2FC8008E3E9B /* Global.swift */,
+				4F3E7917219A2722008E3E9B /* Executable.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -153,6 +164,10 @@
 				4F820F33219B1614004EE2C9 /* Load Command.swift */,
 				4FFEB7E2219C75140049D0A5 /* Store Command.swift */,
 				4FFEB7E4219C75DB0049D0A5 /* Arithmetic Command.swift */,
+				4FA7EBA121A06B8400C52F98 /* Compare Command.swift */,
+				4FA7EB9921A0682100C52F98 /* Jump Command.swift */,
+				4FA7EB9B21A0691800C52F98 /* Conditional Jump Command.swift */,
+				4FA7EB9F21A06B0D00C52F98 /* Halt Command.swift */,
 			);
 			path = Commands;
 			sourceTree = "<group>";
@@ -234,12 +249,16 @@
 				4F346B782199DBE700D6D8AD /* Script.swift in Sources */,
 				4FFEB7D8219C6EDD0049D0A5 /* Binary Register Command.swift in Sources */,
 				4FA7EB9821A0493C00C52F98 /* Word Protocol.swift in Sources */,
+				4FA7EBA221A06B8400C52F98 /* Compare Command.swift in Sources */,
 				4F346B762199DBE700D6D8AD /* Script View Controller.swift in Sources */,
 				4F346B742199DBE700D6D8AD /* Document Browser View Controller.swift in Sources */,
+				4FA7EB9A21A0682100C52F98 /* Jump Command.swift in Sources */,
 				4F44C7F2219A4426003798AF /* Machine.swift in Sources */,
 				4F820F30219B06AB004EE2C9 /* Command.swift in Sources */,
 				4F346B722199DBE700D6D8AD /* DRAMASimulator Delegate.swift in Sources */,
 				4FFEB7E1219C73650049D0A5 /* Register.swift in Sources */,
+				4FA7EBA421A06C4C00C52F98 /* Condition State.swift in Sources */,
+				4FA7EB9C21A0691800C52F98 /* Conditional Jump Command.swift in Sources */,
 				4F3E791E219A2FC8008E3E9B /* Global.swift in Sources */,
 				4FFEB7D4219C6C480049D0A5 /* Nullary Command.swift in Sources */,
 				4F3E7910219A2221008E3E9B /* Addressing Mode.swift in Sources */,
@@ -247,6 +266,7 @@
 				4F3E7916219A25B7008E3E9B /* Condition.swift in Sources */,
 				4F3E7918219A2722008E3E9B /* Executable.swift in Sources */,
 				4F820F35219B1CD6004EE2C9 /* Instruction.swift in Sources */,
+				4FA7EBA021A06B0D00C52F98 /* Halt Command.swift in Sources */,
 				4FFEB7DA219C6EE90049D0A5 /* Address Command.swift in Sources */,
 				4FFEB7D6219C6ED50049D0A5 /* Unary Register Command.swift in Sources */,
 				4FFEB7E5219C75DB0049D0A5 /* Arithmetic Command.swift in Sources */,
