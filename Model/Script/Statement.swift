@@ -12,20 +12,10 @@ enum Statement {
 	case registerCommand(operation: String, primaryRegister: Register, secondaryRegister: Register?)
 	
 	/// A statement encoding an address or register address command.
-	///
-	/// - Invariant: `addressTerms` is nonempty.
-	case addressCommand(operation: String, addressingMode: String?, register: Register?, addressTerms: [AddressTerm], index: AddressSpecification.Index?)
+	case addressCommand(operation: String, addressingMode: String?, register: Register?, address: SymbolicAddress, index: AddressSpecification.Index?)
 	
 	/// A statement encoding a condition command.
-	///
-	/// - Invariant: `addressTerms` is nonempty.
-	case conditionCommand(operation: String, addressingMode: String?, condition: Condition, addressTerms: [AddressTerm], index: AddressSpecification.Index?)
-	
-	/// A term in a symbolic address specification.
-	enum AddressTerm {
-		case literal(Int)
-		case symbol(String)
-	}
+	case conditionCommand(operation: String, addressingMode: String?, condition: Condition, address: SymbolicAddress, index: AddressSpecification.Index?)
 	
 	/// A literal word.
 	case literal(Word)
@@ -61,18 +51,6 @@ enum Statement {
 		func optionalRegister(in match: NSTextCheckingResult, at group: Int) -> Register? {
 			guard let string = optionalString(in: match, at: group) else { return nil }
 			return Register(rawValue: Int(string)!)!
-		}
-		
-		func addressTerms(in match: NSTextCheckingResult, at group: Int) throws -> [AddressTerm] {
-			return try string(in: match, at: group).split(separator: "+", omittingEmptySubsequences: false).map { term in
-				let term = term.trimmingCharacters(in: .whitespaces)
-				guard !term.isEmpty else { throw ParsingError.emptyAddressTerm }
-				if let literal = Int(term) {
-					return .literal(literal)
-				} else {
-					return .symbol(term)
-				}
-			}
 		}
 		
 		func index(in match: NSTextCheckingResult, from group: Int) throws -> AddressSpecification.Index? {
@@ -112,7 +90,7 @@ enum Statement {
 				operation:		string(in: match, at: 1),
 				addressingMode:	string(in: match, at: 2),
 				register:		optionalRegister(in: match, at: 3),
-				addressTerms:	try addressTerms(in: match, at: 4),
+				address:		try .init(from: string(in: match, at: 4)),
 				index:			try index(in: match, from: 5)
 			)
 		} else if let match = Statement.conditionCommandExpression.firstMatch(in: line, range: range) {
@@ -120,7 +98,7 @@ enum Statement {
 				operation:		string(in: match, at: 1),
 				addressingMode:	string(in: match, at: 2),
 				condition:		try condition(in: match, at: 3),
-				addressTerms:	try addressTerms(in: match, at: 4),
+				address:		try .init(from: string(in: match, at: 4)),
 				index:			try index(in: match, from: 5)
 			)
 		} else {
@@ -133,9 +111,6 @@ enum Statement {
 		
 		/// The statement has an illegal format.
 		case illegalFormat
-		
-		/// An address term is empty.
-		case emptyAddressTerm
 		
 		/// Both a pre- and post-indexation modification are specified.
 		case doubleIndexModification
@@ -167,6 +142,18 @@ enum Statement {
 	///
 	/// Groups: operation, addressing mode (opt.), condition, address terms, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
 	private static let conditionCommandExpression = expression(qualifiedOperationPattern, reqSpace, conditionPattern, argSeparator, addressPattern)
+	
+	/// The number of machine words used by the statement.
+	var wordLength: Int {
+		switch self {
+			case .nullaryCommand:		return 1
+			case .registerCommand:		return 1
+			case .addressCommand:		return 1
+			case .conditionCommand:		return 1
+			case .literal:				return 1
+			case .array(let length):	return length
+		}
+	}
 	
 }
 

@@ -39,9 +39,11 @@ struct Script {
 	
 	/// The statements encoded in the script.
 	var statements: [Statement]
+	typealias Statements = [Statement]
 	
 	/// A dictionary mapping symbols to indices in the `statements` array.
-	var statementIndexBySymbol: [String : Int]
+	var statementIndexBySymbol: [Symbol : Statements.Index]
+	typealias Symbol = String
 	
 	/// An error related to symbols.
 	enum SymbolError : Error {

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4F1B6EE021A1A3D700751511 /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1B6EDF21A1A3D700751511 /* Script.swift */; };
+		4F30B52F21A218DC00BDEDCC /* Symbolic Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */; };
 		4F346B722199DBE700D6D8AD /* DRAMASimulator Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B712199DBE700D6D8AD /* DRAMASimulator Delegate.swift */; };
 		4F346B742199DBE700D6D8AD /* Document Browser View Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B732199DBE700D6D8AD /* Document Browser View Controller.swift */; };
 		4F346B762199DBE700D6D8AD /* Script View Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B752199DBE700D6D8AD /* Script View Controller.swift */; };
@@ -19,7 +20,6 @@
 		4F3E7910219A2221008E3E9B /* Addressing Mode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E790F219A2221008E3E9B /* Addressing Mode.swift */; };
 		4F3E7914219A2324008E3E9B /* Address Specification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E7913219A2324008E3E9B /* Address Specification.swift */; };
 		4F3E7916219A25B7008E3E9B /* Condition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E7915219A25B7008E3E9B /* Condition.swift */; };
-		4F3E791E219A2FC8008E3E9B /* Global.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E791D219A2FC8008E3E9B /* Global.swift */; };
 		4F44C7F2219A4426003798AF /* Machine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F44C7F1219A4426003798AF /* Machine.swift */; };
 		4F44C7F4219A4BBE003798AF /* Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F44C7F3219A4BBE003798AF /* Word.swift */; };
 		4F44C7F6219A4C40003798AF /* Address Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F44C7F5219A4C40003798AF /* Address Word.swift */; };
@@ -48,6 +48,7 @@
 
 /* Begin PBXFileReference section */
 		4F1B6EDF21A1A3D700751511 /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
+		4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Symbolic Address.swift"; sourceTree = "<group>"; };
 		4F346B6E2199DBE700D6D8AD /* DRAMASimulator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DRAMASimulator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F346B712199DBE700D6D8AD /* DRAMASimulator Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DRAMASimulator Delegate.swift"; sourceTree = "<group>"; };
 		4F346B732199DBE700D6D8AD /* Document Browser View Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Document Browser View Controller.swift"; sourceTree = "<group>"; };
@@ -62,7 +63,6 @@
 		4F3E790F219A2221008E3E9B /* Addressing Mode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Addressing Mode.swift"; sourceTree = "<group>"; };
 		4F3E7913219A2324008E3E9B /* Address Specification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Address Specification.swift"; sourceTree = "<group>"; };
 		4F3E7915219A25B7008E3E9B /* Condition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Condition.swift; sourceTree = "<group>"; };
-		4F3E791D219A2FC8008E3E9B /* Global.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Global.swift; sourceTree = "<group>"; };
 		4F44C7F1219A4426003798AF /* Machine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Machine.swift; sourceTree = "<group>"; };
 		4F44C7F3219A4BBE003798AF /* Word.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Word.swift; sourceTree = "<group>"; };
 		4F44C7F5219A4C40003798AF /* Address Word.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Address Word.swift"; sourceTree = "<group>"; };
@@ -159,7 +159,6 @@
 				4F820F2E219AFF71004EE2C9 /* Commands */,
 				4FA7EBA721A0895E00C52F98 /* Program.swift */,
 				4FD8ADB421A1B1FD001AD860 /* Script */,
-				4F3E791D219A2FC8008E3E9B /* Global.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -196,6 +195,7 @@
 			children = (
 				4F1B6EDF21A1A3D700751511 /* Script.swift */,
 				4FD8ADB521A1B206001AD860 /* Statement.swift */,
+				4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */,
 			);
 			path = Script;
 			sourceTree = "<group>";
@@ -289,7 +289,6 @@
 				4FFEB7E1219C73650049D0A5 /* Register.swift in Sources */,
 				4FA7EBA421A06C4C00C52F98 /* Condition State.swift in Sources */,
 				4FA7EB9C21A0691800C52F98 /* Conditional Jump Command.swift in Sources */,
-				4F3E791E219A2FC8008E3E9B /* Global.swift in Sources */,
 				4FFEB7D4219C6C480049D0A5 /* Nullary Command.swift in Sources */,
 				4F3E7910219A2221008E3E9B /* Addressing Mode.swift in Sources */,
 				4FFEB7DC219C6EF90049D0A5 /* Register Address Command.swift in Sources */,
@@ -301,6 +300,7 @@
 				4F35A3CE21A0D6EA00A4610D /* Command Word.swift in Sources */,
 				4FFEB7D6219C6ED50049D0A5 /* Unary Register Command.swift in Sources */,
 				4FFEB7E5219C75DB0049D0A5 /* Arithmetic Command.swift in Sources */,
+				4F30B52F21A218DC00BDEDCC /* Symbolic Address.swift in Sources */,
 				4FFEB7DE219C6F060049D0A5 /* Condition Address Command.swift in Sources */,
 				4FFEB7DF219C72D50049D0A5 /* Load Command.swift in Sources */,
 				4FA7EBA821A0895E00C52F98 /* Program.swift in Sources */,

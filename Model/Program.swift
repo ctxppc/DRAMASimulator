@@ -3,6 +3,25 @@
 /// A parsed script that can be readily converted into machine words.
 struct Program {
 	
+	/// Assembles a program from given script.
+	init(from script: Script) {
+		
+		var addressesByStatementIndex: [Int : Int] = [:]
+		var nextAddress = 0
+		for (statementIndex, statement) in script.statements.enumerated() {
+			addressesByStatementIndex[statementIndex] = nextAddress
+			nextAddress += statement.wordLength
+		}
+		
+		var addressesBySymbol: [String : Int] = [:]
+		for (symbol, statementIndex) in script.statementIndexBySymbol {
+			addressesBySymbol[symbol] = addressesByStatementIndex[statementIndex]
+		}
+		
+		wordSequences = []	// TODO
+		
+	}
+	
 	/// The words defined in the program as word sequences.
 	var wordSequences: [WordSequence]
 	enum WordSequence {
