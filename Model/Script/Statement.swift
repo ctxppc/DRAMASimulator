@@ -75,6 +75,30 @@ enum Statement {
 			}
 		}
 		
+		func index(in match: NSTextCheckingResult, from group: Int) throws -> AddressSpecification.Index? {
+			
+			guard let register = optionalRegister(in: match, at: group + 1) else { return nil }
+			
+			let modification: AddressSpecification.Index.Modification?
+			switch (optionalString(in: match, at: group), optionalString(in: match, at: group + 2)) {
+				case (nil, nil):	modification = nil
+				case ("+", nil):	modification = .preincrement
+				case ("-", nil):	modification = .predecrement
+				case (nil, "+"):	modification = .postincrement
+				case (nil, "-"):	modification = .postdecrement
+				default:			throw ParsingError.doubleIndexModification
+			}
+			
+			return .init(indexRegister: register, modification: modification)
+			
+		}
+		
+		func condition(in match: NSTextCheckingResult, at group: Int) throws -> Condition {
+			let rawValue = string(in: match, at: group).uppercased()
+			guard let condition = Condition(rawValue: rawValue) ?? Condition(rawComparisonValue: rawValue) else { throw ParsingError.unknownCondition }
+			return condition
+		}
+		
 		if let match = Statement.nullaryCommandExpression.firstMatch(in: line, range: range) {
 			self = .nullaryCommand(operation: string(in: match, at: 1))
 		} else if let match = Statement.registerCommandExpression.firstMatch(in: line, range: range) {
@@ -88,11 +112,17 @@ enum Statement {
 				operation:		string(in: match, at: 1),
 				addressingMode:	string(in: match, at: 2),
 				register:		optionalRegister(in: match, at: 3),
-				addressTerms:	[],	// TODO
-				index:			nil	// TODO
+				addressTerms:	try addressTerms(in: match, at: 4),
+				index:			try index(in: match, from: 5)
 			)
 		} else if let match = Statement.conditionCommandExpression.firstMatch(in: line, range: range) {
-			// TODO
+			self = .conditionCommand(
+				operation:		string(in: match, at: 1),
+				addressingMode:	string(in: match, at: 2),
+				condition:		try condition(in: match, at: 3),
+				addressTerms:	try addressTerms(in: match, at: 4),
+				index:			try index(in: match, from: 5)
+			)
 		} else {
 			throw ParsingError.illegalFormat
 		}
@@ -106,6 +136,12 @@ enum Statement {
 		
 		/// An address term is empty.
 		case emptyAddressTerm
+		
+		/// Both a pre- and post-indexation modification are specified.
+		case doubleIndexModification
+		
+		/// An unknown condition is specified.
+		case unknownCondition
 		
 		/// An address specified in a statement exceeds the range allowed by an address word.
 		case unrepresentableAddress
@@ -124,13 +160,13 @@ enum Statement {
 	
 	/// A regular expression for matching register commands.
 	///
-	/// Groups: operation, register (opt.), base address specification, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
-	private static let addressCommandExpression = expression(operationPattern, reqSpace, "(?:\(registerPattern)\(argSeparator))", addressPattern)
+	/// Groups: operation, addressing mode (opt.), register (opt.), address terms, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
+	private static let addressCommandExpression = expression(qualifiedOperationPattern, reqSpace, "(?:\(registerPattern)\(argSeparator))", addressPattern)
 	
 	/// A regular expression for matching register commands.
 	///
-	/// Groups: operation, condition, base address specification, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
-	private static let conditionCommandExpression = expression(operationPattern, reqSpace, conditionPattern, argSeparator, addressPattern)
+	/// Groups: operation, addressing mode (opt.), condition, address terms, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
+	private static let conditionCommandExpression = expression(qualifiedOperationPattern, reqSpace, conditionPattern, argSeparator, addressPattern)
 	
 }
 
@@ -144,6 +180,7 @@ private let argSeparator = "\(optSpace),\(optSpace)"
 
 private let operationPattern = "([A-Z]{3})"
 private let addressingModePattern = "\\.(w|a|d|i)"
+private let qualifiedOperationPattern = "\(operationPattern)(?:\(addressingModePattern))"
 private let registerPattern = "R([0-9])"
 private let conditionPattern = "([A-Z]{2,4})"
 private let addressPattern = "\(baseAddressPattern)(?:\(indexPattern))?"
