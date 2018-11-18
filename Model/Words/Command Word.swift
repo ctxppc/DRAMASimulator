@@ -47,3 +47,130 @@ struct CommandWord {
 	}
 	
 }
+
+extension CommandWord {
+	
+	/// Encodes given command or a native representation thereof into a word.
+	///
+	/// - Requires: `command` is encodable as a word.
+	///
+	/// - Parameter command: The command to convert into a word.
+	init(_ c: Command) {
+		
+		self.init(.zero)
+		
+		let command: Command
+		(command, self.opcode) = {
+			if let opcode = c.instruction.opcode {
+				return (c, opcode)
+			} else {
+				let c = c.nativeRepresentation
+				guard let opcode = c.instruction.opcode else { preconditionFailure("Native command has no opcode") }
+				return (c, opcode)
+			}
+		}()
+		
+		if let command = command as? ConditionAddressCommand, let condition = command.conditionOperand, let address = command.addressOperand {
+			self.addressingMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
+			self.indexingMode = address.mode
+			self.register = condition.code
+			self.indexRegister = address.index?.indexRegister.rawValue ?? 0
+			self.address = address.base.rawValue
+		} else if let command = command as? RegisterAddressCommand, let register = command.registerOperand, let address = command.addressOperand {
+			self.addressingMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
+			self.indexingMode = address.mode
+			self.register = register.rawValue
+			self.indexRegister = address.index?.indexRegister.rawValue ?? 0
+			self.address = address.base.rawValue
+		} else if let command = command as? AddressCommand, let address = command.addressOperand {
+			self.addressingMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
+			self.indexingMode = address.mode
+			self.indexRegister = address.index?.indexRegister.rawValue ?? 0
+			self.address = address.base.rawValue
+		} else if let command = command as? BinaryRegisterCommand, let primaryRegister = command.registerOperand, let secondaryRegister = command.secondaryRegisterOperand {
+			self.addressingMode = AddressingMode.value.code(directAccessOnly: type(of: command).directAccessOnly)
+			self.indexingMode = 2
+			self.register = primaryRegister.rawValue
+			self.indexRegister = secondaryRegister.rawValue
+		} else if let command = command as? UnaryRegisterCommand, let register = command.registerOperand {
+			self.addressingMode = AddressingMode.value.code(directAccessOnly: type(of: command).directAccessOnly)
+			self.register = register.rawValue
+		}
+		
+	}
+	
+	/// Decodes a command from the word.
+	func command() throws -> Command {
+		
+		guard let instruction = Instruction(opcode: opcode) else { throw DecodingError.illegalInstruction(opcode: opcode) }
+		guard let commandType = supportedCommandTypes.first(where: { $0.supportedInstructions.contains(instruction) })
+			else { throw DecodingError.unimplementedInstruction(instruction) }
+		
+		func addressingMode() throws -> AddressingMode {
+			guard let mode = AddressingMode(code: self.addressingMode, directAccessOnly: commandType.directAccessOnly) else { throw DecodingError.illegalAddressingMode(code: self.addressingMode) }
+			return mode
+		}
+		
+		let address = AddressSpecification(base: AddressWord(rawValue: self.address)!, indexRegister: Register(rawValue: indexRegister)!, mode: indexingMode)
+		
+		switch commandType {
+			
+			case let type as NullaryCommand.Type:
+			return try type.init(instruction: instruction)
+			
+			case let type as UnaryRegisterCommand.Type:
+			return try type.init(instruction: instruction, register: Register(rawValue: register)!)
+			
+			case let type as BinaryRegisterCommand.Type where try addressingMode() == .value:
+			return try type.init(instruction: instruction, primaryRegister: Register(rawValue: register)!, secondaryRegister: Register(rawValue: indexRegister)!)
+			
+			case let type as AddressCommand.Type:
+			return try type.init(instruction: instruction, addressingMode: addressingMode(), address: address)
+			
+			case let type as RegisterAddressCommand.Type:
+			return try type.init(instruction: instruction, addressingMode: addressingMode(), register: Register(rawValue: register)!, address: address)
+			
+			case let type as ConditionAddressCommand.Type:
+			guard let condition = Condition(code: register) else { throw DecodingError.illegalCondition(code: register) }
+			return try type.init(instruction: instruction, addressingMode: addressingMode(), condition: condition, address: address)
+			
+			default:
+			throw DecodingError.undecodableCommand(type: commandType)
+			
+		}
+		
+	}
+	
+	enum DecodingError : Error {
+		
+		/// The opcode is illegal.
+		case illegalInstruction(opcode: Int)
+		
+		/// The instruction is not implemented.
+		case unimplementedInstruction(Instruction)
+		
+		/// The addressing mode code is illegal.
+		case illegalAddressingMode(code: Int)
+		
+		/// The condition code is illegal.
+		case illegalCondition(code: Int)
+		
+		/// The command type does not have a decodable structure.
+		case undecodableCommand(type: Command.Type)
+		
+	}
+	
+}
+
+/// The command types that machines natively support.
+private let supportedCommandTypes: [Command.Type] = [
+	LoadCommand.self,
+	StoreCommand.self,
+	ArithmeticCommand.self,
+	CompareCommand.self,
+	JumpCommand.self,
+	ConditionalJumpCommand.self,
+	ReadCommand.self,
+	HaltCommand.self
+]
+

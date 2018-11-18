@@ -4,7 +4,7 @@
 struct AddressWord : WordProtocol {
 	
 	// See protocol.
-	static let upperUnsignedValue = 10000
+	static let unsignedUpperBound = 10000
 	
 	// See protocol.
 	init?(rawValue: Int) {
@@ -14,7 +14,7 @@ struct AddressWord : WordProtocol {
 	
 	/// Converts a word into an address word by truncating it (if necessary).
 	init(truncating word: Word) {
-		self.rawValue = word.rawValue % AddressWord.upperUnsignedValue
+		self.rawValue = word.rawValue % AddressWord.unsignedUpperBound
 	}
 	
 	// See protocol.

@@ -3,6 +3,30 @@
 /// A parsed script that can be readily converted into machine words.
 struct Program {
 	
+	/// The words defined in the program as word sequences.
+	var wordSequences: [WordSequence]
+	enum WordSequence {
+		
+		/// A single word containing a single command.
+		case command(Command)
+		
+		/// A single word containing a single literal.
+		case literal(Word)
+		
+		/// A range of some length of zero-initialised words.
+		case range(length: Int)
+		
+		/// The machine words contained in `self`.
+		var words: AnyCollection<Word> {
+			switch self {
+				case .command(let command):			return .init(CollectionOfOne(CommandWord(command).base))
+				case .literal(let word):			return .init(CollectionOfOne(word))
+				case .range(length: let length):	return .init(repeatElement(.zero, count: length))
+			}
+		}
+		
+	}
+	
 	/// The bounds of the program text section.
 	let textSectionBounds = 0..<200
 	
@@ -25,7 +49,7 @@ struct Program {
 		
 		guard !dataOffsetsBySymbol.keys.contains(symbol) else { throw SymbolError.duplicateSymbol }
 		let address = AddressWord(rawValue: dataSection.endIndex + dataSectionBounds.lowerBound)!
-		guard dataSectionBounds.contains(address.unsignedValue) else { throw AssemblyError.dataSectionOverflow }
+		guard dataSectionBounds.contains(address.unsignedValue) else { throw AssemblyError.overflow }
 		
 		dataOffsetsBySymbol[symbol] = address
 		dataSection.append(contentsOf: words)
@@ -49,109 +73,18 @@ struct Program {
 	
 	/// Assembles the program into machine words, ready to be loaded into and executed by a machine.
 	///
-	/// - Postcondition: The resulting array has `AddressWord.upperUnsignedValue` words.
+	/// - Returns: An array encoding the program in exactly `AddressWord.unsignedUpperBound` words.
 	func machineWords() throws -> [Word] {
-		
-		let addressSpace = Machine.emptyMemory.indices
-		guard addressSpace.contains(textSectionBounds.lowerBound),
-			addressSpace.contains(textSectionBounds.upperBound - 1),
-			addressSpace.contains(dataSectionBounds.lowerBound),
-			addressSpace.contains(dataSectionBounds.upperBound - 1)
-			else { throw AssemblyError.invalidBounds }
-		guard !textSectionBounds.overlaps(dataSectionBounds) else { throw AssemblyError.overlappingSections }
-		
-		guard dataSection.count < dataSectionBounds.count else { throw AssemblyError.dataSectionOverflow }
-		let paddedDataSection = dataSection + repeatElement(.zero, count: dataSectionBounds.count - dataSection.count)
-		
-		let textSection = try commands.map { c -> Word in
-			
-			let (command, opcode): (Command, Int) = {
-				if let opcode = c.instruction.opcode {
-					return (c, opcode)
-				} else {
-					let nativeCommand = c.nativeRepresentation
-					guard let opcode = nativeCommand.instruction.opcode else { preconditionFailure("Native command has no opcode") }
-					return (nativeCommand, opcode)
-				}
-			}()
-			
-			var word = CommandWord(.zero)
-			word.opcode = opcode
-			
-			if let command = command as? ConditionAddressCommand, let condition = command.conditionOperand, let address = command.addressOperand {
-				word.addressingMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
-				word.indexingMode = address.mode
-				word.register = condition.code
-				word.indexRegister = address.index?.indexRegister.rawValue ?? 0
-				word.address = address.base.rawValue
-			} else if let command = command as? RegisterAddressCommand, let register = command.registerOperand, let address = command.addressOperand {
-				word.addressingMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
-				word.indexingMode = address.mode
-				word.register = register.rawValue
-				word.indexRegister = address.index?.indexRegister.rawValue ?? 0
-				word.address = address.base.rawValue
-			} else if let command = command as? AddressCommand, let address = command.addressOperand {
-				word.addressingMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
-				word.indexingMode = address.mode
-				word.indexRegister = address.index?.indexRegister.rawValue ?? 0
-				word.address = address.base.rawValue
-			} else if let command = command as? BinaryRegisterCommand, let primaryRegister = command.registerOperand, let secondaryRegister = command.secondaryRegisterOperand {
-				word.addressingMode = AddressingMode.value.code(directAccessOnly: type(of: command).directAccessOnly)
-				word.indexingMode = 2
-				word.register = primaryRegister.rawValue
-				word.indexRegister = secondaryRegister.rawValue
-			} else if let command = command as? UnaryRegisterCommand, let register = command.registerOperand {
-				word.addressingMode = AddressingMode.value.code(directAccessOnly: type(of: command).directAccessOnly)
-				word.register = register.rawValue
-			} else if command is NullaryCommand {
-				// no arguments
-			} else {
-				throw AssemblyError.incompleteCommand
-			}
-			
-			return word.base
-			
-		}
-		
-		guard textSection.count < textSectionBounds.count else { throw AssemblyError.textSectionOverflow }
-		let paddedTextSection = textSection + repeatElement(.zero, count: textSectionBounds.count - textSection.count)
-		
-		let memory: [Word]
-		if textSectionBounds.lowerBound < dataSectionBounds.lowerBound {
-			memory = repeatElement(.zero, count: textSectionBounds.lowerBound)
-				+ paddedTextSection
-				+ repeatElement(.zero, count: dataSectionBounds.lowerBound - textSectionBounds.upperBound)
-				+ paddedDataSection
-				+ repeatElement(.zero, count: addressSpace.upperBound - dataSectionBounds.upperBound)
-		} else {
-			memory = repeatElement(.zero, count: dataSectionBounds.lowerBound)
-				+ paddedDataSection
-				+ repeatElement(.zero, count: textSectionBounds.lowerBound - dataSectionBounds.upperBound)
-				+ paddedTextSection
-				+ repeatElement(.zero, count: addressSpace.upperBound - textSectionBounds.upperBound)
-		}
-		
-		return memory
-		
+		let words = wordSequences.flatMap { $0.words }
+		guard words.count <= AddressWord.unsignedUpperBound else { throw AssemblyError.overflow }
+		return words + repeatElement(.zero, count: AddressWord.unsignedUpperBound - words.count)
 	}
 	
 	/// An error related to assembly such as memory management or command lowering.
 	enum AssemblyError : Error {
 		
-		/// The text section and data section have overlapping bounds.
-		case overlappingSections
-		
-		/// The text section does not fit in its bounds.
-		case textSectionOverflow
-		
-		/// The data section does not fit in its bounds.
-		case dataSectionOverflow
-		
-		/// The text or data section exceeds the address space.
-		case invalidBounds
-		
-		/// The program has an incompletely specified command.
-		case incompleteCommand
+		/// The program does not fit in memory.
+		case overflow
 		
 	}
 	

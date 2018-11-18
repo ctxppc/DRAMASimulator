@@ -4,7 +4,7 @@
 struct Word : WordProtocol {
 	
 	// See protocol.
-	static let upperUnsignedValue = 1_00000_00000
+	static let unsignedUpperBound = 1_00000_00000
 	
 	// See protocol.
 	init?(rawValue: Int) {

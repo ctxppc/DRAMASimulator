@@ -9,8 +9,8 @@ protocol WordProtocol : Equatable, RawRepresentable where RawValue == Int {
 	
 	/// The upper bound unsigned decimal value.
 	///
-	/// - Invariant: `upperUnsignedValue` = 10ⁿ for some nonnegative integer *n*.
-	static var upperUnsignedValue: Int { get }
+	/// - Invariant: `unsignedUpperBound` = 10ⁿ for some nonnegative integer *n*.
+	static var unsignedUpperBound: Int { get }
 	
 }
 
@@ -18,12 +18,12 @@ extension WordProtocol {
 	
 	/// The range of unsigned integers representable by words of this type.
 	static var unsignedRange: Range<Int> {
-		return -upperUnsignedValue..<upperUnsignedValue
+		return -unsignedUpperBound..<unsignedUpperBound
 	}
 	
 	/// The range of signed integers representable by words of this type.
 	static var signedRange: Range<Int> {
-		return -(upperUnsignedValue/2)..<(upperUnsignedValue/2)
+		return -(unsignedUpperBound/2)..<(unsignedUpperBound/2)
 	}
 	
 	/// The zero word.
@@ -33,8 +33,8 @@ extension WordProtocol {
 	
 	/// Creates a word with given signed value, wrapping it if necessary.
 	init(wrapping signedValue: Int) {
-		let wrappedValue = signedValue % Self.upperUnsignedValue
-		self.init(rawValue: wrappedValue > 0 ? wrappedValue : Self.upperUnsignedValue + wrappedValue)!
+		let wrappedValue = signedValue % Self.unsignedUpperBound
+		self.init(rawValue: wrappedValue > 0 ? wrappedValue : Self.unsignedUpperBound + wrappedValue)!
 	}
 	
 	/// Creates a word with given unsigned value, truncating it if necessary.
@@ -42,7 +42,7 @@ extension WordProtocol {
 	/// - Requires: `unsignedValue` ≥ 0.
 	init(truncating unsignedValue: Int) {
 		precondition(unsignedValue >= 0, "Truncating negative value")
-		self.init(rawValue: unsignedValue % Self.upperUnsignedValue)!
+		self.init(rawValue: unsignedValue % Self.unsignedUpperBound)!
 	}
 	
 	/// The word as an unsigned value.
@@ -67,15 +67,15 @@ extension WordProtocol {
 	var signedValue: Int {
 		
 		get {
-			if rawValue < Self.upperUnsignedValue / 2 {
+			if rawValue < Self.unsignedUpperBound / 2 {
 				return rawValue
 			} else {
-				return rawValue - Self.upperUnsignedValue
+				return rawValue - Self.unsignedUpperBound
 			}
 		}
 		
 		set {
-			guard let v = Self.init(rawValue: newValue > 0 ? newValue : Self.upperUnsignedValue + newValue) else { preconditionFailure("Unrepresentable signed value") }
+			guard let v = Self.init(rawValue: newValue > 0 ? newValue : Self.unsignedUpperBound + newValue) else { preconditionFailure("Unrepresentable signed value") }
 			self = v
 		}
 		
@@ -92,14 +92,14 @@ extension WordProtocol {
 	///
 	/// This method is equivalent to but more efficient than `self.modifySignedValueWithWrapping { $0 += 1 }`.
 	mutating func increment() {
-		self = Self.init(rawValue: rawValue + 1 == Self.upperUnsignedValue ? 0 : rawValue + 1)!
+		self = Self.init(rawValue: rawValue + 1 == Self.unsignedUpperBound ? 0 : rawValue + 1)!
 	}
 	
 	/// Decrements the word's value by 1, looping back at overflow.
 	///
 	/// This method is equivalent to but more efficient than `self.modifySignedValueWithWrapping { $0 -= 1 }`.
 	mutating func decrement() {
-		self = Self.init(rawValue: rawValue - 1 == 0 ? Self.upperUnsignedValue : rawValue - 1)!
+		self = Self.init(rawValue: rawValue - 1 == 0 ? Self.unsignedUpperBound : rawValue - 1)!
 	}
 	
 }

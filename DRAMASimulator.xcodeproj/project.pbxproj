@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4F1B6EE021A1A3D700751511 /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1B6EDF21A1A3D700751511 /* Script.swift */; };
 		4F346B722199DBE700D6D8AD /* DRAMASimulator Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B712199DBE700D6D8AD /* DRAMASimulator Delegate.swift */; };
 		4F346B742199DBE700D6D8AD /* Document Browser View Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B732199DBE700D6D8AD /* Document Browser View Controller.swift */; };
 		4F346B762199DBE700D6D8AD /* Script View Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B752199DBE700D6D8AD /* Script View Controller.swift */; };
@@ -32,6 +33,7 @@
 		4FA7EBA421A06C4C00C52F98 /* Condition State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EBA321A06C4C00C52F98 /* Condition State.swift */; };
 		4FA7EBA821A0895E00C52F98 /* Program.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EBA721A0895E00C52F98 /* Program.swift */; };
 		4FA7EBAA21A0A55800C52F98 /* Read Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EBA921A0A55800C52F98 /* Read Command.swift */; };
+		4FD8ADB621A1B206001AD860 /* Statement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD8ADB521A1B206001AD860 /* Statement.swift */; };
 		4FFEB7D4219C6C480049D0A5 /* Nullary Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFEB7D3219C6C480049D0A5 /* Nullary Command.swift */; };
 		4FFEB7D6219C6ED50049D0A5 /* Unary Register Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFEB7D5219C6ED50049D0A5 /* Unary Register Command.swift */; };
 		4FFEB7D8219C6EDD0049D0A5 /* Binary Register Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFEB7D7219C6EDD0049D0A5 /* Binary Register Command.swift */; };
@@ -45,6 +47,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4F1B6EDF21A1A3D700751511 /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
 		4F346B6E2199DBE700D6D8AD /* DRAMASimulator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DRAMASimulator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F346B712199DBE700D6D8AD /* DRAMASimulator Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DRAMASimulator Delegate.swift"; sourceTree = "<group>"; };
 		4F346B732199DBE700D6D8AD /* Document Browser View Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Document Browser View Controller.swift"; sourceTree = "<group>"; };
@@ -73,6 +76,7 @@
 		4FA7EBA321A06C4C00C52F98 /* Condition State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Condition State.swift"; sourceTree = "<group>"; };
 		4FA7EBA721A0895E00C52F98 /* Program.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Program.swift; sourceTree = "<group>"; };
 		4FA7EBA921A0A55800C52F98 /* Read Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Read Command.swift"; sourceTree = "<group>"; };
+		4FD8ADB521A1B206001AD860 /* Statement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Statement.swift; sourceTree = "<group>"; };
 		4FFEB7D3219C6C480049D0A5 /* Nullary Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Nullary Command.swift"; sourceTree = "<group>"; };
 		4FFEB7D5219C6ED50049D0A5 /* Unary Register Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Unary Register Command.swift"; sourceTree = "<group>"; };
 		4FFEB7D7219C6EDD0049D0A5 /* Binary Register Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binary Register Command.swift"; sourceTree = "<group>"; };
@@ -154,6 +158,7 @@
 				4F35A3C921A0D39A00A4610D /* Words */,
 				4F820F2E219AFF71004EE2C9 /* Commands */,
 				4FA7EBA721A0895E00C52F98 /* Program.swift */,
+				4FD8ADB421A1B1FD001AD860 /* Script */,
 				4F3E791D219A2FC8008E3E9B /* Global.swift */,
 			);
 			path = Model;
@@ -184,6 +189,15 @@
 				4FA7EBA321A06C4C00C52F98 /* Condition State.swift */,
 			);
 			path = Commands;
+			sourceTree = "<group>";
+		};
+		4FD8ADB421A1B1FD001AD860 /* Script */ = {
+			isa = PBXGroup;
+			children = (
+				4F1B6EDF21A1A3D700751511 /* Script.swift */,
+				4FD8ADB521A1B206001AD860 /* Statement.swift */,
+			);
+			path = Script;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -268,6 +282,7 @@
 				4FA7EBAA21A0A55800C52F98 /* Read Command.swift in Sources */,
 				4F346B742199DBE700D6D8AD /* Document Browser View Controller.swift in Sources */,
 				4FA7EB9A21A0682100C52F98 /* Jump Command.swift in Sources */,
+				4FD8ADB621A1B206001AD860 /* Statement.swift in Sources */,
 				4F44C7F2219A4426003798AF /* Machine.swift in Sources */,
 				4F820F30219B06AB004EE2C9 /* Command.swift in Sources */,
 				4F346B722199DBE700D6D8AD /* DRAMASimulator Delegate.swift in Sources */,
@@ -282,6 +297,7 @@
 				4F820F35219B1CD6004EE2C9 /* Instruction.swift in Sources */,
 				4FA7EBA021A06B0D00C52F98 /* Halt Command.swift in Sources */,
 				4FFEB7DA219C6EE90049D0A5 /* Address Command.swift in Sources */,
+				4F1B6EE021A1A3D700751511 /* Script.swift in Sources */,
 				4F35A3CE21A0D6EA00A4610D /* Command Word.swift in Sources */,
 				4FFEB7D6219C6ED50049D0A5 /* Unary Register Command.swift in Sources */,
 				4FFEB7E5219C75DB0049D0A5 /* Arithmetic Command.swift in Sources */,

@@ -88,7 +88,7 @@ struct Machine {
 	}
 	
 	/// An array representing empty memory.
-	static let emptyMemory = Array(repeating: Word.zero, count: AddressWord.upperUnsignedValue)
+	static let emptyMemory = Array(repeating: Word.zero, count: AddressWord.unsignedUpperBound)
 	
 	/// The address in memory of the next command to be executed.
 	var programCounter: AddressWord
@@ -118,89 +118,11 @@ struct Machine {
 	/// Executes the next command.
 	///
 	/// - Requires: The machine is ready, i.e., `state == .ready`.
-	mutating func executeCommand() throws {
-		
+	mutating func executeNext() throws {
 		precondition(state == .ready, "The machine is not ready.")
-		
-		let word = CommandWord(self[memoryCellAt: programCounter])
+		let command = try CommandWord(self[memoryCellAt: programCounter]).command()
 		programCounter.increment()
-		
-		guard let instruction = Instruction(opcode: word.opcode) else { throw ExecutionError.illegalInstruction(opcode: word.opcode) }
-		guard let commandType = Machine.supportedCommandTypes.first(where: { $0.supportedInstructions.contains(instruction) })
-			else { throw ExecutionError.unimplementedInstruction(instruction) }
-		
-		func addressingMode() throws -> AddressingMode {
-			guard let mode = AddressingMode(code: word.addressingMode, directAccessOnly: commandType.directAccessOnly) else { throw ExecutionError.illegalAddressingMode(code: word.addressingMode) }
-			return mode
-		}
-		
-		let address = AddressSpecification(base: AddressWord(rawValue: word.address)!, indexRegister: Register(rawValue: word.indexRegister)!, mode: word.indexingMode)
-		
-		let command: Command
-		switch commandType {
-			
-			case let type as NullaryCommand.Type:
-			command = try type.init(instruction: instruction)
-			
-			case let type as UnaryRegisterCommand.Type:
-			command = try type.init(instruction: instruction, register: Register(rawValue: word.register)!)
-			
-			case let type as BinaryRegisterCommand.Type where try addressingMode() == .value:
-			command = try type.init(instruction: instruction, primaryRegister: Register(rawValue: word.register)!, secondaryRegister: Register(rawValue: word.indexRegister)!)
-			
-			case let type as AddressCommand.Type:
-			command = try type.init(instruction: instruction, addressingMode: addressingMode(), address: address)
-			
-			case let type as RegisterAddressCommand.Type:
-			command = try type.init(instruction: instruction, addressingMode: addressingMode(), register: Register(rawValue: word.register)!, address: address)
-			
-			case let type as ConditionAddressCommand.Type:
-			guard let condition = Condition(code: word.register) else { throw ExecutionError.illegalCondition(code: word.register) }
-			command = try type.init(instruction: instruction, addressingMode: addressingMode(), condition: condition, address: address)
-			
-			default:
-			throw ExecutionError.undecodableCommand(type: commandType)
-			
-		}
-		
 		try command.execute(on: &self)
-		
 	}
 	
-	enum ExecutionError : Error {
-		
-		/// The opcode is illegal.
-		case illegalInstruction(opcode: Int)
-		
-		/// The instruction is not implemented.
-		case unimplementedInstruction(Instruction)
-		
-		/// The addressing mode code is illegal.
-		case illegalAddressingMode(code: Int)
-		
-		/// The condition code is illegal.
-		case illegalCondition(code: Int)
-		
-		/// The command type does not have a decodable structure.
-		case undecodableCommand(type: Command.Type)
-		
-	}
-	
-	/// The command types that machines natively support.
-	static let supportedCommandTypes: [Command.Type] = [
-		LoadCommand.self,
-		StoreCommand.self,
-		ArithmeticCommand.self,
-		CompareCommand.self,
-		JumpCommand.self,
-		ConditionalJumpCommand.self,
-		ReadCommand.self,
-		HaltCommand.self
-	]
-	
-}
-
-private func partialWord(from digits: ArraySlice<Int>) -> Int {
-	guard let digit = digits.last else { return 0 }
-	return partialWord(from: digits.dropLast()) * 10 + digit
 }
