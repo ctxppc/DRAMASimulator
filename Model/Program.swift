@@ -20,19 +20,26 @@ struct Program {
 	/// The memory section where globals can be added.
 	private(set) var dataSection: [Word] = []
 	
-	/// Adds given words to the data section, assigns them with given symbol, and returns the absolute address to the first element.
+	/// Adds given words to the data section, assigns them to given symbol, and returns the absolute address to the first element.
 	mutating func addWords<Words : Collection>(_ words: Words, symbol: String) throws -> AddressWord where Words.Element == Word {
+		
 		guard !dataOffsetsBySymbol.keys.contains(symbol) else { throw SymbolError.duplicateSymbol }
-		let absoluteOffset = dataSection.endIndex + dataSectionBounds.lowerBound
+		let address = AddressWord(rawValue: dataSection.endIndex + dataSectionBounds.lowerBound)!
+		guard dataSectionBounds.contains(address.unsignedValue) else { throw AssemblyError.dataSectionOverflow }
+		
+		dataOffsetsBySymbol[symbol] = address
 		dataSection.append(contentsOf: words)
-		return AddressWord(rawValue: absoluteOffset)!
+		
+		return address
+		
 	}
 	
+	/// Allocates a sequence of zero-initialised words of some size, assigns them to given symbol, and returns the absolute address to the first element.
 	mutating func allocateWords(count: Int, symbol: String) throws -> AddressWord {
 		return try addWords(repeatElement(.zero, count: count), symbol: symbol)
 	}
 	
-	
+	/// An error related to symbols.
 	enum SymbolError : Error {
 		
 		/// The symbol is already associated with an offset.
@@ -56,63 +63,53 @@ struct Program {
 		guard dataSection.count < dataSectionBounds.count else { throw AssemblyError.dataSectionOverflow }
 		let paddedDataSection = dataSection + repeatElement(.zero, count: dataSectionBounds.count - dataSection.count)
 		
-		let textSection = try commands.map { command -> Word in
+		let textSection = try commands.map { c -> Word in
 			
-			guard let opcode = command.instruction.opcode else { throw AssemblyError.nonnativeCommand }
-			let addrMode: Int
-			let indMode: Int
-			let reg: Int
-			let indReg: Int
-			let addr: Int
+			let (command, opcode): (Command, Int) = {
+				if let opcode = c.instruction.opcode {
+					return (c, opcode)
+				} else {
+					let nativeCommand = c.nativeRepresentation
+					guard let opcode = nativeCommand.instruction.opcode else { preconditionFailure("Native command has no opcode") }
+					return (nativeCommand, opcode)
+				}
+			}()
+			
+			var word = CommandWord(.zero)
+			word.opcode = opcode
 			
 			if let command = command as? ConditionAddressCommand, let condition = command.conditionOperand, let address = command.addressOperand {
-				addrMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
-				indMode = address.mode
-				reg = condition.code
-				indReg = address.index?.indexRegister.rawValue ?? 0
-				addr = address.base.rawValue
+				word.addressingMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
+				word.indexingMode = address.mode
+				word.register = condition.code
+				word.indexRegister = address.index?.indexRegister.rawValue ?? 0
+				word.address = address.base.rawValue
 			} else if let command = command as? RegisterAddressCommand, let register = command.registerOperand, let address = command.addressOperand {
-				addrMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
-				indMode = address.mode
-				reg = register.rawValue
-				indReg = address.index?.indexRegister.rawValue ?? 0
-				addr = address.base.rawValue
+				word.addressingMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
+				word.indexingMode = address.mode
+				word.register = register.rawValue
+				word.indexRegister = address.index?.indexRegister.rawValue ?? 0
+				word.address = address.base.rawValue
 			} else if let command = command as? AddressCommand, let address = command.addressOperand {
-				addrMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
-				indMode = address.mode
-				reg = 0
-				indReg = address.index?.indexRegister.rawValue ?? 0
-				addr = address.base.rawValue
+				word.addressingMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
+				word.indexingMode = address.mode
+				word.indexRegister = address.index?.indexRegister.rawValue ?? 0
+				word.address = address.base.rawValue
 			} else if let command = command as? BinaryRegisterCommand, let primaryRegister = command.registerOperand, let secondaryRegister = command.secondaryRegisterOperand {
-				addrMode = AddressingMode.value.code(directAccessOnly: type(of: command).directAccessOnly)
-				indMode = 2
-				reg = primaryRegister.rawValue
-				indReg = secondaryRegister.rawValue
-				addr = 0
+				word.addressingMode = AddressingMode.value.code(directAccessOnly: type(of: command).directAccessOnly)
+				word.indexingMode = 2
+				word.register = primaryRegister.rawValue
+				word.indexRegister = secondaryRegister.rawValue
 			} else if let command = command as? UnaryRegisterCommand, let register = command.registerOperand {
-				addrMode = AddressingMode.value.code(directAccessOnly: type(of: command).directAccessOnly)
-				indMode = 0
-				reg = register.rawValue
-				indReg = 0
-				addr = 0
+				word.addressingMode = AddressingMode.value.code(directAccessOnly: type(of: command).directAccessOnly)
+				word.register = register.rawValue
 			} else if command is NullaryCommand {
-				addrMode = 0
-				indMode = 0
-				reg = 0
-				indReg = 0
-				addr = 0
+				// no arguments
 			} else {
 				throw AssemblyError.incompleteCommand
 			}
 			
-			let word = opcode	* 100_000_0000
-				+ addrMode		* 1000_0000
-				+ indMode		* 100_0000
-				+ reg			* 10_0000
-				+ indReg		* 1_0000
-				+ addr
-			
-			return Word(rawValue: word)!
+			return word.base
 			
 		}
 		
@@ -138,7 +135,7 @@ struct Program {
 		
 	}
 	
-	/// An error that occurs during assembly.
+	/// An error related to assembly such as memory management or command lowering.
 	enum AssemblyError : Error {
 		
 		/// The text section and data section have overlapping bounds.
@@ -152,9 +149,6 @@ struct Program {
 		
 		/// The text or data section exceeds the address space.
 		case invalidBounds
-		
-		/// The program has a nonnative command. Nonnative commands are currently unsupported.
-		case nonnativeCommand
 		
 		/// The program has an incompletely specified command.
 		case incompleteCommand

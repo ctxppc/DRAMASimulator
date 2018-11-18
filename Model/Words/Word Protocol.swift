@@ -1,5 +1,7 @@
 // DRAMASimulator © 2018 Constantino Tsarouhas
 
+import Darwin
+
 /// A value that represents a decimal value of some fixed number of digits.
 ///
 /// - Invariant: A raw value `v` is representable by `Self` iff `unsignedRange.contains(v)`.

@@ -42,7 +42,7 @@ final class DocumentBrowserViewController : UIDocumentBrowserViewController, UID
     func presentDocument(at url: URL) {
 		let navigationController = storyboard!.instantiateViewController(withIdentifier: "Root Navigation Controller") as! UINavigationController
 		let scriptViewController = navigationController.viewControllers.first as! ScriptViewController
-		scriptViewController.script = Script(fileURL: url)
+		scriptViewController.script = ScriptDocument(fileURL: url)
         present(navigationController, animated: true, completion: nil)
     }
 	

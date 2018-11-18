@@ -122,20 +122,19 @@ struct Machine {
 		
 		precondition(state == .ready, "The machine is not ready.")
 		
-		let w = self[memoryCellAt: programCounter].digits
-		let (opcode, addrMode, indMode, reg, indReg, addr) = (partialWord(from: w[0...1]), w[2], w[3], w[4], w[5], partialWord(from: w[6...9]))
+		let word = CommandWord(self[memoryCellAt: programCounter])
 		programCounter.increment()
 		
-		guard let instruction = Instruction(opcode: opcode) else { throw ExecutionError.illegalInstruction(opcode: opcode) }
+		guard let instruction = Instruction(opcode: word.opcode) else { throw ExecutionError.illegalInstruction(opcode: word.opcode) }
 		guard let commandType = Machine.supportedCommandTypes.first(where: { $0.supportedInstructions.contains(instruction) })
 			else { throw ExecutionError.unimplementedInstruction(instruction) }
 		
 		func addressingMode() throws -> AddressingMode {
-			guard let mode = AddressingMode(code: addrMode, directAccessOnly: commandType.directAccessOnly) else { throw ExecutionError.illegalAddressingMode(code: addrMode) }
+			guard let mode = AddressingMode(code: word.addressingMode, directAccessOnly: commandType.directAccessOnly) else { throw ExecutionError.illegalAddressingMode(code: word.addressingMode) }
 			return mode
 		}
 		
-		let address = AddressSpecification(base: AddressWord(rawValue: addr)!, indexRegister: Register(rawValue: indReg)!, mode: indMode)
+		let address = AddressSpecification(base: AddressWord(rawValue: word.address)!, indexRegister: Register(rawValue: word.indexRegister)!, mode: word.indexingMode)
 		
 		let command: Command
 		switch commandType {
@@ -144,19 +143,19 @@ struct Machine {
 			command = try type.init(instruction: instruction)
 			
 			case let type as UnaryRegisterCommand.Type:
-			command = try type.init(instruction: instruction, register: Register(rawValue: reg)!)
+			command = try type.init(instruction: instruction, register: Register(rawValue: word.register)!)
 			
 			case let type as BinaryRegisterCommand.Type where try addressingMode() == .value:
-			command = try type.init(instruction: instruction, primaryRegister: Register(rawValue: reg)!, secondaryRegister: Register(rawValue: indReg)!)
+			command = try type.init(instruction: instruction, primaryRegister: Register(rawValue: word.register)!, secondaryRegister: Register(rawValue: word.indexRegister)!)
 			
 			case let type as AddressCommand.Type:
 			command = try type.init(instruction: instruction, addressingMode: addressingMode(), address: address)
 			
 			case let type as RegisterAddressCommand.Type:
-			command = try type.init(instruction: instruction, addressingMode: addressingMode(), register: Register(rawValue: reg)!, address: address)
+			command = try type.init(instruction: instruction, addressingMode: addressingMode(), register: Register(rawValue: word.register)!, address: address)
 			
 			case let type as ConditionAddressCommand.Type:
-			guard let condition = Condition(code: reg) else { throw ExecutionError.illegalCondition(code: reg) }
+			guard let condition = Condition(code: word.register) else { throw ExecutionError.illegalCondition(code: word.register) }
 			command = try type.init(instruction: instruction, addressingMode: addressingMode(), condition: condition, address: address)
 			
 			default:

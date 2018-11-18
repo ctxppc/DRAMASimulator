@@ -5,7 +5,7 @@ import UIKit
 final class ScriptViewController : UIViewController {
 	
 	/// The script being presented.
-    var script: Script?
+    var script: ScriptDocument?
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

@@ -2,7 +2,7 @@
 
 import UIKit
 
-final class Script : UIDocument {
+final class ScriptDocument : UIDocument {
 	
 	/// The source text.
 	var sourceText: String = ""
