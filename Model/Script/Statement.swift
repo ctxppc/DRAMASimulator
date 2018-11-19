@@ -6,16 +6,16 @@ import Foundation
 enum Statement {
 	
 	/// A statement encoding a nullary command.
-	case nullaryCommand(operation: String)
+	case nullaryCommand(instruction: Instruction)
 	
 	/// A statement encoding a unary or binary register command.
-	case registerCommand(operation: String, primaryRegister: Register, secondaryRegister: Register?)
+	case registerCommand(instruction: Instruction, primaryRegister: Register, secondaryRegister: Register?)
 	
 	/// A statement encoding an address or register address command.
-	case addressCommand(operation: String, addressingMode: String?, register: Register?, address: SymbolicAddress, index: AddressSpecification.Index?)
+	case addressCommand(instruction: Instruction, addressingMode: AddressingMode?, register: Register?, address: SymbolicAddress, index: AddressSpecification.Index?)
 	
 	/// A statement encoding a condition command.
-	case conditionCommand(operation: String, addressingMode: String?, condition: Condition, address: SymbolicAddress, index: AddressSpecification.Index?)
+	case conditionCommand(instruction: Instruction, addressingMode: AddressingMode?, condition: Condition, address: SymbolicAddress, index: AddressSpecification.Index?)
 	
 	/// A literal word.
 	case literal(Word)
@@ -30,30 +30,44 @@ enum Statement {
 	/// - Parameter line: A single line of assembly code.
 	init?(from line: String) throws {
 		
+		typealias Match = NSTextCheckingResult
+		
 		let line = line.firstIndex(of: "|").map { line[..<$0] }?.trimmingCharacters(in: .whitespaces) ?? line.trimmingCharacters(in: .whitespaces)
 		guard !line.isEmpty else { return nil }
 		let range = NSRange(location: 0, length: (line as NSString).length)
 		
-		func string(in match: NSTextCheckingResult, at group: Int) -> String {
+		func string(in match: Match, at group: Int) -> String {
 			return (line as NSString).substring(with: match.range(at: group))
 		}
 		
-		func optionalString(in match: NSTextCheckingResult, at group: Int) -> String? {
+		func optionalString(in match: Match, at group: Int) -> String? {
 			let range = match.range(at: group)
 			guard range.location != NSNotFound else { return nil }
 			return (line as NSString).substring(with: range)
 		}
 		
-		func register(in match: NSTextCheckingResult, at group: Int) -> Register {
+		func instruction(in match: Match, at group: Int) throws -> Instruction {
+			let mnemonic = string(in: match, at: group).uppercased()
+			guard let instruction = Instruction(rawValue: mnemonic) else { throw ParsingError.unknownMnemonic(mnemonic) }
+			return instruction
+		}
+		
+		func optionalAddressingMode(in match: Match, at group: Int) throws -> AddressingMode? {
+			guard let value = optionalString(in: match, at: group) else { return nil }
+			guard let mode = AddressingMode(rawValue: value.lowercased()) else { throw ParsingError.unknownAddressingMode(value) }
+			return mode
+		}
+		
+		func register(in match: Match, at group: Int) -> Register {
 			return Register(rawValue: Int(string(in: match, at: group))!)!
 		}
 		
-		func optionalRegister(in match: NSTextCheckingResult, at group: Int) -> Register? {
+		func optionalRegister(in match: Match, at group: Int) -> Register? {
 			guard let string = optionalString(in: match, at: group) else { return nil }
 			return Register(rawValue: Int(string)!)!
 		}
 		
-		func index(in match: NSTextCheckingResult, from group: Int) throws -> AddressSpecification.Index? {
+		func index(in match: Match, from group: Int) throws -> AddressSpecification.Index? {
 			
 			guard let register = optionalRegister(in: match, at: group + 1) else { return nil }
 			
@@ -71,35 +85,35 @@ enum Statement {
 			
 		}
 		
-		func condition(in match: NSTextCheckingResult, at group: Int) throws -> Condition {
+		func condition(in match: Match, at group: Int) throws -> Condition {
 			let rawValue = string(in: match, at: group).uppercased()
 			guard let condition = Condition(rawValue: rawValue) ?? Condition(rawComparisonValue: rawValue) else { throw ParsingError.unknownCondition }
 			return condition
 		}
 		
 		if let match = Statement.nullaryCommandExpression.firstMatch(in: line, range: range) {
-			self = .nullaryCommand(operation: string(in: match, at: 1))
+			self = try .nullaryCommand(instruction: instruction(in: match, at: 1))
 		} else if let match = Statement.registerCommandExpression.firstMatch(in: line, range: range) {
-			self = .registerCommand(
-				operation:			string(in: match, at: 1),
+			self = try .registerCommand(
+				instruction:		instruction(in: match, at: 1),
 				primaryRegister:	register(in: match, at: 2),
 				secondaryRegister:	optionalRegister(in: match, at: 3)
 			)
 		} else if let match = Statement.addressCommandExpression.firstMatch(in: line, range: range) {
-			self = .addressCommand(
-				operation:		string(in: match, at: 1),
-				addressingMode:	string(in: match, at: 2),
+			self = try .addressCommand(
+				instruction:	instruction(in: match, at: 1),
+				addressingMode:	optionalAddressingMode(in: match, at: 2),
 				register:		optionalRegister(in: match, at: 3),
-				address:		try .init(from: string(in: match, at: 4)),
-				index:			try index(in: match, from: 5)
+				address:		.init(from: string(in: match, at: 4)),
+				index:			index(in: match, from: 5)
 			)
 		} else if let match = Statement.conditionCommandExpression.firstMatch(in: line, range: range) {
-			self = .conditionCommand(
-				operation:		string(in: match, at: 1),
-				addressingMode:	string(in: match, at: 2),
-				condition:		try condition(in: match, at: 3),
-				address:		try .init(from: string(in: match, at: 4)),
-				index:			try index(in: match, from: 5)
+			self = try .conditionCommand(
+				instruction:	instruction(in: match, at: 1),
+				addressingMode:	optionalAddressingMode(in: match, at: 2),
+				condition:		condition(in: match, at: 3),
+				address:		.init(from: string(in: match, at: 4)),
+				index:			index(in: match, from: 5)
 			)
 		} else {
 			throw ParsingError.illegalFormat
@@ -109,11 +123,17 @@ enum Statement {
 	
 	enum ParsingError : Error {
 		
-		/// The statement has an illegal format.
+		/// A statement has an illegal format.
 		case illegalFormat
 		
 		/// Both a pre- and post-indexation modification are specified.
 		case doubleIndexModification
+		
+		/// An unknown mnemonic is specified.
+		case unknownMnemonic(String)
+		
+		/// An unknown addressing mode is specified.
+		case unknownAddressingMode(String)
 		
 		/// An unknown condition is specified.
 		case unknownCondition

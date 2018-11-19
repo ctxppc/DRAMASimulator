@@ -161,16 +161,3 @@ extension CommandWord {
 	}
 	
 }
-
-/// The command types that machines natively support.
-private let supportedCommandTypes: [Command.Type] = [
-	LoadCommand.self,
-	StoreCommand.self,
-	ArithmeticCommand.self,
-	CompareCommand.self,
-	JumpCommand.self,
-	ConditionalJumpCommand.self,
-	ReadCommand.self,
-	HaltCommand.self
-]
-

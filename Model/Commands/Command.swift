@@ -46,3 +46,15 @@ enum CommandArgumentError : Error {
 	case invalidAddressingMode
 	
 }
+
+/// The command types that machines natively support.
+let supportedCommandTypes: [Command.Type] = [
+	LoadCommand.self,
+	StoreCommand.self,
+	ArithmeticCommand.self,
+	CompareCommand.self,
+	JumpCommand.self,
+	ConditionalJumpCommand.self,
+	ReadCommand.self,
+	HaltCommand.self
+]

@@ -4,7 +4,7 @@
 struct Program {
 	
 	/// Assembles a program from given script.
-	init(from script: Script) {
+	init(from script: Script) throws {
 		
 		var addressesByStatementIndex: [Int : Int] = [:]
 		var nextAddress = 0
@@ -13,18 +13,79 @@ struct Program {
 			nextAddress += statement.wordLength
 		}
 		
-		var addressesBySymbol: [String : Int] = [:]
+		var addressesBySymbol: [Script.Symbol : Int] = [:]
 		for (symbol, statementIndex) in script.statementIndexBySymbol {
 			addressesBySymbol[symbol] = addressesByStatementIndex[statementIndex]
 		}
 		
-		wordSequences = []	// TODO
+		wordSequences = try script.statements.map {
+			try WordSequence(from: $0, addressesBySymbol: addressesBySymbol)
+		}
 		
 	}
 	
 	/// The words defined in the program as word sequences.
 	var wordSequences: [WordSequence]
 	enum WordSequence {
+		
+		init(from statement: Statement, addressesBySymbol: [Script.Symbol : Int]) throws {
+			
+			func command(instruction: Instruction, initialiser: (Command.Type) throws -> Command?) throws -> Command {
+				guard let type = supportedCommandTypes.first(where: { $0.supportedInstructions.contains(instruction) }) else { preconditionFailure("Unimplemented mnemonic") }
+				guard let command = try initialiser(type) else { throw AssemblyError.incorrectFormat }
+				return command
+			}
+			
+			func commandType<T>(for instruction: Instruction, ofType type: T.Type) throws -> T.Type {
+				guard let type = supportedCommandTypes.first(where: { $0.supportedInstructions.contains(instruction) }) else { preconditionFailure("Unimplemented mnemonic") }
+				guard let narrowedType = type as? T.Type else { throw AssemblyError.incorrectFormat }
+				return narrowedType
+			}
+			
+			func addressSpecification(from symbolicAddress: SymbolicAddress, index: AddressSpecification.Index?) throws -> AddressSpecification {
+				return AddressSpecification(base: AddressWord(wrapping: try symbolicAddress.effectiveAddress(addressesBySymbol: addressesBySymbol)), index: index)
+			}
+			
+			switch statement {
+				
+				case .nullaryCommand(let instruction):
+				self = .command(try command(instruction: instruction) { type in
+					try (type as? NullaryCommand.Type)?.init(instruction: instruction)
+				})
+				
+				case .registerCommand(let instruction, primaryRegister: let register, secondaryRegister: nil):
+				self = .command(try command(instruction: instruction) { type in
+					try (type as? UnaryRegisterCommand.Type)?.init(instruction: instruction, register: register)
+				})
+				
+				case .registerCommand(let instruction, let primaryRegister, let secondaryRegister?):
+				self = .command(try command(instruction: instruction) { type in
+					try (type as? BinaryRegisterCommand.Type)?.init(instruction: instruction, primaryRegister: primaryRegister, secondaryRegister: secondaryRegister)
+				})
+				
+				case .addressCommand(let instruction, let addressingMode, register: nil, let address, let index):
+				self = .command(try command(instruction: instruction) { type in
+					try (type as? AddressCommand.Type)?.init(instruction: instruction, addressingMode: addressingMode, address: addressSpecification(from: address, index: index))
+				})
+				
+				case .addressCommand(let instruction, let addressingMode, let register?, let address, let index):
+				self = .command(try command(instruction: instruction) { type in
+					try (type as? RegisterAddressCommand.Type)?.init(instruction: instruction, addressingMode: addressingMode, register: register, address: addressSpecification(from: address, index: index))
+				})
+				
+				case .conditionCommand(let instruction, let addressingMode, let condition, let address, let index):
+				self = .command(try command(instruction: instruction) { type in
+					try (type as? ConditionAddressCommand.Type)?.init(instruction: instruction, addressingMode: addressingMode, condition: condition, address: addressSpecification(from: address, index: index))
+				})
+				
+				case .literal(let word):
+				self = .literal(word)
+				
+				case .array(let length):
+				self = .array(length: length)
+				
+			}
+		}
 		
 		/// A single word containing a single command.
 		case command(Command)
@@ -60,6 +121,9 @@ struct Program {
 		
 		/// The program does not fit in memory.
 		case overflow
+		
+		/// A command does not have the correct format.
+		case incorrectFormat
 		
 	}
 	
