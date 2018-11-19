@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4F139C0221A3104100F817A6 /* Script Editing Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F139C0121A3104100F817A6 /* Script Editing Controller.swift */; };
 		4F1B6EE021A1A3D700751511 /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1B6EDF21A1A3D700751511 /* Script.swift */; };
 		4F30B52F21A218DC00BDEDCC /* Symbolic Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */; };
 		4F346B722199DBE700D6D8AD /* DRAMASimulator Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B712199DBE700D6D8AD /* DRAMASimulator Delegate.swift */; };
@@ -47,6 +48,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4F139C0121A3104100F817A6 /* Script Editing Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script Editing Controller.swift"; sourceTree = "<group>"; };
 		4F1B6EDF21A1A3D700751511 /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
 		4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Symbolic Address.swift"; sourceTree = "<group>"; };
 		4F346B6E2199DBE700D6D8AD /* DRAMASimulator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DRAMASimulator.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -146,6 +148,7 @@
 				4F346B792199DBE700D6D8AD /* DRAMASimulator.storyboard */,
 				4F346B732199DBE700D6D8AD /* Document Browser View Controller.swift */,
 				4F346B752199DBE700D6D8AD /* Script View Controller.swift */,
+				4F139C0121A3104100F817A6 /* Script Editing Controller.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -305,6 +308,7 @@
 				4FFEB7DF219C72D50049D0A5 /* Load Command.swift in Sources */,
 				4FA7EBA821A0895E00C52F98 /* Program.swift in Sources */,
 				4F44C7F6219A4C40003798AF /* Address Word.swift in Sources */,
+				4F139C0221A3104100F817A6 /* Script Editing Controller.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

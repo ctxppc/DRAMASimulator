@@ -6,11 +6,15 @@ final class ScriptViewController : UIViewController {
 	
 	/// The script being presented.
     var script: ScriptDocument?
+	
+	private var editingViewController: ScriptEditingController {
+		return children[0] as! ScriptEditingController
+	}
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        script?.open { success in
-            // TODO
+        script?.open { [unowned self] success in
+			self.editingViewController.script = success ? self.script : nil
         }
     }
     
