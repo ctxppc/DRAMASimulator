@@ -37,7 +37,8 @@ enum Statement {
 		let range = NSRange(location: 0, length: (line as NSString).length)
 		
 		func string(in match: Match, at group: Int) -> String {
-			return (line as NSString).substring(with: match.range(at: group))
+			guard let value = optionalString(in: match, at: group) else { preconditionFailure("Missing capture group") }
+			return value
 		}
 		
 		func optionalString(in match: Match, at group: Int) -> String? {
@@ -121,7 +122,7 @@ enum Statement {
 		
 	}
 	
-	enum ParsingError : Error {
+	enum ParsingError : LocalizedError {
 		
 		/// A statement has an illegal format.
 		case illegalFormat
@@ -138,8 +139,16 @@ enum Statement {
 		/// An unknown condition is specified.
 		case unknownCondition
 		
-		/// An address specified in a statement exceeds the range allowed by an address word.
-		case unrepresentableAddress
+		// See protocol.
+		var localizedDescription: String {
+			switch self {
+				case .illegalFormat:					return "A statement has an illegal format."
+				case .doubleIndexModification:			return "Both a pre- and post-indexation modification are specified."
+				case .unknownMnemonic(let mnemonic):	return "An unknown mnemonic '\(mnemonic)' is specified."
+				case .unknownAddressingMode(let mode):	return "An unknown addressing mode '\(mode)' is specified."
+				case .unknownCondition:					return "An unknown condition is specified."
+			}
+		}
 		
 	}
 	
@@ -155,23 +164,24 @@ enum Statement {
 	
 	/// A regular expression for matching register commands.
 	///
-	/// Groups: operation, addressing mode (opt.), register (opt.), address terms, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
+	/// Groups: operation, addressing mode (opt.), register (opt.), base address, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
 	private static let addressCommandExpression = expression(qualifiedOperationPattern, reqSpace, "(?:\(registerPattern)\(argSeparator))", addressPattern)
 	
 	/// A regular expression for matching register commands.
 	///
-	/// Groups: operation, addressing mode (opt.), condition, address terms, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
+	/// Groups: operation, addressing mode (opt.), condition, base address, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
 	private static let conditionCommandExpression = expression(qualifiedOperationPattern, reqSpace, conditionPattern, argSeparator, addressPattern)
 	
 	/// The number of machine words used by the statement.
 	var wordLength: Int {
 		switch self {
-			case .nullaryCommand:		return 1
-			case .registerCommand:		return 1
-			case .addressCommand:		return 1
-			case .conditionCommand:		return 1
-			case .literal:				return 1
-			case .array(let length):	return length
+			
+			case .nullaryCommand, .registerCommand, .addressCommand, .conditionCommand, .literal:
+			return 1
+			
+			case .array(let length):
+			return length
+			
 		}
 	}
 	
@@ -187,10 +197,10 @@ private let argSeparator = "\(optSpace),\(optSpace)"
 
 private let operationPattern = "([A-Z]{3})"
 private let addressingModePattern = "\\.(w|a|d|i)"
-private let qualifiedOperationPattern = "\(operationPattern)(?:\(addressingModePattern))"
+private let qualifiedOperationPattern = "\(operationPattern)(?:\(addressingModePattern))?"
 private let registerPattern = "R([0-9])"
 private let conditionPattern = "([A-Z]{2,4})"
-private let addressPattern = "\(baseAddressPattern)(?:\(indexPattern))?"
+private let addressPattern = "(\(baseAddressPattern))(?:\(indexPattern))?"
 private let baseAddressPattern = "[0-9a-z+\\s]+"
 private let indexPattern = "\\(\(optIndexModifier)\(registerPattern)\(optIndexModifier)\\)"
 private let optIndexModifier = "(\\+|\\-)?"

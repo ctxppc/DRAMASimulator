@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4F139C0221A3104100F817A6 /* Script Editing Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F139C0121A3104100F817A6 /* Script Editing Controller.swift */; };
+		4F139C0421A3142400F817A6 /* Machine View Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F139C0321A3142400F817A6 /* Machine View Controller.swift */; };
 		4F1B6EE021A1A3D700751511 /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1B6EDF21A1A3D700751511 /* Script.swift */; };
 		4F30B52F21A218DC00BDEDCC /* Symbolic Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */; };
 		4F346B722199DBE700D6D8AD /* DRAMASimulator Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B712199DBE700D6D8AD /* DRAMASimulator Delegate.swift */; };
@@ -49,6 +50,7 @@
 
 /* Begin PBXFileReference section */
 		4F139C0121A3104100F817A6 /* Script Editing Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script Editing Controller.swift"; sourceTree = "<group>"; };
+		4F139C0321A3142400F817A6 /* Machine View Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Machine View Controller.swift"; sourceTree = "<group>"; };
 		4F1B6EDF21A1A3D700751511 /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
 		4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Symbolic Address.swift"; sourceTree = "<group>"; };
 		4F346B6E2199DBE700D6D8AD /* DRAMASimulator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DRAMASimulator.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -123,7 +125,6 @@
 			isa = PBXGroup;
 			children = (
 				4F346B712199DBE700D6D8AD /* DRAMASimulator Delegate.swift */,
-				4F346B772199DBE700D6D8AD /* Script Document.swift */,
 				4F346B7C2199DBEA00D6D8AD /* Assets.xcassets */,
 				4F346B7E2199DBEA00D6D8AD /* Launch.storyboard */,
 				4F346B812199DBEA00D6D8AD /* DRAMASimulator.plist */,
@@ -149,6 +150,7 @@
 				4F346B732199DBE700D6D8AD /* Document Browser View Controller.swift */,
 				4F346B752199DBE700D6D8AD /* Script View Controller.swift */,
 				4F139C0121A3104100F817A6 /* Script Editing Controller.swift */,
+				4F139C0321A3142400F817A6 /* Machine View Controller.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -156,12 +158,12 @@
 		4F3E790A219A1FA4008E3E9B /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				4FD8ADB421A1B1FD001AD860 /* Script */,
+				4FA7EBA721A0895E00C52F98 /* Program.swift */,
 				4F44C7F1219A4426003798AF /* Machine.swift */,
 				4FFEB7E0219C73650049D0A5 /* Register.swift */,
 				4F35A3C921A0D39A00A4610D /* Words */,
 				4F820F2E219AFF71004EE2C9 /* Commands */,
-				4FA7EBA721A0895E00C52F98 /* Program.swift */,
-				4FD8ADB421A1B1FD001AD860 /* Script */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -196,6 +198,7 @@
 		4FD8ADB421A1B1FD001AD860 /* Script */ = {
 			isa = PBXGroup;
 			children = (
+				4F346B772199DBE700D6D8AD /* Script Document.swift */,
 				4F1B6EDF21A1A3D700751511 /* Script.swift */,
 				4FD8ADB521A1B206001AD860 /* Statement.swift */,
 				4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */,
@@ -274,6 +277,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4F139C0421A3142400F817A6 /* Machine View Controller.swift in Sources */,
 				4FFEB7E3219C75140049D0A5 /* Store Command.swift in Sources */,
 				4F44C7F4219A4BBE003798AF /* Word.swift in Sources */,
 				4F3E7914219A2324008E3E9B /* Address Specification.swift in Sources */,

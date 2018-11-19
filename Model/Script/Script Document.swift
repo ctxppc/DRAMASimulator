@@ -5,7 +5,17 @@ import UIKit
 final class ScriptDocument : UIDocument {
 	
 	/// The source text.
-	var sourceText: String = ""
+	var sourceText: String = "" {
+		didSet { delegate?.scriptDocumentSourceTextDidChange(self) }
+	}
+	
+	/// Returns a machine after loading the program.
+	func initialMachine() throws -> Machine {
+		return Machine(memoryCells: try Program(from: Script(from: sourceText)).machineWords())
+	}
+	
+	/// The document's delegate.
+	weak var delegate: ScriptDocumentDelegate?
 	
 	override func load(fromContents contents: Any, ofType typeName: String?) throws {
 		guard let data = contents as? Data else { throw ReadingError.unsupportedFormat }
@@ -31,3 +41,9 @@ final class ScriptDocument : UIDocument {
 	
 }
 
+protocol ScriptDocumentDelegate : class {
+	
+	/// Notifies the delegate that the source text has been modified.
+	func scriptDocumentSourceTextDidChange(_ document: ScriptDocument)
+	
+}

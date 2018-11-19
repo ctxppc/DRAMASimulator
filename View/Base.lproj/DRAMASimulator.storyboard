@@ -117,10 +117,10 @@ XYZ</string>
             </objects>
             <point key="canvasLocation" x="1327" y="1538"/>
         </scene>
-        <!--Collection View Controller-->
+        <!--Machine View Controller-->
         <scene sceneID="C28-HZ-M7e">
             <objects>
-                <collectionViewController id="Jle-5C-NRb" sceneMemberID="viewController">
+                <collectionViewController id="Jle-5C-NRb" customClass="MachineViewController" customModule="DRAMASimulator" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="9hR-fV-HUH">
                         <rect key="frame" x="0.0" y="0.0" width="512" height="698"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -132,7 +132,7 @@ XYZ</string>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" id="HXL-4p-ueS">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" reuseIdentifier="Word Cell" id="HXL-4p-ueS" customClass="WordCell" customModule="DRAMASimulator" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="150" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
@@ -145,16 +145,28 @@ XYZ</string>
                                                 <constraint firstAttribute="height" constant="50" id="0f6-zP-auV"/>
                                                 <constraint firstAttribute="width" constant="150" id="Swy-PQ-PxP"/>
                                             </constraints>
-                                            <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                            <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="17"/>
                                             <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PIT-3i-gb9">
+                                            <rect key="frame" x="96" y="0.0" width="54" height="15"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                 </view>
                                 <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="PIT-3i-gb9" secondAttribute="trailing" id="9lZ-8s-PoC"/>
+                                    <constraint firstItem="PIT-3i-gb9" firstAttribute="top" secondItem="HXL-4p-ueS" secondAttribute="top" id="Lpt-T4-ZPQ"/>
                                     <constraint firstItem="d6r-FX-ZQc" firstAttribute="centerY" secondItem="HXL-4p-ueS" secondAttribute="centerY" id="Sod-Nh-WRB"/>
                                     <constraint firstItem="d6r-FX-ZQc" firstAttribute="centerX" secondItem="HXL-4p-ueS" secondAttribute="centerX" id="i1w-D5-Cz5"/>
                                 </constraints>
+                                <connections>
+                                    <outlet property="addressLabel" destination="PIT-3i-gb9" id="2Co-gw-liy"/>
+                                    <outlet property="wordLabel" destination="d6r-FX-ZQc" id="tfN-FS-3q4"/>
+                                </connections>
                             </collectionViewCell>
                         </cells>
                         <connections>
