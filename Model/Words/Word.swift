@@ -18,7 +18,9 @@ struct Word : WordProtocol {
 	}
 	
 	// See protocol.
-	private(set) var rawValue: Int
+	private(set) var rawValue: Int {
+		willSet { assert(rawValue >= 0) }
+	}
 	
 	/// Accesses the unsigned value's digits in given range, where the zeroth digit is the least significant digit.
 	///
@@ -56,6 +58,13 @@ struct Word : WordProtocol {
 		set { self[digitsAt: index...index] = newValue }
 	}
 	
+}
+
+extension Word : CustomStringConvertible {
+	var description: String {
+		let unpaddedCharacters = Array(String(rawValue))
+		return String(repeatElement("0", count: 10 - unpaddedCharacters.count) + unpaddedCharacters)
+	}
 }
 
 infix operator ** : BitwiseShiftPrecedence

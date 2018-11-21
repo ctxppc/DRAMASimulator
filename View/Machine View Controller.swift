@@ -24,7 +24,7 @@ final class MachineViewController : UICollectionViewController {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Word Cell", for: indexPath) as! WordCell
 		let word = machine[address: AddressWord(rawValue: indexPath.item)!]
 		cell.addressLabel.text = String(indexPath.item)
-		cell.wordLabel.text = String(format: "%010d", word.rawValue)
+		cell.wordLabel.text = word.description
 		return cell
 	}
 	

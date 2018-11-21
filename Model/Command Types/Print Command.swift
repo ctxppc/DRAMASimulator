@@ -9,7 +9,7 @@ struct PrintCommand : NullaryCommand {
 	init(instruction: Instruction) {}
 	
 	// See protocol.
-	let instruction = Instruction.read
+	let instruction = Instruction.printInteger
 	
 	// See protocol.
 	func execute(on machine: inout Machine) {

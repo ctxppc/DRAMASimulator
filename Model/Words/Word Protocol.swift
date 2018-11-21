@@ -18,7 +18,7 @@ extension WordProtocol {
 	
 	/// The range of unsigned integers representable by words of this type.
 	static var unsignedRange: Range<Int> {
-		return -unsignedUpperBound..<unsignedUpperBound
+		return 0..<unsignedUpperBound
 	}
 	
 	/// The range of signed integers representable by words of this type.

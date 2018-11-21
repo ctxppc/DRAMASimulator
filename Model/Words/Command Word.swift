@@ -2,6 +2,11 @@
 
 struct CommandWord {
 	
+	/// Creates a command word with fully unitialised digits (i.e., 9).
+	init() {
+		self.init(Word(rawValue: 99999_99999)!)
+	}
+	
 	/// Creates a command word for given word.
 	init(_ base: Word) {
 		self.base = base
@@ -57,7 +62,7 @@ extension CommandWord {
 	/// - Parameter command: The command to convert into a word.
 	init(_ c: Command) {
 		
-		self.init(.zero)
+		self.init()
 		
 		let command: Command
 		(command, self.opcode) = {
@@ -85,6 +90,7 @@ extension CommandWord {
 		} else if let command = command as? AddressCommand, let address = command.addressOperand {
 			self.addressingMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
 			self.indexingMode = address.mode
+			self.register = 0
 			self.indexRegister = address.index?.indexRegister.rawValue ?? 0
 			self.address = address.base.rawValue
 		} else if let command = command as? BinaryRegisterCommand, let primaryRegister = command.registerOperand, let secondaryRegister = command.secondaryRegisterOperand {
@@ -92,6 +98,7 @@ extension CommandWord {
 			self.indexingMode = 2
 			self.register = primaryRegister.rawValue
 			self.indexRegister = secondaryRegister.rawValue
+			self.address = 0
 		} else if let command = command as? UnaryRegisterCommand, let register = command.registerOperand {
 			self.addressingMode = AddressingMode.value.code(directAccessOnly: type(of: command).directAccessOnly)
 			self.register = register.rawValue

@@ -18,6 +18,8 @@ struct AddressWord : WordProtocol {
 	}
 	
 	// See protocol.
-	private(set) var rawValue: Int
+	private(set) var rawValue: Int {
+		willSet { assert(rawValue >= 0) }
+	}
 	
 }

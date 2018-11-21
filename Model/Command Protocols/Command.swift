@@ -56,5 +56,7 @@ let supportedCommandTypes: [Command.Type] = [
 	JumpCommand.self,
 	ConditionalJumpCommand.self,
 	ReadCommand.self,
+	PrintCommand.self,
+	StackCommand.self,
 	HaltCommand.self
 ]

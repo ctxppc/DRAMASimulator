@@ -43,7 +43,8 @@ enum Instruction : String, Hashable {
 			case 32:	self = .jump
 			case 33:	self = .conditionalJump
 			case 71:	self = .read
-			case 73:	self = .printInteger
+			case 72:	self = .printInteger
+			case 73:	self = .printNewline
 			case 74:	self = .printString
 			case 99:	self = .halt
 			default:	return nil
@@ -66,9 +67,9 @@ enum Instruction : String, Hashable {
 			case .subroutineJump:	return 41
 			case .subroutineReturn:	return 42
 			case .read:				return 71
-			case .printInteger:		return 73
-			case .printNewline:		return nil
+			case .printInteger:		return 72
 			case .printString:		return 74
+			case .printNewline:		return 73
 			case .push:				return nil
 			case .pop:				return nil
 			case .halt:				return 99
