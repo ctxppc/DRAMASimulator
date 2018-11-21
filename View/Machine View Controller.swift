@@ -22,7 +22,7 @@ final class MachineViewController : UICollectionViewController {
 	
 	override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Word Cell", for: indexPath) as! WordCell
-		let word = machine[memoryCellAt: AddressWord(rawValue: indexPath.item)!]
+		let word = machine[address: AddressWord(rawValue: indexPath.item)!]
 		cell.addressLabel.text = String(indexPath.item)
 		cell.wordLabel.text = String(format: "%010d", word.rawValue)
 		return cell

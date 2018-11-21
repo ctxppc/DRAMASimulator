@@ -25,6 +25,8 @@
 		4F44C7F2219A4426003798AF /* Machine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F44C7F1219A4426003798AF /* Machine.swift */; };
 		4F44C7F4219A4BBE003798AF /* Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F44C7F3219A4BBE003798AF /* Word.swift */; };
 		4F44C7F6219A4C40003798AF /* Address Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F44C7F5219A4C40003798AF /* Address Word.swift */; };
+		4F4FA73D21A5AB5C00C1D2C7 /* Stack Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4FA73C21A5AB5C00C1D2C7 /* Stack Command.swift */; };
+		4F4FA73F21A5AD6800C1D2C7 /* Print Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F4FA73E21A5AD6800C1D2C7 /* Print Command.swift */; };
 		4F820F30219B06AB004EE2C9 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F820F2F219B06AB004EE2C9 /* Command.swift */; };
 		4F820F35219B1CD6004EE2C9 /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E790B219A1FBE008E3E9B /* Instruction.swift */; };
 		4FA7EB9821A0493C00C52F98 /* Word Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EB9721A0493C00C52F98 /* Word Protocol.swift */; };
@@ -70,6 +72,8 @@
 		4F44C7F1219A4426003798AF /* Machine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Machine.swift; sourceTree = "<group>"; };
 		4F44C7F3219A4BBE003798AF /* Word.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Word.swift; sourceTree = "<group>"; };
 		4F44C7F5219A4C40003798AF /* Address Word.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Address Word.swift"; sourceTree = "<group>"; };
+		4F4FA73C21A5AB5C00C1D2C7 /* Stack Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stack Command.swift"; sourceTree = "<group>"; };
+		4F4FA73E21A5AD6800C1D2C7 /* Print Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Print Command.swift"; sourceTree = "<group>"; };
 		4F820F2F219B06AB004EE2C9 /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		4F820F33219B1614004EE2C9 /* Load Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Load Command.swift"; sourceTree = "<group>"; };
 		4FA7EB9721A0493C00C52F98 /* Word Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Word Protocol.swift"; sourceTree = "<group>"; };
@@ -162,13 +166,36 @@
 				4FA7EBA721A0895E00C52F98 /* Program.swift */,
 				4F44C7F1219A4426003798AF /* Machine.swift */,
 				4FFEB7E0219C73650049D0A5 /* Register.swift */,
+				4F3E790B219A1FBE008E3E9B /* Instruction.swift */,
+				4F3E790F219A2221008E3E9B /* Addressing Mode.swift */,
+				4F3E7913219A2324008E3E9B /* Address Specification.swift */,
+				4F3E7915219A25B7008E3E9B /* Condition.swift */,
+				4FA7EBA321A06C4C00C52F98 /* Condition State.swift */,
 				4F35A3C921A0D39A00A4610D /* Words */,
-				4F820F2E219AFF71004EE2C9 /* Commands */,
+				4F820F2E219AFF71004EE2C9 /* Command Protocols */,
+				4F4FA73B21A5AB1E00C1D2C7 /* Command Types */,
 			);
 			path = Model;
 			sourceTree = "<group>";
 		};
-		4F820F2E219AFF71004EE2C9 /* Commands */ = {
+		4F4FA73B21A5AB1E00C1D2C7 /* Command Types */ = {
+			isa = PBXGroup;
+			children = (
+				4F820F33219B1614004EE2C9 /* Load Command.swift */,
+				4FFEB7E2219C75140049D0A5 /* Store Command.swift */,
+				4FFEB7E4219C75DB0049D0A5 /* Arithmetic Command.swift */,
+				4FA7EBA121A06B8400C52F98 /* Compare Command.swift */,
+				4FA7EB9921A0682100C52F98 /* Jump Command.swift */,
+				4FA7EB9B21A0691800C52F98 /* Conditional Jump Command.swift */,
+				4FA7EBA921A0A55800C52F98 /* Read Command.swift */,
+				4F4FA73E21A5AD6800C1D2C7 /* Print Command.swift */,
+				4F4FA73C21A5AB5C00C1D2C7 /* Stack Command.swift */,
+				4FA7EB9F21A06B0D00C52F98 /* Halt Command.swift */,
+			);
+			path = "Command Types";
+			sourceTree = "<group>";
+		};
+		4F820F2E219AFF71004EE2C9 /* Command Protocols */ = {
 			isa = PBXGroup;
 			children = (
 				4F820F2F219B06AB004EE2C9 /* Command.swift */,
@@ -178,21 +205,8 @@
 				4FFEB7D9219C6EE90049D0A5 /* Address Command.swift */,
 				4FFEB7DB219C6EF90049D0A5 /* Register Address Command.swift */,
 				4FFEB7DD219C6F060049D0A5 /* Condition Address Command.swift */,
-				4F820F33219B1614004EE2C9 /* Load Command.swift */,
-				4FFEB7E2219C75140049D0A5 /* Store Command.swift */,
-				4FFEB7E4219C75DB0049D0A5 /* Arithmetic Command.swift */,
-				4FA7EBA121A06B8400C52F98 /* Compare Command.swift */,
-				4FA7EB9921A0682100C52F98 /* Jump Command.swift */,
-				4FA7EB9B21A0691800C52F98 /* Conditional Jump Command.swift */,
-				4FA7EBA921A0A55800C52F98 /* Read Command.swift */,
-				4FA7EB9F21A06B0D00C52F98 /* Halt Command.swift */,
-				4F3E790B219A1FBE008E3E9B /* Instruction.swift */,
-				4F3E790F219A2221008E3E9B /* Addressing Mode.swift */,
-				4F3E7913219A2324008E3E9B /* Address Specification.swift */,
-				4F3E7915219A25B7008E3E9B /* Condition.swift */,
-				4FA7EBA321A06C4C00C52F98 /* Condition State.swift */,
 			);
-			path = Commands;
+			path = "Command Protocols";
 			sourceTree = "<group>";
 		};
 		4FD8ADB421A1B1FD001AD860 /* Script */ = {
@@ -279,6 +293,7 @@
 			files = (
 				4F139C0421A3142400F817A6 /* Machine View Controller.swift in Sources */,
 				4FFEB7E3219C75140049D0A5 /* Store Command.swift in Sources */,
+				4F4FA73D21A5AB5C00C1D2C7 /* Stack Command.swift in Sources */,
 				4F44C7F4219A4BBE003798AF /* Word.swift in Sources */,
 				4F3E7914219A2324008E3E9B /* Address Specification.swift in Sources */,
 				4F346B782199DBE700D6D8AD /* Script Document.swift in Sources */,
@@ -302,6 +317,7 @@
 				4F3E7916219A25B7008E3E9B /* Condition.swift in Sources */,
 				4F820F35219B1CD6004EE2C9 /* Instruction.swift in Sources */,
 				4FA7EBA021A06B0D00C52F98 /* Halt Command.swift in Sources */,
+				4F4FA73F21A5AD6800C1D2C7 /* Print Command.swift in Sources */,
 				4FFEB7DA219C6EE90049D0A5 /* Address Command.swift in Sources */,
 				4F1B6EE021A1A3D700751511 /* Script.swift in Sources */,
 				4F35A3CE21A0D6EA00A4610D /* Command Word.swift in Sources */,

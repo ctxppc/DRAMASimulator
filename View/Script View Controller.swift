@@ -24,9 +24,11 @@ final class ScriptViewController : UIViewController {
 			DispatchQueue.main.async {
 				do {
 					if let script = self.script, success {
+						self.title = script.fileURL.deletingPathExtension().lastPathComponent
 						self.editingViewController.script = script
 						self.machineViewController.machine = try script.initialMachine()
 					} else {
+						self.title = "No document"
 						self.editingViewController.script = nil
 						self.machineViewController.machine = Machine()
 					}

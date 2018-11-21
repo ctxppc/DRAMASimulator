@@ -11,7 +11,7 @@ final class ScriptDocument : UIDocument {
 	
 	/// Returns a machine after loading the program.
 	func initialMachine() throws -> Machine {
-		return Machine(memoryCells: try Program(from: Script(from: sourceText)).machineWords())
+		return Machine(memoryWords: try Program(from: Script(from: sourceText)).machineWords())
 	}
 	
 	/// The document's delegate.

@@ -27,13 +27,13 @@ struct ConditionalJumpCommand : ConditionAddressCommand {
 	let addressingMode: AddressingMode
 	
 	// See protocol.
-	func execute(on machine: inout Machine) throws {
+	func execute(on machine: inout Machine) {
 		guard machine.conditionState.matches(condition) else { return }
 		switch addressingMode {
 			case .value:	fallthrough
 			case .address:	fallthrough
 			case .direct:	machine.programCounter = machine.evaluate(destination)
-			case .indirect:	machine.programCounter = .init(truncating: machine[memoryCellAt: machine.evaluate(destination)])
+			case .indirect:	machine.programCounter = .init(truncating: machine[address: machine.evaluate(destination)])
 		}
 	}
 	

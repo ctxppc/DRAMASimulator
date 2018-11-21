@@ -6,13 +6,13 @@ struct ReadCommand : NullaryCommand {
 	static let supportedInstructions: Set = [Instruction.read]
 	
 	// See protocol.
-	init(instruction: Instruction) throws {}
+	init(instruction: Instruction) {}
 	
 	// See protocol.
 	let instruction = Instruction.read
 	
 	// See protocol.
-	func execute(on machine: inout Machine) throws {
+	func execute(on machine: inout Machine) {
 		machine.state = .waiting
 	}
 	

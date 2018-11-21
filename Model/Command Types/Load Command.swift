@@ -12,7 +12,7 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	}
 	
 	// See protocol.
-	init(instruction: Instruction, addressingMode: AddressingMode?, register: Register, address: AddressSpecification) {
+	init(instruction: Instruction, addressingMode: AddressingMode? = nil, register: Register, address: AddressSpecification) {
 		source = .memory(address: address, mode: addressingMode ?? .direct)
 		destination = register
 	}
@@ -37,7 +37,7 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 		switch source {
 			
 			case .register(let register):
-			value = machine[registerAt: register]
+			value = machine[register: register]
 			
 			case .memory(address: let valueSpec, mode: .value):
 			value = Word(rawValue: machine.evaluate(valueSpec).signedValue)!
@@ -46,16 +46,16 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 			value = Word(machine.evaluate(addressSpec))
 			
 			case .memory(address: let addressSpec, mode: .direct):
-			value = machine[memoryCellAt: machine.evaluate(addressSpec)]
+			value = machine[address: machine.evaluate(addressSpec)]
 			
 			case .memory(address: let addressSpec, mode: .indirect):
 			let addressOfReference = machine.evaluate(addressSpec)
-			let referencedAddress = AddressWord(truncating: machine[memoryCellAt: addressOfReference])
-			value = machine[memoryCellAt: referencedAddress]
+			let referencedAddress = AddressWord(truncating: machine[address: addressOfReference])
+			value = machine[address: referencedAddress]
 			
 		}
 		
-		machine[registerAt: destination, updatingConditionState: true] = value
+		machine[register: destination, updatingConditionState: true] = value
 		
 	}
 	

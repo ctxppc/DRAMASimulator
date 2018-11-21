@@ -4,29 +4,29 @@
 struct Machine {
 	
 	/// Initialises a machine with given registers, memory cells, program counter, and condition state.
-	init(registers: [Word] = defaultRegisters, memoryCells: [Word] = emptyMemory, startingExecutionAt programCounter: AddressWord = .zero, conditionState: ConditionState = .zero) {
+	init(registers: [Word] = defaultRegisters, memoryWords: [Word] = emptyMemory, startingAt programCounter: AddressWord = .zero, conditionState: ConditionState = .zero) {
 		
 		precondition(registers.count == Machine.defaultRegisters.count, "Invalid register count")
-		precondition(memoryCells.count == Machine.emptyMemory.count, "Invalid memory cell count")
+		precondition(memoryWords.count == Machine.emptyMemory.count, "Invalid memory cell count")
 		
 		self.registers = registers
-		self.memoryCells = memoryCells
+		self.memoryWords = memoryWords
 		self.programCounter = programCounter
 		self.conditionState = conditionState
 		
 	}
 	
-	/// The values stored in the registers.
+	/// The words stored in the machine's registers.
 	private var registers: [Word]
 	
-	/// Accesses a value stored in given register.
-	subscript (registerAt register: Register) -> Word {
+	/// Accesses a word stored in given register.
+	subscript (register register: Register) -> Word {
 		get { return registers[register.rawValue] }
 		set { registers[register.rawValue] = newValue }
 	}
 	
-	/// Accesses a value stored in given register and updates the condition state based on that value.
-	subscript (registerAt register: Register, updatingConditionState updatesConditionState: Bool) -> Word {
+	/// Accesses a word stored in given register and optionally updates the condition state based on that value.
+	subscript (register register: Register, updatingConditionState updatesConditionState: Bool) -> Word {
 		
 		mutating get {
 			let value = registers[register.rawValue]
@@ -49,13 +49,13 @@ struct Machine {
 	static let defaultRegisters = Array(repeating: Word.zero, count: 9) + [stackBase]
 	static let stackBase = Word(rawValue: 9000)!
 	
-	/// The values stored in memory.
-	private var memoryCells: [Word]
+	/// The words stored in the machine's memory.
+	private var memoryWords: [Word]
 	
-	/// Accesses a memory cell at given address.
-	subscript (memoryCellAt address: AddressWord) -> Word {
-		get { return memoryCells[address.rawValue] }
-		set { memoryCells[address.rawValue] = newValue }
+	/// Accesses a memory word at given address.
+	subscript (address address: AddressWord) -> Word {
+		get { return memoryWords[address.rawValue] }
+		set { memoryWords[address.rawValue] = newValue }
 	}
 	
 	/// Evaluates an address specified by given address specification and performs any specified indexation.
@@ -67,16 +67,16 @@ struct Machine {
 		if let index = specification.index {
 			
 			switch index.modification {
-				case .preincrement?:	self[registerAt: index.indexRegister].increment()
-				case .predecrement?:	self[registerAt: index.indexRegister].decrement()
+				case .preincrement?:	self[register: index.indexRegister].increment()
+				case .predecrement?:	self[register: index.indexRegister].decrement()
 				default:				break
 			}
 			
-			let result = specification.address(atIndex: self[registerAt: index.indexRegister])
+			let result = specification.address(atIndex: self[register: index.indexRegister])
 			
 			switch index.modification {
-				case .postincrement?:	self[registerAt: index.indexRegister].increment()
-				case .postdecrement?:	self[registerAt: index.indexRegister].decrement()
+				case .postincrement?:	self[register: index.indexRegister].increment()
+				case .postdecrement?:	self[register: index.indexRegister].decrement()
 				default:				break
 			}
 			
@@ -120,7 +120,7 @@ struct Machine {
 	/// - Requires: The machine is ready, i.e., `state == .ready`.
 	mutating func executeNext() throws {
 		precondition(state == .ready, "The machine is not ready.")
-		let command = try CommandWord(self[memoryCellAt: programCounter]).command()
+		let command = try CommandWord(self[address: programCounter]).command()
 		programCounter.increment()
 		try command.execute(on: &self)
 	}
