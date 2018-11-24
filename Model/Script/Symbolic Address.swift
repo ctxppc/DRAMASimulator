@@ -1,5 +1,7 @@
 // DRAMASimulator © 2018 Constantino Tsarouhas
 
+import Foundation
+
 struct SymbolicAddress {
 	
 	/// Parses a symbolic address from given string.
@@ -49,13 +51,21 @@ struct SymbolicAddress {
 		return try terms.map { try $0.effectiveAddress(addressesBySymbol: addressesBySymbol) }.reduce(0, +)
 	}
 	
-	enum Error : Swift.Error {
+	enum Error : LocalizedError {
 		
 		/// A term is empty.
 		case emptyTerm
 		
 		/// An unknown symbol is specified in a symbolic address.
 		case unknownSymbol(Script.Symbol)
+		
+		// See protocol.
+		var errorDescription: String? {
+			switch self {
+				case .emptyTerm:					return "Adresoperand met lege term"
+				case .unknownSymbol(let symbol):	return "‘\(symbol)’ is niet gedefinieerd"
+			}
+		}
 		
 	}
 	

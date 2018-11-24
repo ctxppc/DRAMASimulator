@@ -46,10 +46,17 @@ struct Script {
 	typealias Symbol = String
 	
 	/// An error related to symbols.
-	enum SymbolError : Error {
+	enum SymbolError : LocalizedError {
 		
 		/// A symbol is used multiple times.
 		case duplicateSymbol(String)
+		
+		// See protocol.
+		var errorDescription: String? {
+			switch self {
+				case .duplicateSymbol(let symbol):	return "‘\(symbol)’ is meermaals gedefinieerd"
+			}
+		}
 		
 	}
 	

@@ -13,7 +13,7 @@ struct PrintCommand : NullaryCommand {
 	
 	// See protocol.
 	func execute(on machine: inout Machine) {
-		// TODO
+		machine.provideOutput()
 	}
 	
 }

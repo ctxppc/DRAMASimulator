@@ -70,8 +70,29 @@
                                 <action selector="dismiss" destination="waR-UT-9kZ" id="Etw-Xs-MNH"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="Start" id="gOH-2N-y8E"/>
+                        <rightBarButtonItems>
+                            <barButtonItem systemItem="refresh" id="7Yp-pd-CuG">
+                                <connections>
+                                    <action selector="resetMachine:" destination="waR-UT-9kZ" id="XHf-Ti-2JP"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="pause" id="PRf-fu-yUc">
+                                <connections>
+                                    <action selector="pauseMachine:" destination="waR-UT-9kZ" id="1zA-C1-9O5"/>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem systemItem="play" id="gOH-2N-y8E">
+                                <connections>
+                                    <action selector="resumeMachine:" destination="waR-UT-9kZ" id="ONm-HI-LgY"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
+                    <connections>
+                        <outlet property="pauseButton" destination="PRf-fu-yUc" id="P9J-5c-hgm"/>
+                        <outlet property="resetButton" destination="7Yp-pd-CuG" id="SLg-c4-uWR"/>
+                        <outlet property="resumeButton" destination="gOH-2N-y8E" id="VSS-Bg-gkP"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4nI-Lr-6jy" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -93,7 +114,7 @@ DEF.g R0, 0(R2)
 GHI.k lmn, opqr+s
 TUV w
 XYZ</string>
-                                <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="18"/>
+                                <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                 <connections>
                                     <outlet property="delegate" destination="lDX-M6-H4E" id="5u1-t0-28m"/>
@@ -126,7 +147,7 @@ XYZ</string>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Igp-fF-euK">
-                            <size key="itemSize" width="125" height="50"/>
+                            <size key="itemSize" width="125" height="37"/>
                             <size key="headerReferenceSize" width="50" height="35"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -136,10 +157,10 @@ XYZ</string>
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" reuseIdentifier="Word Cell" id="HXL-4p-ueS" customClass="WordCell" customModule="DRAMASimulator" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="35" width="125" height="50"/>
+                                <rect key="frame" x="0.0" y="35" width="125" height="37"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
-                                    <rect key="frame" x="0.0" y="0.0" width="125" height="50"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="125" height="37"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Address" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PIT-3i-gb9">
@@ -149,8 +170,8 @@ XYZ</string>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="0000000000" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d6r-FX-ZQc" userLabel="Word Label">
-                                            <rect key="frame" x="11" y="15" width="103" height="20"/>
-                                            <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="17"/>
+                                            <rect key="frame" x="17" y="15" width="91" height="18"/>
+                                            <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="15"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
@@ -158,7 +179,7 @@ XYZ</string>
                                 </view>
                                 <constraints>
                                     <constraint firstItem="PIT-3i-gb9" firstAttribute="top" secondItem="HXL-4p-ueS" secondAttribute="top" id="Lpt-T4-ZPQ"/>
-                                    <constraint firstItem="d6r-FX-ZQc" firstAttribute="centerY" secondItem="HXL-4p-ueS" secondAttribute="centerY" id="Sod-Nh-WRB"/>
+                                    <constraint firstAttribute="bottom" secondItem="d6r-FX-ZQc" secondAttribute="bottom" constant="2" id="Zo3-Lk-Jcj"/>
                                     <constraint firstItem="d6r-FX-ZQc" firstAttribute="centerX" secondItem="HXL-4p-ueS" secondAttribute="centerX" id="i1w-D5-Cz5"/>
                                     <constraint firstItem="PIT-3i-gb9" firstAttribute="leading" secondItem="HXL-4p-ueS" secondAttribute="leading" id="p59-zU-XoU"/>
                                 </constraints>

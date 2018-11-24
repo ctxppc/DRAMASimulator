@@ -2,6 +2,7 @@
 
 import UIKit
 
+/// A view controller that presents the contents of a document's source text.
 final class ScriptEditingController : UIViewController {
 	
 	/// The script being edited.
@@ -23,6 +24,11 @@ final class ScriptEditingController : UIViewController {
 
 extension ScriptEditingController : UITextViewDelegate {
 	func textViewDidChange(_ textView: UITextView) {
-		script?.sourceText = textView.text
+		guard let script = script else { return }
+		let previousText = script.sourceText
+		script.sourceText = textView.text
+		script.undoManager!.registerUndo(withTarget: script) { script in
+			script.sourceText = previousText
+		}
 	}
 }

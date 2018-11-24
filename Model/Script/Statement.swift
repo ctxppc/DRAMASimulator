@@ -140,13 +140,13 @@ enum Statement {
 		case unknownCondition
 		
 		// See protocol.
-		var localizedDescription: String {
+		var errorDescription: String? {
 			switch self {
-				case .illegalFormat:					return "A statement has an illegal format."
-				case .doubleIndexModification:			return "Both a pre- and post-indexation modification are specified."
-				case .unknownMnemonic(let mnemonic):	return "An unknown mnemonic '\(mnemonic)' is specified."
-				case .unknownAddressingMode(let mode):	return "An unknown addressing mode '\(mode)' is specified."
-				case .unknownCondition:					return "An unknown condition is specified."
+				case .illegalFormat:					return "Bevel met ongeldig formaat"
+				case .doubleIndexModification:			return "Dubbele indexatie"
+				case .unknownMnemonic(let mnemonic):	return "Onbekend bevel ‘\(mnemonic)’"
+				case .unknownAddressingMode(let mode):	return "Onbekende interpretatie ‘\(mode)’"
+				case .unknownCondition:					return "Onbekende voorwaarde"
 			}
 		}
 		

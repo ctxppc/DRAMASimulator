@@ -1,5 +1,7 @@
 // DRAMASimulator © 2018 Constantino Tsarouhas
 
+import Foundation
+
 struct CommandWord {
 	
 	/// Creates a command word with fully unitialised digits (i.e., 9).
@@ -128,7 +130,7 @@ extension CommandWord {
 			case let type as UnaryRegisterCommand.Type:
 			return try type.init(instruction: instruction, register: Register(rawValue: register)!)
 			
-			case let type as BinaryRegisterCommand.Type where try addressingMode() == .value:
+			case let type as BinaryRegisterCommand.Type where address.index == nil && address.base == .zero:
 			return try type.init(instruction: instruction, primaryRegister: Register(rawValue: register)!, secondaryRegister: Register(rawValue: indexRegister)!)
 			
 			case let type as AddressCommand.Type:
@@ -148,7 +150,7 @@ extension CommandWord {
 		
 	}
 	
-	enum DecodingError : Error {
+	enum DecodingError : LocalizedError {
 		
 		/// The opcode is illegal.
 		case illegalInstruction(opcode: Int)
@@ -164,6 +166,17 @@ extension CommandWord {
 		
 		/// The command type does not have a decodable structure.
 		case undecodableCommand(type: Command.Type)
+		
+		// See protocol.
+		var errorDescription: String? {
+			switch self {
+				case .illegalInstruction(let opcode):	return "\(opcode) is geen geldige functiecode."
+				case .unimplementedInstruction(let i):	return "De instructie \(i) is niet geïmplementeerd."
+				case .illegalAddressingMode(let code):	return "\(code) is geen geldige interpretatiecode."
+				case .illegalCondition(let code):		return "\(code) is geen geldige voorwaarde."
+				case .undecodableCommand(let type):		return "Het bevel van type \(type) kan niet gedecodeerd worden."
+			}
+		}
 		
 	}
 	

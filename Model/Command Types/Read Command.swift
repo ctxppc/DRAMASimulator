@@ -13,7 +13,7 @@ struct ReadCommand : NullaryCommand {
 	
 	// See protocol.
 	func execute(on machine: inout Machine) {
-		machine.state = .waiting
+		machine.state = .waitingForInput
 	}
 	
 }

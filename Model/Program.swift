@@ -1,5 +1,7 @@
 // DRAMASimulator © 2018 Constantino Tsarouhas
 
+import Foundation
+
 /// A parsed script that can be readily converted into machine words.
 struct Program {
 	
@@ -117,13 +119,21 @@ struct Program {
 	}
 	
 	/// An error related to assembly such as memory management or command lowering.
-	enum AssemblyError : Error {
+	enum AssemblyError : LocalizedError {
 		
 		/// The program does not fit in memory.
 		case overflow
 		
 		/// A command does not have the correct format.
 		case incorrectFormat
+		
+		// See protocol.
+		var errorDescription: String? {
+			switch self {
+				case .overflow:			return "Programma past niet in geheugen"
+				case .incorrectFormat:	return "Bevel met onjuist formaat"
+			}
+		}
 		
 	}
 	

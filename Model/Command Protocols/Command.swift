@@ -1,5 +1,7 @@
 // DRAMASimulator © 2018 Constantino Tsarouhas
 
+import Foundation
+
 /// A value that performs modifications on a machine.
 protocol Command {
 	
@@ -37,13 +39,6 @@ extension Command {
 	var nativeRepresentation: Command {
 		return self
 	}
-	
-}
-
-enum CommandArgumentError : Error {
-	
-	/// The addressing mode is invalid for this command.
-	case invalidAddressingMode
 	
 }
 

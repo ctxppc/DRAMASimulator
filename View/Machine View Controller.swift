@@ -2,6 +2,7 @@
 
 import UIKit
 
+/// A view controller that presents the contents of a machine.
 final class MachineViewController : UICollectionViewController {
 	
 	/// The machine being presented.
@@ -45,7 +46,7 @@ final class MachineViewController : UICollectionViewController {
 		
 		var title: String {
 			switch self {
-				case .terminal:		return "Terminal"
+				case .terminal:		return "In- en uitvoer"
 				case .registers:	return "Accumulatoren"
 				case .memory:		return "Geheugen"
 			}
@@ -65,7 +66,7 @@ final class MachineViewController : UICollectionViewController {
 	
 	override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		switch Section(rawValue: section)! {
-			case .terminal:		return 0
+			case .terminal:		return machine.ioMessages.count
 			case .registers:	return Register.indices.count
 			case .memory:		return AddressWord.unsignedUpperBound
 		}
@@ -73,17 +74,28 @@ final class MachineViewController : UICollectionViewController {
 	
 	override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		
-		func cell(for word: Word, prefix: String = "") -> UICollectionViewCell {
+		func cell(for word: Word, prefix: String = "", isActive: Bool = false) -> UICollectionViewCell {
 			let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Word Cell", for: indexPath) as! WordCell
 			cell.addressLabel.text = prefix + String(indexPath.item)
 			cell.wordLabel.attributedText = MachineViewController.attributedString(for: word)
+			cell.contentView.backgroundColor = isActive ? #colorLiteral(red: 0.8999999762, green: 0.8999999762, blue: 1, alpha: 1) : nil
 			return cell
 		}
 		
 		switch Section(for: indexPath) {
-			case .terminal:		preconditionFailure("Terminal index out of bounds")
-			case .registers:	return cell(for: machine[register: Register(rawValue: indexPath.item)!], prefix: "R")
-			case .memory:		return cell(for: machine[address: AddressWord(rawValue: indexPath.item)!])
+			
+			case .terminal:
+			switch machine.ioMessages[indexPath.item] {
+				case .input(let word):	return cell(for: word, prefix: "Invoer #")
+				case .output(let word):	return cell(for: word, prefix: "Uitvoer #")
+			}
+			
+			case .registers:
+			return cell(for: machine[register: Register(rawValue: indexPath.item)!], prefix: "R")
+			
+			case .memory:
+			return cell(for: machine[address: AddressWord(rawValue: indexPath.item)!], isActive: machine.programCounter == AddressWord(rawValue: indexPath.item))
+			
 		}
 		
 	}

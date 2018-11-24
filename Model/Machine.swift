@@ -98,21 +98,42 @@ struct Machine {
 	/// The machine does not use or modify the condition state but rather commands executed on the machine.
 	var conditionState: ConditionState
 	
-	/// The state in which the machine is.
+	/// The general state of the machine.
 	var state: State = .ready
 	enum State {
 		
 		/// The machine can perform the next command.
 		case ready
 		
-		/// The machine waits for input in register 0.
+		/// The machine waits for input.
 		///
-		/// The client of a machine must request an input value (or use a predefined buffer), put it in register 0, and set the machine to the ready state before resuming execution.
-		case waiting
+		/// The client of a machine must request an input value (or use a predefined buffer) and invoke `provideInput()` before resuming execution.
+		case waitingForInput
 		
 		/// The machine is stopped and can no longer perform commands.
 		case halted
 		
+	}
+	
+	/// Provides input to the machine (in register 0).
+	///
+	/// - Requires: The machine is waiting for input, i.e., `state == .waitingForInput`.
+	mutating func provideInput(_ word: Word) {
+		precondition(state == .waitingForInput, "The machine is not waiting for input.")
+		ioMessages.append(.input(word))
+		self[register: .r0, updatingConditionState: true] = word
+	}
+	
+	/// Provides output from the machine (from register 0).
+	mutating func provideOutput() {
+		ioMessages.append(.output(self[register: .r0, updatingConditionState: true]))
+	}
+	
+	/// The messages inputted into or outputted by the machine.
+	private(set) var ioMessages = [IOMessage]()
+	enum IOMessage {
+		case input(Word)
+		case output(Word)
 	}
 	
 	/// Executes the next command.

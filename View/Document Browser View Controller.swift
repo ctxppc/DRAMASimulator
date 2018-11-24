@@ -35,9 +35,13 @@ final class DocumentBrowserViewController : UIDocumentBrowserViewController, UID
 	
 	// See protocol.
     func documentBrowser(_ controller: UIDocumentBrowserViewController, failedToImportDocumentAt documentURL: URL, error: Error?) {
-		let alert = UIAlertController(title: "Could not load document", message: error?.localizedDescription, preferredStyle: .alert)
-		alert.addAction(.init(title: "OK", style: .default))
-		present(alert, animated: true)
+		if let error = error {
+			present(error)
+		} else {
+			let alert = UIAlertController(title: "Fout bij het laden", message: nil, preferredStyle: .alert)
+			alert.addAction(.init(title: "OK", style: .default))
+			present(alert, animated: true)
+		}
     }
 	
 	/// Presents the document at a given URL.
