@@ -17,11 +17,13 @@ final class ScriptViewController : UIViewController {
 		
 		if let script = script {
 			title = script.fileURL.deletingPathExtension().lastPathComponent
-			editingViewController.script = script
+			editingViewController.sourceText = script.sourceText
+			editingViewController.sourceError = script.buildResult.sourceError
 			machineViewController.machine = script.machine
 		} else {
 			title = "Geen document"
-			editingViewController.script = nil
+			editingViewController.sourceText = ""
+			editingViewController.sourceError = nil
 			machineViewController.machine = Machine()
 		}
 		
@@ -29,18 +31,19 @@ final class ScriptViewController : UIViewController {
 		
 	}
 	
+	/// Loads the program into the machine.
 	private func loadProgram() {
-		
-		pauseButton.isEnabled = false
-		
 		do {
+			pauseButton.isEnabled = false
 			try script?.loadProgram()
 			resumeButton.isEnabled = true
+		} catch let error as SourceError {
+			resumeButton.isEnabled = false
+			editingViewController.sourceError = error
 		} catch {
 			resumeButton.isEnabled = false
 			present(error)
 		}
-		
 	}
 	
 	/// The child view controller for editing the source text.
@@ -51,6 +54,11 @@ final class ScriptViewController : UIViewController {
 	/// The child view controller for viewing the machine.
 	private var machineViewController: MachineViewController {
 		return children[1] as! MachineViewController
+	}
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		editingViewController.delegate = self
 	}
 	
     override func viewWillAppear(_ animated: Bool) {
@@ -96,15 +104,18 @@ final class ScriptViewController : UIViewController {
 		let alert = UIAlertController(title: "Invoer", message: message, preferredStyle: .alert)
 		alert.addTextField()
 		
-		alert.addAction(UIAlertAction(title: "OK", style: .default) { action in
+		
+		let ok = UIAlertAction(title: "OK", style: .default) { action in
 			if let integer = Int(alert.textFields![0].text ?? "") {
 				self.script!.provideMachineInput(Word(wrapping: integer))
 			} else {
 				self.promptInput(message: "Geef een geldig getal in.")
 			}
-		})
+		}
 		
+		alert.addAction(ok)
 		alert.addAction(UIAlertAction(title: "Pauzeer", style: .cancel))
+		alert.preferredAction = ok
 		
 		present(alert, animated: true)
 		
@@ -148,4 +159,12 @@ extension ScriptViewController : ScriptDocumentDelegate {
 		pauseButton.isEnabled = false
 	}
 	
+}
+
+extension ScriptViewController : ScriptEditingControllerDelegate {
+	func scriptEditingControllerDidChangeSourceText(_ controller: ScriptEditingController) {
+		guard let script = script else { return }
+		script.sourceText = controller.sourceText
+		controller.sourceError = script.buildResult.sourceError
+	}
 }

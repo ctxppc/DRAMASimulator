@@ -28,7 +28,8 @@ enum Statement {
 	/// - Requires: `line` does not contain newlines.
 	///
 	/// - Parameter line: A single line of assembly code.
-	init?(from line: String) throws {
+	/// - Parameter lineIndex: The line index of `line` within the script.
+	init?(from line: String, lineIndex: Int) throws {
 		
 		typealias Match = NSTextCheckingResult
 		
@@ -49,13 +50,13 @@ enum Statement {
 		
 		func instruction(in match: Match, at group: Int) throws -> Instruction {
 			let mnemonic = string(in: match, at: group).uppercased()
-			guard let instruction = Instruction(rawValue: mnemonic) else { throw ParsingError.unknownMnemonic(mnemonic) }
+			guard let instruction = Instruction(rawValue: mnemonic) else { throw ParsingError.unknownMnemonic(mnemonic, lineIndex: lineIndex) }
 			return instruction
 		}
 		
 		func optionalAddressingMode(in match: Match, at group: Int) throws -> AddressingMode? {
 			guard let value = optionalString(in: match, at: group) else { return nil }
-			guard let mode = AddressingMode(rawValue: value.lowercased()) else { throw ParsingError.unknownAddressingMode(value) }
+			guard let mode = AddressingMode(rawValue: value.lowercased()) else { throw ParsingError.unknownAddressingMode(value, lineIndex: lineIndex) }
 			return mode
 		}
 		
@@ -79,7 +80,7 @@ enum Statement {
 				case ("-", nil):	modification = .predecrement
 				case (nil, "+"):	modification = .postincrement
 				case (nil, "-"):	modification = .postdecrement
-				default:			throw ParsingError.doubleIndexModification
+				default:			throw ParsingError.doubleIndexModification(lineIndex: lineIndex)
 			}
 			
 			return .init(indexRegister: register, modification: modification)
@@ -88,7 +89,7 @@ enum Statement {
 		
 		func condition(in match: Match, at group: Int) throws -> Condition {
 			let rawValue = string(in: match, at: group).uppercased()
-			guard let condition = Condition(rawValue: rawValue) ?? Condition(rawComparisonValue: rawValue) else { throw ParsingError.unknownCondition }
+			guard let condition = Condition(rawValue: rawValue) ?? Condition(rawComparisonValue: rawValue) else { throw ParsingError.unknownCondition(lineIndex: lineIndex) }
 			return condition
 		}
 		
@@ -117,36 +118,47 @@ enum Statement {
 				index:			index(in: match, from: 5)
 			)
 		} else {
-			throw ParsingError.illegalFormat
+			throw ParsingError.illegalFormat(lineIndex: lineIndex)
 		}
 		
 	}
 	
-	enum ParsingError : LocalizedError {
+	enum ParsingError : LocalizedError, SourceError {
 		
 		/// A statement has an illegal format.
-		case illegalFormat
+		case illegalFormat(lineIndex: Int)
 		
 		/// Both a pre- and post-indexation modification are specified.
-		case doubleIndexModification
+		case doubleIndexModification(lineIndex: Int)
 		
 		/// An unknown mnemonic is specified.
-		case unknownMnemonic(String)
+		case unknownMnemonic(String, lineIndex: Int)
 		
 		/// An unknown addressing mode is specified.
-		case unknownAddressingMode(String)
+		case unknownAddressingMode(String, lineIndex: Int)
 		
 		/// An unknown condition is specified.
-		case unknownCondition
+		case unknownCondition(lineIndex: Int)
 		
 		// See protocol.
 		var errorDescription: String? {
 			switch self {
-				case .illegalFormat:					return "Bevel met ongeldig formaat"
-				case .doubleIndexModification:			return "Dubbele indexatie"
-				case .unknownMnemonic(let mnemonic):	return "Onbekend bevel ‘\(mnemonic)’"
-				case .unknownAddressingMode(let mode):	return "Onbekende interpretatie ‘\(mode)’"
-				case .unknownCondition:					return "Onbekende voorwaarde"
+				case .illegalFormat:									return "Bevel met ongeldig formaat"
+				case .doubleIndexModification:							return "Dubbele indexatie"
+				case .unknownMnemonic(let mnemonic, lineIndex: _):		return "Onbekend bevel ‘\(mnemonic)’"
+				case .unknownAddressingMode(let mode, lineIndex: _):	return "Onbekende interpretatie ‘\(mode)’"
+				case .unknownCondition:									return "Onbekende voorwaarde"
+			}
+		}
+		
+		// See protocol.
+		var lineIndex: Int {
+			switch self {
+				case .illegalFormat(lineIndex: let index):				return index
+				case .doubleIndexModification(lineIndex: let index):	return index
+				case .unknownMnemonic(_, lineIndex: let index):			return index
+				case .unknownAddressingMode(_, lineIndex: let index):	return index
+				case .unknownCondition(lineIndex: let index):			return index
 			}
 		}
 		
@@ -157,17 +169,17 @@ enum Statement {
 	/// Groups: operation
 	private static let nullaryCommandExpression = expression(operationPattern)
 	
-	/// A regular expression for matching register commands.
+	/// A regular expression for matching unary and binary register commands.
 	///
 	/// Groups: operation, primary register, secondary register (opt.)
-	private static let registerCommandExpression = expression(operationPattern, reqSpace, registerPattern, argSeparator, "(?:\(registerPattern))")
+	private static let registerCommandExpression = expression(operationPattern, reqSpace, registerPattern, argSeparator, opt(registerPattern))
 	
-	/// A regular expression for matching register commands.
+	/// A regular expression for matching address and register–address commands.
 	///
 	/// Groups: operation, addressing mode (opt.), register (opt.), base address, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
-	private static let addressCommandExpression = expression(qualifiedOperationPattern, reqSpace, "(?:\(registerPattern)\(argSeparator))", addressPattern)
+	private static let addressCommandExpression = expression(qualifiedOperationPattern, reqSpace, opt(registerPattern, argSeparator), addressPattern)
 	
-	/// A regular expression for matching register commands.
+	/// A regular expression for matching condition–address commands.
 	///
 	/// Groups: operation, addressing mode (opt.), condition, base address, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
 	private static let conditionCommandExpression = expression(qualifiedOperationPattern, reqSpace, conditionPattern, argSeparator, addressPattern)
@@ -194,6 +206,10 @@ private func expression(_ subpatterns: String...) -> NSRegularExpression {
 private let reqSpace = "\\s+"
 private let optSpace = "\\s*"
 private let argSeparator = "\(optSpace),\(optSpace)"
+
+private func opt(_ expressions: String...) -> String {
+	return "(?:\(expressions.joined()))?"
+}
 
 private let operationPattern = "([A-Z]{3})"
 private let addressingModePattern = "\\.(w|a|d|i)"

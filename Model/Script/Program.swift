@@ -5,6 +5,11 @@ import Foundation
 /// A parsed script that can be readily converted into machine words.
 struct Program {
 	
+	/// Creates an empty program.
+	init() {
+		self.wordSequences = []
+	}
+	
 	/// Assembles a program from given script.
 	init(from script: Script) throws {
 		

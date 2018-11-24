@@ -122,6 +122,7 @@ struct Machine {
 		precondition(state == .waitingForInput, "The machine is not waiting for input.")
 		ioMessages.append(.input(word))
 		self[register: .r0, updatingConditionState: true] = word
+		state = .ready
 	}
 	
 	/// Provides output from the machine (from register 0).

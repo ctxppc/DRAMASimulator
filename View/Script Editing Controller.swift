@@ -5,30 +5,67 @@ import UIKit
 /// A view controller that presents the contents of a document's source text.
 final class ScriptEditingController : UIViewController {
 	
-	/// The script being edited.
-	var script: ScriptDocument? {
-		didSet { presentText() }
+	/// The presented source text.
+	var sourceText: String = "" {
+		didSet {
+			guard oldValue != sourceText else { return }
+			updatePresentedSourceText()
+		}
 	}
+	
+	private func updatePresentedSourceText() {
+		textView?.text = sourceText
+	}
+	
+	/// The presented source error, if any.
+	var sourceError: SourceError? {
+		didSet {
+			if oldValue != nil || sourceError != nil {
+				updatePresentedSourceError()
+			}
+		}
+	}
+	
+	private func updatePresentedSourceError() {
+		if let error = sourceError {
+			errorBar?.isHidden = false
+			errorLabel?.text = "⚠️ \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription) (lijn \(error.lineIndex + 1))"
+		} else {
+			errorBar?.isHidden = true
+			errorLabel?.text = "Geen fouten"
+		}
+	}
+	
+	/// The controller's delegate.
+	weak var delegate: ScriptEditingControllerDelegate?
 	
 	/// The text view presenting the script's text.
-	@IBOutlet var textView: UITextView! {
-		didSet { presentText() }
-	}
+	@IBOutlet var textView: UITextView!
 	
-	/// Presents the script's text, replacing the contents of the text view.
-	private func presentText() {
-		textView?.text = script?.sourceText ?? ""
+	/// The arranged view hosting the error label.
+	@IBOutlet weak var errorBar: UIView!
+	
+	/// The label presenting a description of the script's source error.
+	@IBOutlet weak var errorLabel: UILabel!
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		updatePresentedSourceText()
+		updatePresentedSourceError()
 	}
 	
 }
 
 extension ScriptEditingController : UITextViewDelegate {
 	func textViewDidChange(_ textView: UITextView) {
-		guard let script = script else { return }
-		let previousText = script.sourceText
-		script.sourceText = textView.text
-		script.undoManager!.registerUndo(withTarget: script) { script in
-			script.sourceText = previousText
-		}
+		sourceText = textView.text
+		delegate?.scriptEditingControllerDidChangeSourceText(self)
 	}
+}
+
+protocol ScriptEditingControllerDelegate : class {
+	
+	/// Notifies the delegate that the source text has been changed.
+	func scriptEditingControllerDidChangeSourceText(_ controller: ScriptEditingController)
+	
 }

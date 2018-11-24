@@ -34,7 +34,7 @@ extension WordProtocol {
 	/// Creates a word with given signed value, wrapping it if necessary.
 	init(wrapping signedValue: Int) {
 		let wrappedValue = signedValue % Self.unsignedUpperBound
-		self.init(rawValue: wrappedValue > 0 ? wrappedValue : Self.unsignedUpperBound + wrappedValue)!
+		self.init(rawValue: wrappedValue >= 0 ? wrappedValue : Self.unsignedUpperBound + wrappedValue)!
 	}
 	
 	/// Creates a word with given unsigned value, truncating it if necessary.

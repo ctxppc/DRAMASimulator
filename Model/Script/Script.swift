@@ -5,29 +5,39 @@ import Foundation
 /// A parsed script.
 struct Script {
 	
+	/// Creates an empty script.
+	init() {
+		statements = []
+		statementIndexBySymbol = [:]
+		lineIndexByStatementIndex = [:]
+	}
+	
 	/// Parses a script from given text.
 	init(from text: String) throws {
 		
-		statements = []
-		statementIndexBySymbol = [:]
+		self.init()
 		
-		for line in text.components(separatedBy: .newlines) {
+		for (lineIndex, line) in text.components(separatedBy: .newlines).enumerated() {
+			
+			func processStatement(from line: String) throws {
+				guard let statement = try Statement(from: line, lineIndex: lineIndex) else { return }
+				lineIndexByStatementIndex[statements.endIndex] = lineIndex
+				statements.append(statement)
+			}
+			
 			if let match = Script.symbolExpression.firstMatch(in: line, range: NSRange(location: 0, length: (line as NSString).length)) {
 				
 				let symbol = (line as NSString).substring(with: match.range(at: 1))
-				guard !statementIndexBySymbol.keys.contains(symbol) else { throw SymbolError.duplicateSymbol(symbol) }
-				statementIndexBySymbol[symbol] = statements.endIndex
-				
 				let remainder = (line as NSString).substring(with: match.range(at: 2))
-				if let statement = try Statement(from: remainder) {
-					statements.append(statement)
-				}
+				guard !statementIndexBySymbol.keys.contains(symbol) else { throw SymbolError.duplicateSymbol(symbol, lineIndex: lineIndex) }
+				
+				statementIndexBySymbol[symbol] = statements.endIndex
+				try processStatement(from: remainder)
 				
 			} else {
-				if let statement = try Statement(from: line) {
-					statements.append(statement)
-				}
+				try processStatement(from: line)
 			}
+			
 		}
 		
 	}
@@ -41,20 +51,33 @@ struct Script {
 	var statements: [Statement]
 	typealias Statements = [Statement]
 	
+	/// A dictionary mapping indices in the `statements` array to line indices.
+	var lineIndexByStatementIndex: [Statements.Index : Int]
+	
 	/// A dictionary mapping symbols to indices in the `statements` array.
 	var statementIndexBySymbol: [Symbol : Statements.Index]
 	typealias Symbol = String
 	
 	/// An error related to symbols.
-	enum SymbolError : LocalizedError {
+	enum SymbolError : LocalizedError, SourceError {
 		
 		/// A symbol is used multiple times.
-		case duplicateSymbol(String)
+		///
+		/// - Parameter 1: The symbol.
+		/// - Parameter lineIndex: The line index.
+		case duplicateSymbol(String, lineIndex: Int)
 		
 		// See protocol.
 		var errorDescription: String? {
 			switch self {
-				case .duplicateSymbol(let symbol):	return "‘\(symbol)’ is meermaals gedefinieerd"
+				case .duplicateSymbol(let symbol, lineIndex: _):	return "‘\(symbol)’ is meermaals gedefinieerd"
+			}
+		}
+		
+		// See protocol.
+		var lineIndex: Int {
+			switch self {
+				case .duplicateSymbol(_, lineIndex: let lineIndex):	return lineIndex
 			}
 		}
 		

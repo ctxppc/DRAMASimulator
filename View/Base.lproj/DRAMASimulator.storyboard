@@ -106,31 +106,56 @@
                         <rect key="frame" x="0.0" y="0.0" width="512" height="698"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="interactive" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="x8N-f6-xzC">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ZE8-k6-rEZ">
                                 <rect key="frame" x="0.0" y="20" width="512" height="678"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <string key="text">ABC R0, R1
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZBX-al-uWg" userLabel="Error Bar">
+                                        <rect key="frame" x="0.0" y="0.0" width="512" height="128"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error message" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xgw-Wg-wbN">
+                                                <rect key="frame" x="8" y="8" width="496" height="112"/>
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" red="1" green="0.83234566450000003" blue="0.47320586440000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstItem="Xgw-Wg-wbN" firstAttribute="leading" secondItem="ZBX-al-uWg" secondAttribute="leadingMargin" id="AQs-bW-29J"/>
+                                            <constraint firstAttribute="bottomMargin" secondItem="Xgw-Wg-wbN" secondAttribute="bottom" id="IB5-bU-qry"/>
+                                            <constraint firstItem="Xgw-Wg-wbN" firstAttribute="top" secondItem="ZBX-al-uWg" secondAttribute="topMargin" id="VZJ-gV-hCc"/>
+                                            <constraint firstAttribute="trailingMargin" secondItem="Xgw-Wg-wbN" secondAttribute="trailing" id="VmF-ah-12q"/>
+                                        </constraints>
+                                    </view>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="interactive" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="x8N-f6-xzC">
+                                        <rect key="frame" x="0.0" y="128" width="512" height="550"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <string key="text">ABC R0, R1
 DEF.g R0, 0(R2)
 GHI.k lmn, opqr+s
 TUV w
 XYZ</string>
-                                <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="14"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                <connections>
-                                    <outlet property="delegate" destination="lDX-M6-H4E" id="5u1-t0-28m"/>
-                                </connections>
-                            </textView>
+                                        <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="lDX-M6-H4E" id="5u1-t0-28m"/>
+                                        </connections>
+                                    </textView>
+                                </subviews>
+                            </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="x8N-f6-xzC" firstAttribute="bottom" secondItem="NKg-l5-0UO" secondAttribute="bottom" id="IE4-se-DpC"/>
-                            <constraint firstItem="x8N-f6-xzC" firstAttribute="leading" secondItem="NKg-l5-0UO" secondAttribute="leading" id="Vjx-Tq-h8s"/>
-                            <constraint firstItem="x8N-f6-xzC" firstAttribute="top" secondItem="nvO-XW-Ygk" secondAttribute="topMargin" id="ZHh-SR-LAO"/>
-                            <constraint firstItem="x8N-f6-xzC" firstAttribute="trailing" secondItem="NKg-l5-0UO" secondAttribute="trailing" id="lRo-6f-kmI"/>
+                            <constraint firstItem="ZE8-k6-rEZ" firstAttribute="leading" secondItem="NKg-l5-0UO" secondAttribute="leading" id="ZmF-QC-asW"/>
+                            <constraint firstItem="ZE8-k6-rEZ" firstAttribute="top" secondItem="nvO-XW-Ygk" secondAttribute="topMargin" id="c6V-GL-XCX"/>
+                            <constraint firstItem="ZE8-k6-rEZ" firstAttribute="trailing" secondItem="NKg-l5-0UO" secondAttribute="trailing" id="dXF-Me-v3n"/>
+                            <constraint firstItem="NKg-l5-0UO" firstAttribute="bottom" secondItem="ZE8-k6-rEZ" secondAttribute="bottom" id="eGL-Ba-ZNj"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="NKg-l5-0UO"/>
                     </view>
                     <connections>
+                        <outlet property="errorBar" destination="ZBX-al-uWg" id="d7a-Rq-TV5"/>
+                        <outlet property="errorLabel" destination="Xgw-Wg-wbN" id="DfQ-Zd-sk6"/>
                         <outlet property="textView" destination="x8N-f6-xzC" id="6Mw-4D-HmQ"/>
                     </connections>
                 </viewController>
@@ -256,4 +281,5 @@ XYZ</string>
             <point key="canvasLocation" x="766" y="654"/>
         </scene>
     </scenes>
+    <color key="tintColor" red="0.99949461221694946" green="0.27363279461860657" blue="0.34636437892913818" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
 </document>

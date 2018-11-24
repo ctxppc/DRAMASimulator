@@ -6,7 +6,49 @@ final class ScriptDocument : UIDocument {
 	
 	/// The source text.
 	var sourceText: String = "" {
-		didSet { delegate?.scriptDocumentSourceTextDidChange(self) }
+		didSet {
+			buildResult = .init(sourceText: sourceText)
+		}
+	}
+	
+	/// The build result of the source text.
+	///
+	/// This property is updated every time `sourceText` is modified.
+	private(set) var buildResult: BuildResult = .program(.init(), script: .init())
+	enum BuildResult {
+		
+		/// A program ready to be loaded into a machine.
+		case program(Program, script: Script)
+		
+		/// An error occurred while assembling the program but the script could be parsed.
+		case programError(Error, script: Script)
+		
+		/// An error occurred while parsing the script.
+		case scriptError(Error)
+		
+		/// Parses & assembles given source text.
+		init(sourceText: String) {
+			do {
+				let script = try Script(from: sourceText)
+				do {
+					self = .program(try Program(from: script), script: script)
+				} catch {
+					self = .programError(error, script: script)
+				}
+			} catch {
+				self = .scriptError(error)
+			}
+		}
+		
+		/// The source error, if any.
+		var sourceError: SourceError? {
+			switch self {
+				case .program:								return nil
+				case .programError(let error, script: _):	return error as? SourceError
+				case .scriptError(let error):				return error as? SourceError
+			}
+		}
+		
 	}
 	
 	/// The (currently loaded) machine.
@@ -23,7 +65,11 @@ final class ScriptDocument : UIDocument {
 	/// The machine isn't affected if the program couldn't be loaded; an error is thrown instead.
 	func loadProgram() throws {
 		isRunning = false
-		machine = .init(memoryWords: try Program(from: Script(from: sourceText)).machineWords())
+		switch buildResult {
+			case .program(let program, script: _):		machine = .init(memoryWords: try program.machineWords())
+			case .programError(let error, script: _):	throw error
+			case .scriptError(let error):				throw error
+		}
 	}
 	
 	/// The duration of a tick.
@@ -115,9 +161,6 @@ final class ScriptDocument : UIDocument {
 }
 
 protocol ScriptDocumentDelegate : class {
-	
-	/// Notifies the delegate that the document's source text has been modified.
-	func scriptDocumentSourceTextDidChange(_ document: ScriptDocument)
 	
 	/// Notifies the delegate that the document's machine has been modified.
 	func scriptDocumentMachineDidChange(_ document: ScriptDocument)
