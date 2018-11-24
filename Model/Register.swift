@@ -14,9 +14,12 @@ struct Register : RawRepresentable {
 	static let r8 = Register(rawValue: 8)!
 	static let r9 = Register(rawValue: 9)!
 	
+	/// The range of valid register indices.
+	static let indices = 0...9
+	
 	// See protocol.
 	init?(rawValue: Int) {
-		guard (0...9).contains(rawValue) else { return nil }
+		guard Register.indices.contains(rawValue) else { return nil }
 		self.rawValue = rawValue
 	}
 	
