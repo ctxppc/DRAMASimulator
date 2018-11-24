@@ -92,7 +92,6 @@ extension CommandWord {
 		} else if let command = command as? AddressCommand, let address = command.addressOperand {
 			self.addressingMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
 			self.indexingMode = address.mode
-			self.register = 0
 			self.indexRegister = address.index?.indexRegister.rawValue ?? 0
 			self.address = address.base.rawValue
 		} else if let command = command as? BinaryRegisterCommand, let primaryRegister = command.registerOperand, let secondaryRegister = command.secondaryRegisterOperand {
@@ -129,9 +128,6 @@ extension CommandWord {
 			
 			case let type as UnaryRegisterCommand.Type:
 			return try type.init(instruction: instruction, register: Register(rawValue: register)!)
-			
-			case let type as BinaryRegisterCommand.Type where address.index == nil && address.base == .zero:
-			return try type.init(instruction: instruction, primaryRegister: Register(rawValue: register)!, secondaryRegister: Register(rawValue: indexRegister)!)
 			
 			case let type as AddressCommand.Type:
 			return try type.init(instruction: instruction, addressingMode: addressingMode(), address: address)

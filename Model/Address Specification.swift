@@ -39,20 +39,29 @@ extension AddressSpecification {
 	
 	init(base: AddressWord, indexRegister: Register, mode: Int) {
 		self.base = base
-		self.index = {
-			if let m = Index.Modification(rawValue: mode) {
-				return .init(indexRegister: indexRegister, modification: m)
-			} else if mode == 2 {
-				return .init(indexRegister: indexRegister, modification: nil)
-			} else {
-				return nil
-			}
-		}()
+		self.index = Index(indexRegister: indexRegister, mode: mode)
 	}
 	
 	var mode: Int {
-		guard let index = index else { return 1 }
-		return index.modification?.rawValue ?? 2
+		return index?.mode ?? 1
+	}
+	
+}
+
+extension AddressSpecification.Index {
+	
+	init?(indexRegister: Register, mode: Int) {
+		if let modification = Modification(rawValue: mode) {
+			self.init(indexRegister: indexRegister, modification: modification)
+		} else if mode == 2 {
+			self.init(indexRegister: indexRegister, modification: nil)
+		} else {
+			return nil
+		}
+	}
+	
+	var mode: Int {
+		return modification?.rawValue ?? 2
 	}
 	
 }

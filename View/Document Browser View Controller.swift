@@ -13,13 +13,21 @@ final class DocumentBrowserViewController : UIDocumentBrowserViewController, UID
 	
 	// See protocol.
     func documentBrowser(_ controller: UIDocumentBrowserViewController, didRequestDocumentCreationWithHandler importHandler: @escaping (URL?, ImportMode) -> ()) {
-		
-		let documentURL: URL? = nil
-		
-		// TODO: Determine URL.
-		
-		importHandler(documentURL, documentURL != nil ? .move : .none)
-		
+		do {
+			
+			let temporaryFileURL = try FileManager.default.url(
+				for:			.itemReplacementDirectory,
+				in:				.userDomainMask,
+				appropriateFor:	FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false),
+				create:			true
+			).appendingPathComponent("Nieuw.dra")
+			
+			try Data().write(to: temporaryFileURL)
+			importHandler(temporaryFileURL, .move)
+			
+		} catch {
+			importHandler(nil, .none)
+		}
     }
 	
 	// See protocol.

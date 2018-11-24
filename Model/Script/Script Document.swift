@@ -76,9 +76,9 @@ final class ScriptDocument : UIDocument {
 	///
 	/// Any changes to this property only apply after pausing and resuming the machine.
 	///
-	/// - Requires: `timeInterval` ≥ 0.1 seconds.
-	var tickInterval: TimeInterval = 0.2 {
-		willSet { precondition(newValue >= 0.1) }
+	/// - Requires: `timeInterval` ≥ 0.01 seconds.
+	var tickInterval: TimeInterval = 0.1 {
+		willSet { precondition(newValue >= 0.01) }
 	}
 	
 	/// The timer that fires on every tick, or `nil` if the machine isn't running.

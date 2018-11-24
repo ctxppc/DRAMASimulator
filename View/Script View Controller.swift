@@ -163,8 +163,16 @@ extension ScriptViewController : ScriptDocumentDelegate {
 
 extension ScriptViewController : ScriptEditingControllerDelegate {
 	func scriptEditingControllerDidChangeSourceText(_ controller: ScriptEditingController) {
+		
 		guard let script = script else { return }
+		
+		let previousText = script.sourceText
 		script.sourceText = controller.sourceText
+		script.undoManager.registerUndo(withTarget: script) { script in
+			script.sourceText = previousText
+		}
+		
 		controller.sourceError = script.buildResult.sourceError
+		
 	}
 }
