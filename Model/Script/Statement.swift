@@ -28,8 +28,7 @@ enum Statement {
 	/// - Requires: `line` does not contain newlines.
 	///
 	/// - Parameter line: A single line of assembly code.
-	/// - Parameter lineIndex: The line index of `line` within the script.
-	init?(from line: String, lineIndex: Int) throws {
+	init?(from line: Substring) throws {
 		
 		typealias Match = NSTextCheckingResult
 		
@@ -50,13 +49,13 @@ enum Statement {
 		
 		func instruction(in match: Match, at group: Int) throws -> Instruction {
 			let mnemonic = string(in: match, at: group).uppercased()
-			guard let instruction = Instruction(rawValue: mnemonic) else { throw ParsingError.unknownMnemonic(mnemonic, lineIndex: lineIndex) }
+			guard let instruction = Instruction(rawValue: mnemonic) else { throw ParsingError.unknownMnemonic(mnemonic) }
 			return instruction
 		}
 		
 		func optionalAddressingMode(in match: Match, at group: Int) throws -> AddressingMode? {
 			guard let value = optionalString(in: match, at: group) else { return nil }
-			guard let mode = AddressingMode(rawValue: value.lowercased()) else { throw ParsingError.unknownAddressingMode(value, lineIndex: lineIndex) }
+			guard let mode = AddressingMode(rawValue: value.lowercased()) else { throw ParsingError.unknownAddressingMode(value) }
 			return mode
 		}
 		
@@ -80,7 +79,7 @@ enum Statement {
 				case ("-", nil):	modification = .predecrement
 				case (nil, "+"):	modification = .postincrement
 				case (nil, "-"):	modification = .postdecrement
-				default:			throw ParsingError.doubleIndexModification(lineIndex: lineIndex)
+				default:			throw ParsingError.doubleIndexModification
 			}
 			
 			return .init(indexRegister: register, modification: modification)
@@ -89,7 +88,7 @@ enum Statement {
 		
 		func condition(in match: Match, at group: Int) throws -> Condition {
 			let rawValue = string(in: match, at: group).uppercased()
-			guard let condition = Condition(rawValue: rawValue) ?? Condition(rawComparisonValue: rawValue) else { throw ParsingError.unknownCondition(lineIndex: lineIndex) }
+			guard let condition = Condition(rawValue: rawValue) ?? Condition(rawComparisonValue: rawValue) else { throw ParsingError.unknownCondition }
 			return condition
 		}
 		
@@ -118,47 +117,36 @@ enum Statement {
 				index:			index(in: match, from: 5)
 			)
 		} else {
-			throw ParsingError.illegalFormat(lineIndex: lineIndex)
+			throw ParsingError.illegalFormat
 		}
 		
 	}
 	
-	enum ParsingError : LocalizedError, SourceError {
+	enum ParsingError : LocalizedError {
 		
 		/// A statement has an illegal format.
-		case illegalFormat(lineIndex: Int)
+		case illegalFormat
 		
 		/// Both a pre- and post-indexation modification are specified.
-		case doubleIndexModification(lineIndex: Int)
+		case doubleIndexModification
 		
 		/// An unknown mnemonic is specified.
-		case unknownMnemonic(String, lineIndex: Int)
+		case unknownMnemonic(String)
 		
 		/// An unknown addressing mode is specified.
-		case unknownAddressingMode(String, lineIndex: Int)
+		case unknownAddressingMode(String)
 		
 		/// An unknown condition is specified.
-		case unknownCondition(lineIndex: Int)
+		case unknownCondition
 		
 		// See protocol.
 		var errorDescription: String? {
 			switch self {
-				case .illegalFormat:									return "Bevel met ongeldig formaat"
-				case .doubleIndexModification:							return "Dubbele indexatie"
-				case .unknownMnemonic(let mnemonic, lineIndex: _):		return "Onbekend bevel ‘\(mnemonic)’"
-				case .unknownAddressingMode(let mode, lineIndex: _):	return "Onbekende interpretatie ‘\(mode)’"
-				case .unknownCondition:									return "Onbekende voorwaarde"
-			}
-		}
-		
-		// See protocol.
-		var lineIndex: Int {
-			switch self {
-				case .illegalFormat(lineIndex: let index):				return index
-				case .doubleIndexModification(lineIndex: let index):	return index
-				case .unknownMnemonic(_, lineIndex: let index):			return index
-				case .unknownAddressingMode(_, lineIndex: let index):	return index
-				case .unknownCondition(lineIndex: let index):			return index
+				case .illegalFormat:					return "Bevel met ongeldig formaat"
+				case .doubleIndexModification:			return "Dubbele indexatie"
+				case .unknownMnemonic(let mnemonic):	return "Onbekend bevel ‘\(mnemonic)’"
+				case .unknownAddressingMode(let mode):	return "Onbekende interpretatie ‘\(mode)’"
+				case .unknownCondition:					return "Onbekende voorwaarde"
 			}
 		}
 		

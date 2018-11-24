@@ -18,12 +18,12 @@ final class ScriptViewController : UIViewController {
 		if let script = script {
 			title = script.fileURL.deletingPathExtension().lastPathComponent
 			editingViewController.sourceText = script.sourceText
-			editingViewController.sourceError = script.buildResult.sourceError
+			editingViewController.sourceErrors = script.buildResult.sourceErrors
 			machineViewController.machine = script.machine
 		} else {
 			title = "Geen document"
 			editingViewController.sourceText = ""
-			editingViewController.sourceError = nil
+			editingViewController.sourceErrors = []
 			machineViewController.machine = Machine()
 		}
 		
@@ -37,9 +37,9 @@ final class ScriptViewController : UIViewController {
 			pauseButton.isEnabled = false
 			try script?.loadProgram()
 			resumeButton.isEnabled = true
-		} catch let error as SourceError {
+		} catch let partialScriptError as ScriptDocument.PartialScriptError {
 			resumeButton.isEnabled = false
-			editingViewController.sourceError = error
+			editingViewController.sourceErrors = partialScriptError.sourceErrors
 		} catch {
 			resumeButton.isEnabled = false
 			present(error)
@@ -172,7 +172,8 @@ extension ScriptViewController : ScriptEditingControllerDelegate {
 			script.sourceText = previousText
 		}
 		
-		controller.sourceError = script.buildResult.sourceError
+		controller.sourceErrors = script.buildResult.sourceErrors
+		loadProgram()
 		
 	}
 }

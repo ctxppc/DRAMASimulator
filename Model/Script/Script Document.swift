@@ -17,35 +17,35 @@ final class ScriptDocument : UIDocument {
 	private(set) var buildResult: BuildResult = .program(.init(), script: .init())
 	enum BuildResult {
 		
-		/// A program ready to be loaded into a machine.
-		case program(Program, script: Script)
+		/// One or more errors occurred while parsing the script.
+		case partialScript(Script)
 		
 		/// An error occurred while assembling the program but the script could be parsed.
 		case programError(Error, script: Script)
 		
-		/// An error occurred while parsing the script.
-		case scriptError(Error)
+		/// A program ready to be loaded into a machine.
+		case program(Program, script: Script)
 		
 		/// Parses & assembles given source text.
 		init(sourceText: String) {
+			let script = Script(from: sourceText)
 			do {
-				let script = try Script(from: sourceText)
+				let statements = try script.statements()
 				do {
-					self = .program(try Program(from: script), script: script)
+					self = .program(try Program(statements: statements, statementIndicesBySymbol: script.statementIndicesBySymbol), script: script)
 				} catch {
 					self = .programError(error, script: script)
 				}
 			} catch {
-				self = .scriptError(error)
+				self = .partialScript(script)
 			}
 		}
 		
-		/// The source error, if any.
-		var sourceError: SourceError? {
+		/// The script's source errors, if any.
+		var sourceErrors: [SourceError] {
 			switch self {
-				case .program:								return nil
-				case .programError(let error, script: _):	return error as? SourceError
-				case .scriptError(let error):				return error as? SourceError
+				case .partialScript(let script):	return script.sourceErrors()
+				case .programError, .program:		return []
 			}
 		}
 		
@@ -68,8 +68,12 @@ final class ScriptDocument : UIDocument {
 		switch buildResult {
 			case .program(let program, script: _):		machine = .init(memoryWords: try program.machineWords())
 			case .programError(let error, script: _):	throw error
-			case .scriptError(let error):				throw error
+			case .partialScript(let script):			throw PartialScriptError(sourceErrors: script.sourceErrors())
 		}
+	}
+	
+	struct PartialScriptError : Error {
+		let sourceErrors: [SourceError]
 	}
 	
 	/// The duration of a tick.
@@ -82,7 +86,7 @@ final class ScriptDocument : UIDocument {
 	}
 	
 	/// The timer that fires on every tick, or `nil` if the machine isn't running.
-	private var machineTicker: Timer?
+	private var machineClock: Timer?
 	
 	/// Executes a tick.
 	private func executeTick(from timer: Timer) {
@@ -113,13 +117,13 @@ final class ScriptDocument : UIDocument {
 	var isRunning: Bool {
 		
 		get {
-			return machineTicker != nil
+			return machineClock != nil
 		}
 		
 		set {
 			guard isRunning != newValue else { return }
-			machineTicker?.invalidate()
-			machineTicker = newValue ? .scheduledTimer(withTimeInterval: tickInterval, repeats: true, block: executeTick(from:)) : nil
+			machineClock?.invalidate()
+			machineClock = newValue ? .scheduledTimer(withTimeInterval: tickInterval, repeats: true, block: executeTick(from:)) : nil
 		}
 		
 	}

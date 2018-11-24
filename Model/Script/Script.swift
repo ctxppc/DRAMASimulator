@@ -2,42 +2,57 @@
 
 import Foundation
 
-/// A parsed script.
+/// A document parsed into statements.
 struct Script {
 	
 	/// Creates an empty script.
 	init() {
-		statements = []
-		statementIndexBySymbol = [:]
-		lineIndexByStatementIndex = [:]
+		partialStatements = []
+		statementIndicesBySymbol = [:]
+		sourceRangeByStatementIndex = [:]
 	}
 	
 	/// Parses a script from given text.
-	init(from text: String) throws {
+	init(from text: String) {
 		
 		self.init()
+		var script = self	// shadow copy because `enumerateSubstrings` declares an escaping closure that doesn't really escape
+		defer { self = script }
 		
-		for (lineIndex, line) in text.components(separatedBy: .newlines).enumerated() {
+		func processStatement(in range: Range<String.Index>) {
 			
-			func processStatement(from line: String) throws {
-				guard let statement = try Statement(from: line, lineIndex: lineIndex) else { return }
-				lineIndexByStatementIndex[statements.endIndex] = lineIndex
-				statements.append(statement)
+			let partialStatement: PartialStatement
+			do {
+				guard let statement = try Statement(from: text[range]) else { return }
+				partialStatement = .statement(statement)
+			} catch {
+				partialStatement = .error(.init(underlyingError: error, range: range))
 			}
 			
-			if let match = Script.symbolExpression.firstMatch(in: line, range: NSRange(location: 0, length: (line as NSString).length)) {
-				
-				let symbol = (line as NSString).substring(with: match.range(at: 1))
-				let remainder = (line as NSString).substring(with: match.range(at: 2))
-				guard !statementIndexBySymbol.keys.contains(symbol) else { throw SymbolError.duplicateSymbol(symbol, lineIndex: lineIndex) }
-				
-				statementIndexBySymbol[symbol] = statements.endIndex
-				try processStatement(from: remainder)
-				
+			script.sourceRangeByStatementIndex[self.partialStatements.endIndex] = range
+			script.partialStatements.append(partialStatement)
+			
+		}
+		
+		text.enumerateSubstrings(in: text.startIndex..<text.endIndex, options: .byLines) { _, range, _, _ in
+			if let match = Script.symbolExpression.firstMatch(in: text, range: NSRange(range, in: text)) {
+				do {
+					
+					let symbolRange = Range(match.range(at: 1), in: text)!
+					let remainderRange = Range(match.range(at: 2), in: text)!
+					let symbol = String(text[symbolRange])
+					guard !script.statementIndicesBySymbol.keys.contains(symbol) else { throw SymbolError.duplicateSymbol(symbol) }
+					
+					script.statementIndicesBySymbol[symbol] = script.partialStatements.endIndex
+					processStatement(in: remainderRange)
+					
+				} catch {
+					script.sourceRangeByStatementIndex[script.partialStatements.endIndex] = range
+					script.partialStatements.append(.error(.init(underlyingError: error, range: range)))
+				}
 			} else {
-				try processStatement(from: line)
+				processStatement(in: range)
 			}
-			
 		}
 		
 	}
@@ -47,37 +62,54 @@ struct Script {
 	/// Groups: symbol, remainder
 	private static let symbolExpression = try! NSRegularExpression(pattern: "^\\s*([A-Z_][A-Z_0-9]*):(.*)$", options: .caseInsensitive)
 	
-	/// The statements encoded in the script.
-	var statements: [Statement]
-	typealias Statements = [Statement]
+	/// The statements encoded in the script, including partially parsed ones.
+	var partialStatements: [PartialStatement]
+	enum PartialStatement {
+		case statement(Statement)
+		case error(SourceError)
+	}
 	
-	/// A dictionary mapping indices in the `statements` array to line indices.
-	var lineIndexByStatementIndex: [Statements.Index : Int]
+	/// Returns the script's statements.
+	///
+	/// - Throws: An error if any statement couldn't be parsed.
+	func statements() throws -> [Statement] {
+		return try partialStatements.map {
+			switch $0 {
+				case .statement(let statement):	return statement
+				case .error(let error):			throw error
+			}
+		}
+	}
+	
+	/// Returns the errors found in the script's source.
+	func sourceErrors() -> [SourceError] {
+		return partialStatements.compactMap {
+			switch $0 {
+				case .statement:		return nil
+				case .error(let error):	return error
+			}
+		}
+	}
+	
+	/// A dictionary mapping indices in the `statements` array to ranges in the source text.
+	var sourceRangeByStatementIndex: [Int : Range<String.Index>]
 	
 	/// A dictionary mapping symbols to indices in the `statements` array.
-	var statementIndexBySymbol: [Symbol : Statements.Index]
+	var statementIndicesBySymbol: [Symbol : Int]
 	typealias Symbol = String
 	
 	/// An error related to symbols.
-	enum SymbolError : LocalizedError, SourceError {
+	enum SymbolError : LocalizedError {
 		
 		/// A symbol is used multiple times.
 		///
 		/// - Parameter 1: The symbol.
-		/// - Parameter lineIndex: The line index.
-		case duplicateSymbol(String, lineIndex: Int)
+		case duplicateSymbol(String)
 		
 		// See protocol.
 		var errorDescription: String? {
 			switch self {
-				case .duplicateSymbol(let symbol, lineIndex: _):	return "‘\(symbol)’ is meermaals gedefinieerd"
-			}
-		}
-		
-		// See protocol.
-		var lineIndex: Int {
-			switch self {
-				case .duplicateSymbol(_, lineIndex: let lineIndex):	return lineIndex
+				case .duplicateSymbol(let symbol):	return "‘\(symbol)’ is meermaals gedefinieerd"
 			}
 		}
 		

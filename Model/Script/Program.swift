@@ -10,22 +10,24 @@ struct Program {
 		self.wordSequences = []
 	}
 	
-	/// Assembles a program from given script.
-	init(from script: Script) throws {
+	/// Assembles a program with given statements and mapping from symbols to statement indices.
+	///
+	/// - Throws: An error if an undefined symbol is referenced.
+	init(statements: [Statement], statementIndicesBySymbol: [String : Int]) throws {
 		
 		var addressesByStatementIndex: [Int : Int] = [:]
 		var nextAddress = 0
-		for (statementIndex, statement) in script.statements.enumerated() {
+		for (statementIndex, statement) in statements.enumerated() {
 			addressesByStatementIndex[statementIndex] = nextAddress
 			nextAddress += statement.wordLength
 		}
 		
 		var addressesBySymbol: [Script.Symbol : Int] = [:]
-		for (symbol, statementIndex) in script.statementIndexBySymbol {
+		for (symbol, statementIndex) in statementIndicesBySymbol {
 			addressesBySymbol[symbol] = addressesByStatementIndex[statementIndex]
 		}
 		
-		wordSequences = try script.statements.map {
+		wordSequences = try statements.map {
 			try WordSequence(from: $0, addressesBySymbol: addressesBySymbol)
 		}
 		

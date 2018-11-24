@@ -1,9 +1,12 @@
 // DRAMASimulator © 2018 Constantino Tsarouhas
 
-/// An error that can be associated with a line of source text.
-protocol SourceError : Error {
+/// An error that is associated with a part of a source text.
+struct SourceError : Error {
 	
-	/// The line index in the source text where the error occurs.
-	var lineIndex: Int { get }
+	/// The error.
+	var underlyingError: Error
+	
+	/// The range of the erroneous source.
+	var range: Range<String.Index>
 	
 }
