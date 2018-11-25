@@ -30,10 +30,32 @@ final class ScriptEditingController : UIViewController {
 		}
 		
 		let formattedText = NSMutableAttributedString(string: script.text, attributes: [.font: type(of: self).sourceFont])
+		
 		for error in sourceErrors {
 			formattedText.addAttribute(.backgroundColor, value: #colorLiteral(red: 0.9179999828, green: 0.8460000157, blue: 0.8140000105, alpha: 1), range: NSRange(error.range, in: script.text))
 		}
+		
+		let rangesByColour: KeyValuePairs<UIColor, [Script.SourceRange]> = [
+			.mnemonic:			script.syntaxMap.mnemonicRanges,
+			.addressingMode:	script.syntaxMap.addressingModeRanges,
+			.registerOperands:	script.syntaxMap.registerOperandRanges,
+			.baseAddress:		script.syntaxMap.baseAddressRanges,
+			.addressIndex:		script.syntaxMap.addressIndexRanges,
+			.comment:			script.syntaxMap.commentRanges
+		]
+		
+		for (colour, ranges) in rangesByColour {
+			for range in ranges {
+				formattedText.addAttribute(.foregroundColor, value: colour, range: NSRange(range, in: script.text))
+			}
+		}
+		
+		let oldSelectedRange = textView.selectedRange
+		let oldText = textView.text ?? ""
 		textView.attributedText = formattedText
+		if let newSelectedRange = Range(oldSelectedRange, in: oldText)?.clamped(to: script.text.startIndex..<script.text.endIndex) {
+			textView.selectedRange = NSRange(newSelectedRange, in: script.text)
+		}
 		
 	}
 	
@@ -68,4 +90,13 @@ protocol ScriptEditingControllerDelegate : class {
 	/// Notifies the delegate that the source text has been changed.
 	func scriptEditingControllerDidChangeSourceText(_ controller: ScriptEditingController)
 	
+}
+
+extension UIColor {
+	static let mnemonic = red
+	static let addressingMode = green
+	static let baseAddress = blue
+	static let registerOperands = cyan
+	static let addressIndex = brown
+	static let comment = gray
 }

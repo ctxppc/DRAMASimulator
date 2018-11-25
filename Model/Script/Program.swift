@@ -57,40 +57,40 @@ struct Program {
 			
 			switch statement {
 				
-				case .nullaryCommand(let instruction):
+				case .nullaryCommand(let instruction, syntaxMap: _):
 				self = .command(try command(instruction: instruction) { type in
 					try (type as? NullaryCommand.Type)?.init(instruction: instruction)
 				})
 				
-				case .registerCommand(let instruction, primaryRegister: let register, secondaryRegister: nil):
+				case .registerCommand(let instruction, primaryRegister: let register, secondaryRegister: nil, syntaxMap: _):
 				self = .command(try command(instruction: instruction) { type in
 					try (type as? UnaryRegisterCommand.Type)?.init(instruction: instruction, register: register)
 				})
 				
-				case .registerCommand(let instruction, let primaryRegister, let secondaryRegister?):
+				case .registerCommand(let instruction, let primaryRegister, let secondaryRegister?, syntaxMap: _):
 				self = .command(try command(instruction: instruction) { type in
 					try (type as? BinaryRegisterCommand.Type)?.init(instruction: instruction, primaryRegister: primaryRegister, secondaryRegister: secondaryRegister)
 				})
 				
-				case .addressCommand(let instruction, let addressingMode, register: nil, let address, let index):
+				case .addressCommand(let instruction, let addressingMode, register: nil, let address, let index, syntaxMap: _):
 				self = .command(try command(instruction: instruction) { type in
 					try (type as? AddressCommand.Type)?.init(instruction: instruction, addressingMode: addressingMode, address: addressSpecification(from: address, index: index))
 				})
 				
-				case .addressCommand(let instruction, let addressingMode, let register?, let address, let index):
+				case .addressCommand(let instruction, let addressingMode, let register?, let address, let index, syntaxMap: _):
 				self = .command(try command(instruction: instruction) { type in
 					try (type as? RegisterAddressCommand.Type)?.init(instruction: instruction, addressingMode: addressingMode, register: register, address: addressSpecification(from: address, index: index))
 				})
 				
-				case .conditionCommand(let instruction, let addressingMode, let condition, let address, let index):
+				case .conditionCommand(let instruction, let addressingMode, let condition, let address, let index, syntaxMap: _):
 				self = .command(try command(instruction: instruction) { type in
 					try (type as? ConditionAddressCommand.Type)?.init(instruction: instruction, addressingMode: addressingMode, condition: condition, address: addressSpecification(from: address, index: index))
 				})
 				
-				case .literal(let word):
+				case .literal(let word, syntaxMap: _):
 				self = .literal(word)
 				
-				case .array(let length):
+				case .array(let length, syntaxMap: _):
 				self = .array(length: length)
 				
 			}

@@ -6,22 +6,22 @@ import Foundation
 enum Statement {
 	
 	/// A statement encoding a nullary command.
-	case nullaryCommand(instruction: Instruction)
+	case nullaryCommand(instruction: Instruction, syntaxMap: SyntaxMap)
 	
 	/// A statement encoding a unary or binary register command.
-	case registerCommand(instruction: Instruction, primaryRegister: Register, secondaryRegister: Register?)
+	case registerCommand(instruction: Instruction, primaryRegister: Register, secondaryRegister: Register?, syntaxMap: SyntaxMap)
 	
 	/// A statement encoding an address or register address command.
-	case addressCommand(instruction: Instruction, addressingMode: AddressingMode?, register: Register?, address: SymbolicAddress, index: AddressSpecification.Index?)
+	case addressCommand(instruction: Instruction, addressingMode: AddressingMode?, register: Register?, address: SymbolicAddress, index: AddressSpecification.Index?, syntaxMap: SyntaxMap)
 	
 	/// A statement encoding a condition command.
-	case conditionCommand(instruction: Instruction, addressingMode: AddressingMode?, condition: Condition, address: SymbolicAddress, index: AddressSpecification.Index?)
+	case conditionCommand(instruction: Instruction, addressingMode: AddressingMode?, condition: Condition, address: SymbolicAddress, index: AddressSpecification.Index?, syntaxMap: SyntaxMap)
 	
 	/// A literal word.
-	case literal(Word)
+	case literal(Word, syntaxMap: SyntaxMap)
 	
 	/// A zero-initialised array of some length.
-	case array(length: Int)
+	case array(length: Int, syntaxMap: SyntaxMap)
 	
 	/// Parses given line and returns the statement encoded therein, or `nil` if the line is empty or only contains whitespace and comments.
 	///
@@ -93,12 +93,13 @@ enum Statement {
 		}
 		
 		if let match = Statement.nullaryCommandExpression.firstMatch(in: line, range: range) {
-			self = try .nullaryCommand(instruction: instruction(in: match, at: 1))
+			self = try .nullaryCommand(instruction: instruction(in: match, at: 1), syntaxMap: .init())	// TODO
 		} else if let match = Statement.registerCommandExpression.firstMatch(in: line, range: range) {
 			self = try .registerCommand(
 				instruction:		instruction(in: match, at: 1),
 				primaryRegister:	register(in: match, at: 2),
-				secondaryRegister:	optionalRegister(in: match, at: 3)
+				secondaryRegister:	optionalRegister(in: match, at: 3),
+				syntaxMap:			.init()	// TODO
 			)
 		} else if let match = Statement.addressCommandExpression.firstMatch(in: line, range: range) {
 			self = try .addressCommand(
@@ -106,7 +107,8 @@ enum Statement {
 				addressingMode:	optionalAddressingMode(in: match, at: 2),
 				register:		optionalRegister(in: match, at: 3),
 				address:		.init(from: string(in: match, at: 4)),
-				index:			index(in: match, from: 5)
+				index:			index(in: match, from: 5),
+				syntaxMap:		.init()	// TODO
 			)
 		} else if let match = Statement.conditionCommandExpression.firstMatch(in: line, range: range) {
 			self = try .conditionCommand(
@@ -114,7 +116,8 @@ enum Statement {
 				addressingMode:	optionalAddressingMode(in: match, at: 2),
 				condition:		condition(in: match, at: 3),
 				address:		.init(from: string(in: match, at: 4)),
-				index:			index(in: match, from: 5)
+				index:			index(in: match, from: 5),
+				syntaxMap:		.init()	// TODO
 			)
 		} else {
 			throw ParsingError.illegalFormat
@@ -179,9 +182,21 @@ enum Statement {
 			case .nullaryCommand, .registerCommand, .addressCommand, .conditionCommand, .literal:
 			return 1
 			
-			case .array(let length):
+			case .array(let length, syntaxMap: _):
 			return length
 			
+		}
+	}
+	
+	/// The syntax map for the statement.
+	var syntaxMap: SyntaxMap {
+		switch self {
+			case .nullaryCommand(instruction: _, syntaxMap: let map):															return map
+			case .registerCommand(instruction: _, primaryRegister: _, secondaryRegister: _, syntaxMap: let map):				return map
+			case .addressCommand(instruction: _, addressingMode: _, register: _, address: _, index: _, syntaxMap: let map):		return map
+			case .conditionCommand(instruction: _, addressingMode: _, condition: _, address: _, index: _, syntaxMap: let map):	return map
+			case .literal(_, syntaxMap: let map):																				return map
+			case .array(length: _, syntaxMap: let map):																			return map
 		}
 	}
 	

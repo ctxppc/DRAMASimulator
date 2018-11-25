@@ -19,6 +19,7 @@ struct Script {
 			do {
 				guard let statement = try Statement(from: text[range]) else { return }
 				partialStatement = .statement(statement)
+				syntaxMap.combine(with: statement.syntaxMap)
 			} catch {
 				partialStatement = .error(.init(underlyingError: error, range: range))
 			}
@@ -57,6 +58,7 @@ struct Script {
 		set { self = .init(from: newValue) }
 	}
 	
+	/// The backing storage for `text`.
 	private let storedText: String
 	
 	/// A regular expression matching a symbol.
@@ -100,6 +102,9 @@ struct Script {
 	/// A dictionary mapping symbols to indices in the `statements` array.
 	private(set) var statementIndicesBySymbol: [Symbol : Int] = [:]
 	typealias Symbol = String
+	
+	/// The combined syntax map of all statements.
+	private(set) var syntaxMap: SyntaxMap = .init()
 	
 	/// An error related to symbols.
 	enum SymbolError : LocalizedError {
