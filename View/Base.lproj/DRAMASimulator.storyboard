@@ -13,7 +13,7 @@
         <!--Document Browser View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="DocumentBrowserViewController" customModule="DRAMASimulator" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="DocumentBrowserViewController" customModule="DRAMA" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -29,7 +29,7 @@
         <!--Document-->
         <scene sceneID="K2a-Ba-T2U">
             <objects>
-                <viewController id="waR-UT-9kZ" customClass="ScriptViewController" customModule="DRAMASimulator" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="waR-UT-9kZ" customClass="ScriptViewController" customModule="DRAMA" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="MKH-6h-kcc">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -86,12 +86,18 @@
                                     <action selector="resumeMachine:" destination="waR-UT-9kZ" id="ONm-HI-LgY"/>
                                 </connections>
                             </barButtonItem>
+                            <barButtonItem systemItem="rewind" id="LrY-uN-Esz">
+                                <connections>
+                                    <action selector="rewindMachine:" destination="waR-UT-9kZ" id="umN-lq-X3q"/>
+                                </connections>
+                            </barButtonItem>
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>
                         <outlet property="pauseButton" destination="PRf-fu-yUc" id="P9J-5c-hgm"/>
                         <outlet property="resetButton" destination="7Yp-pd-CuG" id="SLg-c4-uWR"/>
                         <outlet property="resumeButton" destination="gOH-2N-y8E" id="VSS-Bg-gkP"/>
+                        <outlet property="rewindButton" destination="LrY-uN-Esz" id="4zG-cW-as9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4nI-Lr-6jy" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -101,7 +107,7 @@
         <!--Script Editing Controller-->
         <scene sceneID="d2C-cB-vh1">
             <objects>
-                <viewController id="lDX-M6-H4E" customClass="ScriptEditingController" customModule="DRAMASimulator" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="lDX-M6-H4E" customClass="ScriptEditingController" customModule="DRAMA" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="nvO-XW-Ygk">
                         <rect key="frame" x="0.0" y="0.0" width="512" height="698"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -166,7 +172,7 @@ XYZ</string>
         <!--Machine View Controller-->
         <scene sceneID="C28-HZ-M7e">
             <objects>
-                <collectionViewController id="Jle-5C-NRb" customClass="MachineViewController" customModule="DRAMASimulator" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController id="Jle-5C-NRb" customClass="MachineViewController" customModule="DRAMA" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="9hR-fV-HUH">
                         <rect key="frame" x="0.0" y="0.0" width="512" height="698"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -181,7 +187,7 @@ XYZ</string>
                             </userDefinedRuntimeAttributes>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" reuseIdentifier="Word Cell" id="HXL-4p-ueS" customClass="WordCell" customModule="DRAMASimulator" customModuleProvider="target">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" reuseIdentifier="Word Cell" id="HXL-4p-ueS" customClass="WordCell" customModule="DRAMA" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="35" width="125" height="37"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
@@ -214,7 +220,7 @@ XYZ</string>
                                 </connections>
                             </collectionViewCell>
                         </cells>
-                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="Header" id="iqc-pl-qRX" customClass="SectionHeaderView" customModule="DRAMASimulator" customModuleProvider="target">
+                        <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="Header" id="iqc-pl-qRX" customClass="SectionHeaderView" customModule="DRAMA" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="0.0" width="512" height="35"/>
                             <autoresizingMask key="autoresizingMask"/>
                             <subviews>

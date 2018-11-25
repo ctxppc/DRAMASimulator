@@ -5,9 +5,17 @@ import UIKit
 final class ScriptViewController : UIViewController {
 	
 	/// The script being presented.
-	var scriptDocument: ScriptDocument? {
-		willSet { scriptDocument?.delegate = nil }
-		didSet { scriptDocument?.delegate = self }
+	var scriptDocument: ScriptDocument?
+	
+	/// The timeline being presented.
+	private var timeline: Timeline? {
+		willSet { timeline?.delegate = nil }
+		didSet { timeline?.delegate = self }
+	}
+	
+	private func discardTimeline() {
+		timeline?.direction = .still
+		timeline = nil
 	}
 	
 	/// (Re)loads the script, resetting any presented source text and machine.
@@ -18,11 +26,9 @@ final class ScriptViewController : UIViewController {
 		if let scriptDocument = scriptDocument {
 			title = scriptDocument.fileURL.deletingPathExtension().lastPathComponent
 			editingViewController.script = scriptDocument.script
-			machineViewController.machine = scriptDocument.machine
 		} else {
 			title = "Geen document"
 			editingViewController.script = .init()
-			machineViewController.machine = .init()
 		}
 		
 		loadProgram()
@@ -31,16 +37,22 @@ final class ScriptViewController : UIViewController {
 	
 	/// Loads the program into the machine.
 	private func loadProgram() {
+		
+		discardTimeline()
+		
+		guard let document = scriptDocument else { return }
 		do {
-			pauseButton.isEnabled = false
-			try scriptDocument?.loadProgram()
-			resumeButton.isEnabled = true
+			let machine = Machine(memoryWords: try document.program().machineWords())
+			timeline = .init(machine: machine)
+			machineViewController.machine = machine
 		} catch _ as ScriptDocument.PartialScriptError {
-			resumeButton.isEnabled = false
+			// Source errors are already handled by the script editing controller.
 		} catch {
-			resumeButton.isEnabled = false
 			present(error)
 		}
+		
+		updateToolbarButtons()
+		
 	}
 	
 	/// The child view controller for editing the source text.
@@ -73,38 +85,39 @@ final class ScriptViewController : UIViewController {
         }
     }
 	
+	@IBAction func rewindMachine(_ sender: Any) {
+		timeline?.direction = .backward
+		updateToolbarButtons()
+	}
+	
 	@IBAction func resumeMachine(_ sender: Any) {
-		guard let scriptDocument = scriptDocument else { return }
-		if scriptDocument.machine.state == .waitingForInput {
-			promptInput()
-		} else {
-			scriptDocument.isRunning = true
-			resumeButton.isEnabled = false
-			pauseButton.isEnabled = true
-		}
+		timeline?.direction = .forward
+		updateToolbarButtons()
 	}
 	
 	@IBAction func pauseMachine(_ sender: Any) {
-		scriptDocument?.isRunning = false
-		resumeButton.isEnabled = true
-		pauseButton.isEnabled = false
+		timeline?.direction = .still
+		updateToolbarButtons()
 	}
 	
 	@IBAction func resetMachine(_ sender: Any) {
 		loadProgram()
-		resumeButton.isEnabled = true
-		pauseButton.isEnabled = false
+		updateToolbarButtons()
 	}
 	
 	fileprivate func promptInput(message: String? = nil) {
 		
+		guard let timeline = timeline else { return }
+		
 		let alert = UIAlertController(title: "Invoer", message: message, preferredStyle: .alert)
-		alert.addTextField()
+		alert.addTextField { textField in
+			textField.keyboardType = .decimalPad
+		}
 		
-		
-		let ok = UIAlertAction(title: "OK", style: .default) { action in
+		let ok = UIAlertAction(title: "OK", style: .default) { [unowned self] _ in
 			if let integer = Int(alert.textFields![0].text ?? "") {
-				self.scriptDocument!.provideMachineInput(Word(wrapping: integer))
+				timeline.provideMachineInput(Word(wrapping: integer))
+				self.updateToolbarButtons()
 			} else {
 				self.promptInput(message: "Geef een geldig getal in.")
 			}
@@ -118,12 +131,25 @@ final class ScriptViewController : UIViewController {
 		
 	}
 	
+	private func updateToolbarButtons() {
+		(rewindButton.isEnabled, resumeButton.isEnabled, pauseButton.isEnabled, resetButton.isEnabled) = {
+			guard let timeline = timeline else { return (false, false, false, false) }
+			switch timeline.direction {
+				case .still:	return (timeline.canRewind, timeline.currentMachine.state != .halted, false, true)
+				case .forward:	return (true, false, true, true)
+				case .backward:	return (false, true, true, true)
+			}
+		}()
+	}
+	
+	@IBOutlet weak var rewindButton: UIBarButtonItem!
 	@IBOutlet weak var resumeButton: UIBarButtonItem!
 	@IBOutlet weak var pauseButton: UIBarButtonItem!
 	@IBOutlet weak var resetButton: UIBarButtonItem!
 	
 	@IBAction func dismiss() {
         dismiss(animated: true) {
+			self.discardTimeline()
 			self.scriptDocument?.close()
 			self.scriptDocument = nil
 			self.updatePresentedScript()
@@ -132,34 +158,30 @@ final class ScriptViewController : UIViewController {
 	
 }
 
-extension ScriptViewController : ScriptDocumentDelegate {
+extension ScriptViewController : TimelineDelegate {
 	
-	func scriptDocumentSourceTextDidChange(_ script: ScriptDocument) {
-		loadProgram()
+	func currentMachineDidChange(on timeline: Timeline) {
+		machineViewController.machine = timeline.currentMachine
 	}
 	
-	func scriptDocumentMachineDidChange(_ document: ScriptDocument) {
-		machineViewController.machine = document.machine
-	}
-	
-	func scriptDocumentWaitsForInput(_ document: ScriptDocument) {
-		pauseButton.isEnabled = false
+	func machineWaitsForInput(on timeline: Timeline) {
+		updateToolbarButtons()
 		promptInput()
 	}
 	
-	func scriptDocument(_ document: ScriptDocument, failedExecutionWithError error: Error) {
-		pauseButton.isEnabled = false
+	func machineExecutionDidFail(withError error: Error, on timeline: Timeline) {
+		updateToolbarButtons()
 		present(error)
 	}
 	
-	func scriptDocumentCompletedExecution(_ document: ScriptDocument) {
-		pauseButton.isEnabled = false
+	func timelineDidFinishMoving(on timeline: Timeline) {
+		updateToolbarButtons()
 	}
 	
 }
 
 extension ScriptViewController : ScriptEditingControllerDelegate {
-	func scriptEditingControllerDidChangeSourceText(_ controller: ScriptEditingController) {
+	func sourceTextDidChange(on controller: ScriptEditingController) {
 		
 		guard let scriptDocument = scriptDocument else { return }
 		

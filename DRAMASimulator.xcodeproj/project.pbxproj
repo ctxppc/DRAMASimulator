@@ -32,6 +32,7 @@
 		4F820F35219B1CD6004EE2C9 /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E790B219A1FBE008E3E9B /* Instruction.swift */; };
 		4F85A2E721A9BB590061E505 /* Error Presentation on View Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F85A2E621A9BB590061E505 /* Error Presentation on View Controller.swift */; };
 		4F85A2E921A9C42E0061E505 /* Source Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F85A2E821A9C42E0061E505 /* Source Error.swift */; };
+		4FA5A4E721AB210000799084 /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA5A4E621AB210000799084 /* Timeline.swift */; };
 		4FA7EB9821A0493C00C52F98 /* Word Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EB9721A0493C00C52F98 /* Word Protocol.swift */; };
 		4FA7EB9A21A0682100C52F98 /* Jump Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EB9921A0682100C52F98 /* Jump Command.swift */; };
 		4FA7EB9C21A0691800C52F98 /* Conditional Jump Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EB9B21A0691800C52F98 /* Conditional Jump Command.swift */; };
@@ -82,6 +83,7 @@
 		4F820F33219B1614004EE2C9 /* Load Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Load Command.swift"; sourceTree = "<group>"; };
 		4F85A2E621A9BB590061E505 /* Error Presentation on View Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error Presentation on View Controller.swift"; sourceTree = "<group>"; };
 		4F85A2E821A9C42E0061E505 /* Source Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Source Error.swift"; sourceTree = "<group>"; };
+		4FA5A4E621AB210000799084 /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		4FA7EB9721A0493C00C52F98 /* Word Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Word Protocol.swift"; sourceTree = "<group>"; };
 		4FA7EB9921A0682100C52F98 /* Jump Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Jump Command.swift"; sourceTree = "<group>"; };
 		4FA7EB9B21A0691800C52F98 /* Conditional Jump Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conditional Jump Command.swift"; sourceTree = "<group>"; };
@@ -169,7 +171,9 @@
 		4F3E790A219A1FA4008E3E9B /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				4F346B772199DBE700D6D8AD /* Script Document.swift */,
 				4FD8ADB421A1B1FD001AD860 /* Script */,
+				4FA5A4E621AB210000799084 /* Timeline.swift */,
 				4F44C7F1219A4426003798AF /* Machine.swift */,
 				4FFEB7E0219C73650049D0A5 /* Register.swift */,
 				4F3E790B219A1FBE008E3E9B /* Instruction.swift */,
@@ -218,7 +222,6 @@
 		4FD8ADB421A1B1FD001AD860 /* Script */ = {
 			isa = PBXGroup;
 			children = (
-				4F346B772199DBE700D6D8AD /* Script Document.swift */,
 				4F1B6EDF21A1A3D700751511 /* Script.swift */,
 				4FD8ADB521A1B206001AD860 /* Statement.swift */,
 				4F1F1E6221AAF428001445FF /* Syntax Map.swift */,
@@ -336,6 +339,7 @@
 				4F85A2E921A9C42E0061E505 /* Source Error.swift in Sources */,
 				4FFEB7E5219C75DB0049D0A5 /* Arithmetic Command.swift in Sources */,
 				4F30B52F21A218DC00BDEDCC /* Symbolic Address.swift in Sources */,
+				4FA5A4E721AB210000799084 /* Timeline.swift in Sources */,
 				4FFEB7DE219C6F060049D0A5 /* Condition Address Command.swift in Sources */,
 				4FFEB7DF219C72D50049D0A5 /* Load Command.swift in Sources */,
 				4FA7EBA821A0895E00C52F98 /* Program.swift in Sources */,

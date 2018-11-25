@@ -81,14 +81,14 @@ final class ScriptEditingController : UIViewController {
 extension ScriptEditingController : UITextViewDelegate {
 	func textViewDidChange(_ textView: UITextView) {
 		script.text = textView.text
-		delegate?.scriptEditingControllerDidChangeSourceText(self)
+		delegate?.sourceTextDidChange(on: self)
 	}
 }
 
 protocol ScriptEditingControllerDelegate : class {
 	
 	/// Notifies the delegate that the source text has been changed.
-	func scriptEditingControllerDidChangeSourceText(_ controller: ScriptEditingController)
+	func sourceTextDidChange(on controller: ScriptEditingController)
 	
 }
 

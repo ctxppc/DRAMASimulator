@@ -40,7 +40,7 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 			value = machine[register: register]
 			
 			case .memory(address: let valueSpec, mode: .value):
-			value = Word(rawValue: machine.evaluate(valueSpec).signedValue)!
+			value = Word(wrapping: machine.evaluate(valueSpec).signedValue)
 			
 			case .memory(address: let addressSpec, mode: .address):
 			value = Word(machine.evaluate(addressSpec))
