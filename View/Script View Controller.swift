@@ -5,9 +5,9 @@ import UIKit
 final class ScriptViewController : UIViewController {
 	
 	/// The script being presented.
-	var script: ScriptDocument? {
-		willSet { script?.delegate = nil }
-		didSet { script?.delegate = self }
+	var scriptDocument: ScriptDocument? {
+		willSet { scriptDocument?.delegate = nil }
+		didSet { scriptDocument?.delegate = self }
 	}
 	
 	/// (Re)loads the script, resetting any presented source text and machine.
@@ -15,16 +15,14 @@ final class ScriptViewController : UIViewController {
 	/// The view controller is reset to its empty state if `script` is `nil`.
 	private func updatePresentedScript() {
 		
-		if let script = script {
-			title = script.fileURL.deletingPathExtension().lastPathComponent
-			editingViewController.sourceText = script.sourceText
-			editingViewController.sourceErrors = script.buildResult.sourceErrors
-			machineViewController.machine = script.machine
+		if let scriptDocument = scriptDocument {
+			title = scriptDocument.fileURL.deletingPathExtension().lastPathComponent
+			editingViewController.script = scriptDocument.script
+			machineViewController.machine = scriptDocument.machine
 		} else {
 			title = "Geen document"
-			editingViewController.sourceText = ""
-			editingViewController.sourceErrors = []
-			machineViewController.machine = Machine()
+			editingViewController.script = .init()
+			machineViewController.machine = .init()
 		}
 		
 		loadProgram()
@@ -35,11 +33,10 @@ final class ScriptViewController : UIViewController {
 	private func loadProgram() {
 		do {
 			pauseButton.isEnabled = false
-			try script?.loadProgram()
+			try scriptDocument?.loadProgram()
 			resumeButton.isEnabled = true
-		} catch let partialScriptError as ScriptDocument.PartialScriptError {
+		} catch _ as ScriptDocument.PartialScriptError {
 			resumeButton.isEnabled = false
-			editingViewController.sourceErrors = partialScriptError.sourceErrors
 		} catch {
 			resumeButton.isEnabled = false
 			present(error)
@@ -63,11 +60,11 @@ final class ScriptViewController : UIViewController {
 	
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        script?.open { [unowned self] success in
+        scriptDocument?.open { [unowned self] success in
 			DispatchQueue.main.async {
 				
 				if !success {
-					self.script = nil
+					self.scriptDocument = nil
 				}
 				
 				self.updatePresentedScript()
@@ -77,18 +74,18 @@ final class ScriptViewController : UIViewController {
     }
 	
 	@IBAction func resumeMachine(_ sender: Any) {
-		guard let script = script else { return }
-		if script.machine.state == .waitingForInput {
+		guard let scriptDocument = scriptDocument else { return }
+		if scriptDocument.machine.state == .waitingForInput {
 			promptInput()
 		} else {
-			script.isRunning = true
+			scriptDocument.isRunning = true
 			resumeButton.isEnabled = false
 			pauseButton.isEnabled = true
 		}
 	}
 	
 	@IBAction func pauseMachine(_ sender: Any) {
-		script?.isRunning = false
+		scriptDocument?.isRunning = false
 		resumeButton.isEnabled = true
 		pauseButton.isEnabled = false
 	}
@@ -107,14 +104,14 @@ final class ScriptViewController : UIViewController {
 		
 		let ok = UIAlertAction(title: "OK", style: .default) { action in
 			if let integer = Int(alert.textFields![0].text ?? "") {
-				self.script!.provideMachineInput(Word(wrapping: integer))
+				self.scriptDocument!.provideMachineInput(Word(wrapping: integer))
 			} else {
 				self.promptInput(message: "Geef een geldig getal in.")
 			}
 		}
 		
-		alert.addAction(ok)
 		alert.addAction(UIAlertAction(title: "Pauzeer", style: .cancel))
+		alert.addAction(ok)
 		alert.preferredAction = ok
 		
 		present(alert, animated: true)
@@ -127,8 +124,8 @@ final class ScriptViewController : UIViewController {
 	
 	@IBAction func dismiss() {
         dismiss(animated: true) {
-			self.script?.close()
-			self.script = nil
+			self.scriptDocument?.close()
+			self.scriptDocument = nil
 			self.updatePresentedScript()
         }
     }
@@ -164,15 +161,14 @@ extension ScriptViewController : ScriptDocumentDelegate {
 extension ScriptViewController : ScriptEditingControllerDelegate {
 	func scriptEditingControllerDidChangeSourceText(_ controller: ScriptEditingController) {
 		
-		guard let script = script else { return }
+		guard let scriptDocument = scriptDocument else { return }
 		
-		let previousText = script.sourceText
-		script.sourceText = controller.sourceText
-		script.undoManager.registerUndo(withTarget: script) { script in
-			script.sourceText = previousText
+		let previousScript = scriptDocument.script
+		scriptDocument.undoManager.registerUndo(withTarget: scriptDocument) { scriptDocument in
+			scriptDocument.script = previousScript
 		}
 		
-		controller.sourceErrors = script.buildResult.sourceErrors
+		scriptDocument.script = controller.script
 		loadProgram()
 		
 	}

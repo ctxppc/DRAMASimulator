@@ -4,51 +4,50 @@ import UIKit
 
 final class ScriptDocument : UIDocument {
 	
-	/// The source text.
-	var sourceText: String = "" {
+	/// The script.
+	var script = Script(from: "") {
 		didSet {
-			buildResult = .init(sourceText: sourceText)
+			partialProgram = .init(with: script)
 		}
 	}
 	
-	/// The build result of the source text.
+	/// Returns a program compiled from the script.
 	///
-	/// This property is updated every time `sourceText` is modified.
-	private(set) var buildResult: BuildResult = .program(.init(), script: .init())
-	enum BuildResult {
+	/// - Throws: A `PartialScriptError` if the script has unparsed statements.
+	/// - Throws: An error if the program can't be assembled.
+	func program() throws -> Program {
+		switch partialProgram {
+			case .program(let program):	return program
+			case .error(let error):		throw error
+		}
+	}
+	
+	private var partialProgram: PartialProgram = .program(.init())
+	private enum PartialProgram {
 		
-		/// One or more errors occurred while parsing the script.
-		case partialScript(Script)
+		case program(Program)
+		case error(Error)
 		
-		/// An error occurred while assembling the program but the script could be parsed.
-		case programError(Error, script: Script)
-		
-		/// A program ready to be loaded into a machine.
-		case program(Program, script: Script)
-		
-		/// Parses & assembles given source text.
-		init(sourceText: String) {
-			let script = Script(from: sourceText)
+		init(with script: Script) {
+			
+			let errors = script.sourceErrors()
+			guard errors.isEmpty else {
+				self = .error(PartialScriptError(sourceErrors: errors))
+				return
+			}
+			
 			do {
-				let statements = try script.statements()
-				do {
-					self = .program(try Program(statements: statements, statementIndicesBySymbol: script.statementIndicesBySymbol), script: script)
-				} catch {
-					self = .programError(error, script: script)
-				}
+				self = .program(try Program(statements: try script.statements(), statementIndicesBySymbol: script.statementIndicesBySymbol))
 			} catch {
-				self = .partialScript(script)
+				self = .error(error)
 			}
+			
 		}
 		
-		/// The script's source errors, if any.
-		var sourceErrors: [SourceError] {
-			switch self {
-				case .partialScript(let script):	return script.sourceErrors()
-				case .programError, .program:		return []
-			}
-		}
-		
+	}
+	
+	struct PartialScriptError : Error {
+		let sourceErrors: [SourceError]
 	}
 	
 	/// The (currently loaded) machine.
@@ -65,15 +64,7 @@ final class ScriptDocument : UIDocument {
 	/// The machine isn't affected if the program couldn't be loaded; an error is thrown instead.
 	func loadProgram() throws {
 		isRunning = false
-		switch buildResult {
-			case .program(let program, script: _):		machine = .init(memoryWords: try program.machineWords())
-			case .programError(let error, script: _):	throw error
-			case .partialScript(let script):			throw PartialScriptError(sourceErrors: script.sourceErrors())
-		}
-	}
-	
-	struct PartialScriptError : Error {
-		let sourceErrors: [SourceError]
+		machine = .init(memoryWords: try program().machineWords())
 	}
 	
 	/// The duration of a tick.
@@ -142,7 +133,7 @@ final class ScriptDocument : UIDocument {
 	override func load(fromContents contents: Any, ofType typeName: String?) throws {
 		guard let data = contents as? Data else { throw ReadingError.unsupportedFormat }
 		guard let text = String(data: data, encoding: .utf8) else { throw ReadingError.decodingError }
-		sourceText = text
+		script = .init(from: text)
 		machine = .init()
 	}
 	
@@ -153,7 +144,7 @@ final class ScriptDocument : UIDocument {
 	}
 	
     override func contents(forType typeName: String) throws -> Any {
-		guard let data = sourceText.data(using: .utf8) else { throw WritingError.encodingError }
+		guard let data = script.text.data(using: .utf8) else { throw WritingError.encodingError }
         return data
     }
 	

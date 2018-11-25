@@ -5,44 +5,35 @@ import UIKit
 /// A view controller that presents the contents of a document's source text.
 final class ScriptEditingController : UIViewController {
 	
-	/// The presented source text.
-	var sourceText: String = "" {
-		didSet {
-			guard oldValue != sourceText else { return }
-			updatePresentedSourceText()
-		}
+	/// The presented script.
+	var script: Script = .init() {
+		didSet { updatePresentedScript() }
 	}
 	
-	/// The presented source errors, if any.
-	var sourceErrors: [SourceError] = [] {
-		didSet { updatePresentedSourceErrors() }
-	}
+	/// The font for presenting source text.
+	private static let sourceFont = UIFont(name: "Menlo", size: 14)!
 	
-	private func updatePresentedSourceText() {
-		self.textView.text = sourceText
-		updatePresentedSourceErrors()
-	}
-	
-	private func updatePresentedSourceErrors() {
+	private func updatePresentedScript() {
 		
 		guard let errorBar = errorBar, let errorLabel = errorLabel, let textView = textView else { return }
+		let sourceErrors = script.sourceErrors()
+		
 		if sourceErrors.isEmpty {
-			textView.text = sourceText
 			errorBar.isHidden = true
 			errorLabel.text = "Geen fouten"
-			return
+		} else {
+			errorBar.isHidden = false
+			errorLabel.text = sourceErrors.map { sourceError in
+				let error = sourceError.underlyingError
+				return "⚠️ \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)"
+			}.joined(separator: "\n")
 		}
 		
-		errorBar.isHidden = false
-		errorLabel.text = sourceErrors.map { sourceError in
-			let error = sourceError.underlyingError
-			return "⚠️ \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)"
-		}.joined(separator: "\n")
-		
-		textView.textStorage.removeAttribute(.backgroundColor, range: NSRange(textView.text.startIndex..<textView.text.endIndex, in: textView.text))
-		for error in sourceErrors where error.range.upperBound < sourceText.endIndex {
-			textView.textStorage.addAttribute(.backgroundColor, value: #colorLiteral(red: 0.9179999828, green: 0.8460000157, blue: 0.8140000105, alpha: 1), range: NSRange(error.range, in: sourceText))
+		let formattedText = NSMutableAttributedString(string: script.text, attributes: [.font: type(of: self).sourceFont])
+		for error in sourceErrors {
+			formattedText.addAttribute(.backgroundColor, value: #colorLiteral(red: 0.9179999828, green: 0.8460000157, blue: 0.8140000105, alpha: 1), range: NSRange(error.range, in: script.text))
 		}
+		textView.attributedText = formattedText
 		
 	}
 	
@@ -60,14 +51,14 @@ final class ScriptEditingController : UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		updatePresentedSourceText()
+		updatePresentedScript()
 	}
 	
 }
 
 extension ScriptEditingController : UITextViewDelegate {
 	func textViewDidChange(_ textView: UITextView) {
-		sourceText = textView.text
+		script.text = textView.text
 		delegate?.scriptEditingControllerDidChangeSourceText(self)
 	}
 }

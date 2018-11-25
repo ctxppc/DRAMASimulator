@@ -5,17 +5,11 @@ import Foundation
 /// A document parsed into statements.
 struct Script {
 	
-	/// Creates an empty script.
-	init() {
-		partialStatements = []
-		statementIndicesBySymbol = [:]
-		sourceRangeByStatementIndex = [:]
-	}
-	
 	/// Parses a script from given text.
-	init(from text: String) {
+	init(from text: String = "") {
 		
-		self.init()
+		storedText = text
+		
 		var script = self	// shadow copy because `enumerateSubstrings` declares an escaping closure that doesn't really escape
 		defer { self = script }
 		
@@ -57,13 +51,21 @@ struct Script {
 		
 	}
 	
+	/// The script's source text.
+	var text: String {
+		get { return storedText }
+		set { self = .init(from: newValue) }
+	}
+	
+	private let storedText: String
+	
 	/// A regular expression matching a symbol.
 	///
 	/// Groups: symbol, remainder
 	private static let symbolExpression = try! NSRegularExpression(pattern: "^\\s*([A-Z_][A-Z_0-9]*):(.*)$", options: .caseInsensitive)
 	
 	/// The statements encoded in the script, including partially parsed ones.
-	var partialStatements: [PartialStatement]
+	private(set) var partialStatements: [PartialStatement] = []
 	enum PartialStatement {
 		case statement(Statement)
 		case error(SourceError)
@@ -92,10 +94,11 @@ struct Script {
 	}
 	
 	/// A dictionary mapping indices in the `statements` array to ranges in the source text.
-	var sourceRangeByStatementIndex: [Int : Range<String.Index>]
+	private(set) var sourceRangeByStatementIndex: [Int : SourceRange] = [:]
+	typealias SourceRange = Range<String.Index>
 	
 	/// A dictionary mapping symbols to indices in the `statements` array.
-	var statementIndicesBySymbol: [Symbol : Int]
+	private(set) var statementIndicesBySymbol: [Symbol : Int] = [:]
 	typealias Symbol = String
 	
 	/// An error related to symbols.
