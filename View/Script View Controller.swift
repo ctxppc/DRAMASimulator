@@ -85,22 +85,32 @@ final class ScriptViewController : UIViewController {
         }
     }
 	
-	@IBAction func rewindMachine(_ sender: Any) {
+	@IBAction func moveBackward(_ sender: Any) {
+		timeline?.moveBackward()
+		updateToolbarButtons()
+	}
+	
+	@IBAction func moveForward(_ sender: Any) {
+		timeline?.moveForward()
+		updateToolbarButtons()
+	}
+	
+	@IBAction func rewindTimeline(_ sender: Any) {
 		timeline?.direction = .backward
 		updateToolbarButtons()
 	}
 	
-	@IBAction func resumeMachine(_ sender: Any) {
-		timeline?.direction = .forward
-		updateToolbarButtons()
-	}
-	
-	@IBAction func pauseMachine(_ sender: Any) {
+	@IBAction func pauseTimeline(_ sender: Any) {
 		timeline?.direction = .still
 		updateToolbarButtons()
 	}
 	
-	@IBAction func resetMachine(_ sender: Any) {
+	@IBAction func resumeTimeline(_ sender: Any) {
+		timeline?.direction = .forward
+		updateToolbarButtons()
+	}
+	
+	@IBAction func resetTimeline(_ sender: Any) {
 		loadProgram()
 		updateToolbarButtons()
 	}
@@ -132,19 +142,23 @@ final class ScriptViewController : UIViewController {
 	}
 	
 	private func updateToolbarButtons() {
-		(rewindButton.isEnabled, resumeButton.isEnabled, pauseButton.isEnabled, resetButton.isEnabled) = {
-			guard let timeline = timeline else { return (false, false, false, false) }
+		(moveBackwardButton.isEnabled, moveForwardButton.isEnabled, rewindButton.isEnabled, pauseButton.isEnabled, resumeButton.isEnabled, resetButton.isEnabled) = {
+			guard let timeline = timeline else { return (false, false, false, false, false, false) }
+			let canRewind = timeline.canRewind
+			let canResume = timeline.currentMachine.state != .halted
 			switch timeline.direction {
-				case .still:	return (timeline.canRewind, timeline.currentMachine.state != .halted, false, true)
-				case .forward:	return (true, false, true, true)
-				case .backward:	return (false, true, true, true)
+				case .still:	return (canRewind, canResume, canRewind, false, canResume, true)
+				case .forward:	return (false, false, true, true, false, true)
+				case .backward:	return (false, false, false, true, true, true)
 			}
 		}()
 	}
 	
+	@IBOutlet weak var moveBackwardButton: UIBarButtonItem!
+	@IBOutlet weak var moveForwardButton: UIBarButtonItem!
 	@IBOutlet weak var rewindButton: UIBarButtonItem!
-	@IBOutlet weak var resumeButton: UIBarButtonItem!
 	@IBOutlet weak var pauseButton: UIBarButtonItem!
+	@IBOutlet weak var resumeButton: UIBarButtonItem!
 	@IBOutlet weak var resetButton: UIBarButtonItem!
 	
 	@IBAction func dismiss() {

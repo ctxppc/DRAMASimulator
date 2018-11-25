@@ -26,15 +26,20 @@ final class Timeline {
 		return !previousMachines.isEmpty
 	}
 	
-	/// Provides input to the machine and resumes execution.
+	/// Provides input to the machine and resumes execution if it paused to wait for input.
 	///
 	/// While the machine is modified by providing it input, the `currentMachineDidChange(on:)` delegate method is _not_ invoked as a result of that change.
 	///
 	/// - Requires: `machine.state` is `.waitingForInput`.
 	func provideMachineInput(_ input: Word) {
 		currentMachine.provideInput(input)
-		direction = .forward
+		if pausedForInput {
+			direction = .forward
+			pausedForInput = false
+		}
 	}
+	
+	private(set) var pausedForInput = false
 	
 	/// The speed at which the timeline moves forward or backward.
 	///
@@ -54,7 +59,7 @@ final class Timeline {
 			animationTimer?.invalidate()
 			switch direction {
 				case .still:				animationTimer = nil
-				case .forward, .backward:	animationTimer = .scheduledTimer(withTimeInterval: animationSpeed, repeats: true) { [weak self] _ in self?.move() }
+				case .forward, .backward:	animationTimer = .scheduledTimer(withTimeInterval: animationSpeed, repeats: true) { [weak self] _ in self?.timedMove() }
 			}
 		}
 	}
@@ -72,52 +77,54 @@ final class Timeline {
 		
 	}
 	
-	/// The timer that fires on every transition, or `nil` if the timeline is still.
+	/// The timer that fires for every step, or `nil` if the timeline isn't moving.
 	private var animationTimer: Timer?
 	
-	private func move() {
-		
-		func moveForward() {
-			switch currentMachine.state {
-				
-				case .ready:
-				do {
-					let previousMachine = currentMachine
-					try currentMachine.executeNext()
-					previousMachines.append(previousMachine)
-					delegate?.currentMachineDidChange(on: self)
-				} catch {
-					direction = .still
-					delegate?.machineExecutionDidFail(withError: error, on: self)
-				}
-				
-				case .waitingForInput:
-				direction = .still
-				delegate?.machineWaitsForInput(on: self)
-				
-				case .halted:
-				direction = .still
-				delegate?.timelineDidFinishMoving(on: self)
-				
-			}
-		}
-		
-		func moveBackward() {
-			if canRewind {
-				currentMachine = previousMachines.removeLast()
-				delegate?.currentMachineDidChange(on: self)
-			} else {
-				direction = .still
-				delegate?.timelineDidFinishMoving(on: self)
-			}
-		}
-		
+	/// Moves the timeline in response to the animation timer firing.
+	private func timedMove() {
 		switch direction {
 			case .still:	assert(animationTimer == nil, "We're in a useless loop or there are zombie timers.")
 			case .forward:	moveForward()
 			case .backward:	moveBackward()
 		}
-		
+	}
+	
+	/// Moves the timeline one step forwards.
+	func moveForward() {
+		switch currentMachine.state {
+			
+			case .ready:
+			do {
+				let previousMachine = currentMachine
+				try currentMachine.executeNext()
+				previousMachines.append(previousMachine)
+				delegate?.currentMachineDidChange(on: self)
+			} catch {
+				direction = .still
+				delegate?.machineExecutionDidFail(withError: error, on: self)
+			}
+			
+			case .waitingForInput:
+			pausedForInput = direction != .still
+			direction = .still
+			delegate?.machineWaitsForInput(on: self)
+			
+			case .halted:
+			direction = .still
+			delegate?.timelineDidFinishMoving(on: self)
+			
+		}
+	}
+	
+	/// Moves the timeline one step backwards.
+	func moveBackward() {
+		if canRewind {
+			currentMachine = previousMachines.removeLast()
+			delegate?.currentMachineDidChange(on: self)
+		} else {
+			direction = .still
+			delegate?.timelineDidFinishMoving(on: self)
+		}
 	}
 	
 	deinit {
