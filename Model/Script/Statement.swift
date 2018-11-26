@@ -17,11 +17,11 @@ enum Statement {
 	/// A statement encoding a condition command.
 	case conditionCommand(instruction: Instruction, addressingMode: AddressingMode?, condition: Condition, address: SymbolicAddress, index: AddressSpecification.Index?, syntaxMap: SyntaxMap)
 	
-	/// A literal word.
-	case literal(Word, syntaxMap: SyntaxMap)
+	/// An array of one or more words.
+	case array([Word], syntaxMap: SyntaxMap)
 	
 	/// A zero-initialised array of some length.
-	case array(length: Int, syntaxMap: SyntaxMap)
+	case zeroArray(length: Int, syntaxMap: SyntaxMap)
 	
 	/// Parses given line and returns the statement encoded therein, or `nil` if the line is empty or only contains whitespace and comments.
 	///
@@ -119,6 +119,16 @@ enum Statement {
 				index:			index(in: match, from: 5),
 				syntaxMap:		.init()	// TODO
 			)
+		} else if let match = Statement.arrayExpression.firstMatch(in: line, range: range) {
+			self = .array(
+				string(in: match, at: 1).components(separatedBy: ",").map { Word(wrapping: Int($0.trimmingCharacters(in: .whitespaces))!) },
+				syntaxMap:	.init()
+			)
+		} else if let match = Statement.zeroArrayExpression.firstMatch(in: line, range: range) {
+			self = .zeroArray(
+				length:		Int(string(in: match, at: 1))!,
+				syntaxMap:	.init()
+			)
 		} else {
 			throw ParsingError.illegalFormat
 		}
@@ -175,14 +185,27 @@ enum Statement {
 	/// Groups: operation, addressing mode (opt.), condition, base address, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
 	private static let conditionCommandExpression = expression(qualifiedOperationPattern, reqSpace, conditionPattern, argSeparator, addressPattern)
 	
+	/// A regular expression for matching zero-initialised arrays.
+	///
+	/// Groups: comma-separated literals
+	private static let arrayExpression = expression("(", literalConstantPattern, "(?:", optSpace, ",", optSpace, literalConstantPattern, ")*", ")")
+	
+	/// A regular expression for matching zero-initialised arrays.
+	///
+	/// Groups: array length
+	private static let zeroArrayExpression = expression("RESGR", reqSpace, arrayLengthPattern)
+	
 	/// The number of machine words used by the statement.
 	var wordLength: Int {
 		switch self {
 			
-			case .nullaryCommand, .registerCommand, .addressCommand, .conditionCommand, .literal:
+			case .nullaryCommand, .registerCommand, .addressCommand, .conditionCommand:
 			return 1
 			
-			case .array(let length, syntaxMap: _):
+			case .array(let words, syntaxMap: _):
+			return words.count
+			
+			case .zeroArray(let length, syntaxMap: _):
 			return length
 			
 		}
@@ -195,8 +218,8 @@ enum Statement {
 			case .registerCommand(instruction: _, primaryRegister: _, secondaryRegister: _, syntaxMap: let map):				return map
 			case .addressCommand(instruction: _, addressingMode: _, register: _, address: _, index: _, syntaxMap: let map):		return map
 			case .conditionCommand(instruction: _, addressingMode: _, condition: _, address: _, index: _, syntaxMap: let map):	return map
-			case .literal(_, syntaxMap: let map):																				return map
-			case .array(length: _, syntaxMap: let map):																			return map
+			case .array(_, syntaxMap: let map):																					return map
+			case .zeroArray(length: _, syntaxMap: let map):																		return map
 		}
 	}
 	
@@ -224,3 +247,5 @@ private let baseAddressPattern = "\(addressTermPattern)(?:\\+\(addressTermPatter
 private let addressTermPattern = "(?:[a-z][a-z0-9]*|[0-9]*)"
 private let indexPattern = "\\(\(optIndexModifier)\(registerPattern)\(optIndexModifier)\\)"
 private let optIndexModifier = "(\\+|\\-)?"
+private let literalConstantPattern = "-?[0-9]{1,10}"
+private let arrayLengthPattern = "([0-9]{1,4})"

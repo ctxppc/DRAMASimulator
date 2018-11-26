@@ -10,13 +10,24 @@ final class ScriptEditingController : UIViewController {
 		didSet { updatePresentedScript() }
 	}
 	
+	/// A presented source error that is not part of the script.
+	var additionalSourceError: SourceError?	{	// FIXME: Code smell
+		didSet { updatePresentedScript() }
+	}
+	
 	/// The font for presenting source text.
-	private static let sourceFont = UIFont(name: "Menlo", size: 14)!
+	private static let sourceFont = UIFont(name: "Menlo", size: 18)!
 	
 	private func updatePresentedScript() {
 		
 		guard let errorBar = errorBar, let errorLabel = errorLabel, let textView = textView else { return }
-		let sourceErrors = script.sourceErrors()
+		
+		let sourceErrors: [SourceError]
+		if let error = additionalSourceError {
+			sourceErrors = script.sourceErrors() + [error]
+		} else {
+			sourceErrors = script.sourceErrors()
+		}
 		
 		if sourceErrors.isEmpty {
 			errorBar.isHidden = true

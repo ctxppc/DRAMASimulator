@@ -27,8 +27,14 @@ struct Program {
 			addressesBySymbol[symbol] = addressesByStatementIndex[statementIndex]
 		}
 		
-		wordSequences = try statements.map {
-			try WordSequence(from: $0, addressesBySymbol: addressesBySymbol)
+		wordSequences = try zip(statements, statements.indices).map { statement, index in
+			do {
+				return try WordSequence(from: statement, addressesBySymbol: addressesBySymbol)
+			} catch WordSequence.EncodingError.incorrectFormat {
+				throw AssemblyError.incorrectFormat(statementIndex: index)
+			} catch SymbolicAddress.Error.undefinedSymbol(let symbol) {
+				throw AssemblyError.undefinedSymbol(symbol, statementIndex: index)
+			}
 		}
 		
 	}
@@ -41,14 +47,8 @@ struct Program {
 			
 			func command(instruction: Instruction, initialiser: (Command.Type) throws -> Command?) throws -> Command {
 				guard let type = supportedCommandTypes.first(where: { $0.supportedInstructions.contains(instruction) }) else { preconditionFailure("Unimplemented mnemonic") }
-				guard let command = try initialiser(type) else { throw AssemblyError.incorrectFormat }
+				guard let command = try initialiser(type) else { throw EncodingError.incorrectFormat }
 				return command
-			}
-			
-			func commandType<T>(for instruction: Instruction, ofType type: T.Type) throws -> T.Type {
-				guard let type = supportedCommandTypes.first(where: { $0.supportedInstructions.contains(instruction) }) else { preconditionFailure("Unimplemented mnemonic") }
-				guard let narrowedType = type as? T.Type else { throw AssemblyError.incorrectFormat }
-				return narrowedType
 			}
 			
 			func addressSpecification(from symbolicAddress: SymbolicAddress, index: AddressSpecification.Index?) throws -> AddressSpecification {
@@ -87,11 +87,11 @@ struct Program {
 					try (type as? ConditionAddressCommand.Type)?.init(instruction: instruction, addressingMode: addressingMode, condition: condition, address: addressSpecification(from: address, index: index))
 				})
 				
-				case .literal(let word, syntaxMap: _):
-				self = .literal(word)
+				case .array(let words, syntaxMap: _):
+				self = .array(words)
 				
-				case .array(let length, syntaxMap: _):
-				self = .array(length: length)
+				case .zeroArray(let length, syntaxMap: _):
+				self = .zeroArray(length: length)
 				
 			}
 		}
@@ -99,19 +99,33 @@ struct Program {
 		/// A single word containing a single command.
 		case command(Command)
 		
-		/// A single word containing a single literal.
-		case literal(Word)
+		/// An array of one or more words.
+		case array([Word])
 		
-		/// An array of some length of zero-initialised words.
-		case array(length: Int)
+		/// A zero-initialised array of some length.
+		case zeroArray(length: Int)
 		
 		/// The machine words contained in `self`.
 		var words: AnyCollection<Word> {
 			switch self {
-				case .command(let command):			return .init(CollectionOfOne(CommandWord(command).base))
-				case .literal(let word):			return .init(CollectionOfOne(word))
-				case .array(length: let length):	return .init(repeatElement(.zero, count: length))
+				case .command(let command):				return .init(CollectionOfOne(CommandWord(command).base))
+				case .array(let words):					return .init(words)
+				case .zeroArray(length: let length):	return .init(repeatElement(.zero, count: length))
 			}
+		}
+		
+		enum EncodingError : LocalizedError {
+			
+			/// The command does not have the correct format.
+			case incorrectFormat
+			
+			// See protocol.
+			var errorDescription: String? {
+				switch self {
+					case .incorrectFormat:	return "Bevel met onjuist formaat"
+				}
+			}
+			
 		}
 		
 	}
@@ -132,13 +146,21 @@ struct Program {
 		case overflow
 		
 		/// A command does not have the correct format.
-		case incorrectFormat
+		///
+		/// - Parameter statementIndex: The index of the statement whose command is erroneous.
+		case incorrectFormat(statementIndex: Int)
+		
+		/// An undefined symbol is specified in a symbolic address.
+		///
+		/// - Parameter statementIndex: The index of the statement whose command contains an undefined symbol.
+		case undefinedSymbol(Script.Symbol, statementIndex: Int)
 		
 		// See protocol.
 		var errorDescription: String? {
 			switch self {
-				case .overflow:			return "Programma past niet in geheugen"
-				case .incorrectFormat:	return "Bevel met onjuist formaat"
+				case .overflow:											return "Programma past niet in geheugen"
+				case .incorrectFormat:									return "Bevel met onjuist formaat"
+				case .undefinedSymbol(let symbol, statementIndex: _):	return "“\(symbol)” is niet gedefinieerd"
 			}
 		}
 		

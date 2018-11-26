@@ -38,7 +38,7 @@ struct SymbolicAddress {
 				return value
 				
 				case .symbol(let symbol):
-				guard let address = addressesBySymbol[symbol] else { throw Error.unknownSymbol(symbol) }
+				guard let address = addressesBySymbol[symbol] else { throw Error.undefinedSymbol(symbol) }
 				return address
 				
 			}
@@ -56,14 +56,14 @@ struct SymbolicAddress {
 		/// A term is empty.
 		case emptyTerm
 		
-		/// An unknown symbol is specified in a symbolic address.
-		case unknownSymbol(Script.Symbol)
+		/// An undefined symbol is specified in a symbolic address.
+		case undefinedSymbol(Script.Symbol)
 		
 		// See protocol.
 		var errorDescription: String? {
 			switch self {
 				case .emptyTerm:					return "Adresoperand met lege term"
-				case .unknownSymbol(let symbol):	return "‘\(symbol)’ is niet gedefinieerd"
+				case .undefinedSymbol(let symbol):	return "“\(symbol)” is niet gedefinieerd"
 			}
 		}
 		

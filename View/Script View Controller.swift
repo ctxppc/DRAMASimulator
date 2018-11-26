@@ -25,10 +25,10 @@ final class ScriptViewController : UIViewController {
 		
 		if let scriptDocument = scriptDocument {
 			title = scriptDocument.fileURL.deletingPathExtension().lastPathComponent
-			editingViewController.script = scriptDocument.script
+			editingController.script = scriptDocument.script
 		} else {
 			title = "Geen document"
-			editingViewController.script = .init()
+			editingController.script = .init()
 		}
 		
 		loadProgram()
@@ -39,6 +39,7 @@ final class ScriptViewController : UIViewController {
 	private func loadProgram() {
 		
 		discardTimeline()
+		editingController.additionalSourceError = nil
 		
 		guard let document = scriptDocument else { return }
 		do {
@@ -46,7 +47,9 @@ final class ScriptViewController : UIViewController {
 			timeline = .init(machine: machine)
 			machineViewController.machine = machine
 		} catch _ as ScriptDocument.PartialScriptError {
-			// Source errors are already handled by the script editing controller.
+			// Partial script errors are already handled by the editing controller.
+		} catch let error as SourceError {
+			editingController.additionalSourceError = error
 		} catch {
 			present(error)
 		}
@@ -55,19 +58,19 @@ final class ScriptViewController : UIViewController {
 		
 	}
 	
-	/// The child view controller for editing the source text.
-	private var editingViewController: ScriptEditingController {
+	/// The child view controller for script editing.
+	private var editingController: ScriptEditingController {
 		return children[0] as! ScriptEditingController
 	}
 	
-	/// The child view controller for viewing the machine.
+	/// The child view controller for machine visualisation.
 	private var machineViewController: MachineViewController {
 		return children[1] as! MachineViewController
 	}
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		editingViewController.delegate = self
+		editingController.delegate = self
 	}
 	
     override func viewWillAppear(_ animated: Bool) {

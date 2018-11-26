@@ -38,6 +38,16 @@ final class ScriptDocument : UIDocument {
 			
 			do {
 				self = .program(try Program(statements: try script.statements(), statementIndicesBySymbol: script.statementIndicesBySymbol))
+			} catch Program.AssemblyError.incorrectFormat(statementIndex: let index) {
+				self = .error(SourceError(
+					underlyingError:	Program.AssemblyError.incorrectFormat(statementIndex: index),
+					range:				script.sourceRangeByStatementIndex[index]
+				))
+			} catch Program.AssemblyError.undefinedSymbol(let symbol, statementIndex: let index) {
+				self = .error(SourceError(
+					underlyingError:	Program.AssemblyError.undefinedSymbol(symbol, statementIndex: index),
+					range:				script.sourceRangeByStatementIndex[index]
+				))
 			} catch {
 				self = .error(error)
 			}

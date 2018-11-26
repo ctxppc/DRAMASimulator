@@ -24,7 +24,7 @@ struct Script {
 				partialStatement = .error(.init(underlyingError: error, range: range))
 			}
 			
-			script.sourceRangeByStatementIndex[self.partialStatements.endIndex] = range
+			script.sourceRangeByStatementIndex.append(range)
 			script.partialStatements.append(partialStatement)
 			
 		}
@@ -42,7 +42,7 @@ struct Script {
 					processStatement(in: remainderRange)
 					
 				} catch {
-					script.sourceRangeByStatementIndex[script.partialStatements.endIndex] = range
+					script.sourceRangeByStatementIndex.append(range)
 					script.partialStatements.append(.error(.init(underlyingError: error, range: range)))
 				}
 			} else {
@@ -96,7 +96,7 @@ struct Script {
 	}
 	
 	/// A dictionary mapping indices in the `statements` array to ranges in the source text.
-	private(set) var sourceRangeByStatementIndex: [Int : SourceRange] = [:]
+	private(set) var sourceRangeByStatementIndex: [SourceRange] = []
 	typealias SourceRange = Range<String.Index>
 	
 	/// A dictionary mapping symbols to indices in the `statements` array.
