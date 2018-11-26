@@ -88,7 +88,7 @@
                             </barButtonItem>
                             <barButtonItem image="Reverse" id="LrY-uN-Esz">
                                 <connections>
-                                    <action selector="rewind:" destination="waR-UT-9kZ" id="umN-lq-X3q"/>
+                                    <action selector="rewindTimeline:" destination="waR-UT-9kZ" id="juB-o6-Xfm"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem image="Step" id="MnI-eU-0aP">
