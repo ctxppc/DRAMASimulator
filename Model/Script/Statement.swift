@@ -3,77 +3,68 @@
 import Foundation
 
 /// A human-readable encoded command or directive.
+///
+/// A statement is typically instantiated from a lexical unit. Every lexical unit maps to exactly one statement: comments and labels are translated to `noop` statements whereas errors are mapped to `error` statements.
 enum Statement {
 	
 	/// A statement encoding a nullary command.
-	case nullaryCommand(instruction: Instruction, syntaxMap: SyntaxMap)
+	case nullaryCommand(instruction: Instruction)
 	
 	/// A statement encoding a unary or binary register command.
-	case registerCommand(instruction: Instruction, primaryRegister: Register, secondaryRegister: Register?, syntaxMap: SyntaxMap)
+	case registerCommand(instruction: Instruction, primaryRegister: Register, secondaryRegister: Register?)
 	
 	/// A statement encoding an address or register address command.
-	case addressCommand(instruction: Instruction, addressingMode: AddressingMode?, register: Register?, address: SymbolicAddress, index: AddressSpecification.Index?, syntaxMap: SyntaxMap)
+	case addressCommand(instruction: Instruction, addressingMode: AddressingMode?, register: Register?, address: SymbolicAddress, index: AddressSpecification.Index?)
 	
 	/// A statement encoding a condition command.
-	case conditionCommand(instruction: Instruction, addressingMode: AddressingMode?, condition: Condition, address: SymbolicAddress, index: AddressSpecification.Index?, syntaxMap: SyntaxMap)
+	case conditionCommand(instruction: Instruction, addressingMode: AddressingMode?, condition: Condition, address: SymbolicAddress, index: AddressSpecification.Index?)
 	
 	/// An array of one or more words.
-	case array([Word], syntaxMap: SyntaxMap)
+	case array([Word])
 	
 	/// A zero-initialised array of some length.
-	case zeroArray(length: Int, syntaxMap: SyntaxMap)
+	case zeroArray(length: Int)
 	
-	/// Parses given line and returns the statement encoded therein, or `nil` if the line is empty or only contains whitespace and comments.
+	/// A statement that does nothing, e.g., for mapping labels or comments.
 	///
-	/// - Requires: `line` does not contain newlines.
+	/// A no-operation statement is ignored during lowering into machine words.
+	case noop
+	
+	/// A statement that could not be instantiated.
+	case error(Error)
+	
+	/// Converts a given lexical unit into a statement.
 	///
-	/// - Parameter line: A single line of assembly code.
-	init?(from line: Substring) throws {
+	/// - Parameter lexicalUnit: The lexical unit to convert into a statement.
+	/// - Parameter source: The source from which the lexical units originate.
+	init(from lexicalUnit: LexicalUnit, source: String) {
 		
-		typealias Match = NSTextCheckingResult
-		
-		let line = line.firstIndex(of: "|").map { line[..<$0] }?.trimmingCharacters(in: .whitespaces) ?? line.trimmingCharacters(in: .whitespaces)
-		guard !line.isEmpty else { return nil }
-		let range = NSRange(location: 0, length: (line as NSString).length)
-		
-		func string(in match: Match, at group: Int) -> String {
-			guard let value = optionalString(in: match, at: group) else { preconditionFailure("Missing capture group") }
-			return value
-		}
-		
-		func optionalString(in match: Match, at group: Int) -> String? {
-			let range = match.range(at: group)
-			guard range.location != NSNotFound else { return nil }
-			return (line as NSString).substring(with: range)
-		}
-		
-		func instruction(in match: Match, at group: Int) throws -> Instruction {
-			let mnemonic = string(in: match, at: group).uppercased()
+		func instruction(in range: SourceRange) throws -> Instruction {
+			let mnemonic = source[range].uppercased()
 			guard let instruction = Instruction(rawValue: mnemonic) else { throw ParsingError.unknownMnemonic(mnemonic) }
 			return instruction
 		}
 		
-		func optionalAddressingMode(in match: Match, at group: Int) throws -> AddressingMode? {
-			guard let value = optionalString(in: match, at: group) else { return nil }
-			guard let mode = AddressingMode(rawValue: value.lowercased()) else { throw ParsingError.unknownAddressingMode(value) }
+		func register(in range: LexicalUnit.RegisterSourceRange) -> Register {
+			return Register(rawValue: Int(source[range.numberRange])!)!
+		}
+		
+		func addressingMode(in range: SourceRange) throws -> AddressingMode? {
+			let code = source[range].lowercased()
+			guard let mode = AddressingMode(rawValue: code) else { throw ParsingError.unknownAddressingMode(code) }
 			return mode
 		}
 		
-		func register(in match: Match, at group: Int) -> Register {
-			return Register(rawValue: Int(string(in: match, at: group))!)!
+		func condition(in range: SourceRange) throws -> Condition {
+			let rawValue = source[range].uppercased()
+			guard let condition = Condition(rawValue: rawValue) ?? Condition(rawComparisonValue: rawValue) else { throw ParsingError.unknownCondition(rawValue) }
+			return condition
 		}
 		
-		func optionalRegister(in match: Match, at group: Int) -> Register? {
-			guard let string = optionalString(in: match, at: group) else { return nil }
-			return Register(rawValue: Int(string)!)!
-		}
-		
-		func index(in match: Match, from group: Int) throws -> AddressSpecification.Index? {
-			
-			guard let register = optionalRegister(in: match, at: group + 1) else { return nil }
+		func index(from range: LexicalUnit.IndexSourceRange) throws -> AddressSpecification.Index? {
 			
 			let modification: AddressSpecification.Index.Modification?
-			switch (optionalString(in: match, at: group), optionalString(in: match, at: group + 2)) {
+			switch (range.preindexationOperationRange.flatMap({ source[$0] }), range.postindexationOperationRange.flatMap({ source[$0] })) {
 				case (nil, nil):	modification = nil
 				case ("+", nil):	modification = .preincrement
 				case ("-", nil):	modification = .predecrement
@@ -82,55 +73,58 @@ enum Statement {
 				default:			throw ParsingError.doubleIndexModification
 			}
 			
-			return .init(indexRegister: register, modification: modification)
+			return .init(indexRegister: Register(rawValue: Int(source[range.indexRegisterRange])!)!, modification: modification)
 			
 		}
 		
-		func condition(in match: Match, at group: Int) throws -> Condition {
-			let rawValue = string(in: match, at: group).uppercased()
-			guard let condition = Condition(rawValue: rawValue) ?? Condition(rawComparisonValue: rawValue) else { throw ParsingError.unknownCondition }
-			return condition
-		}
-		
-		if let match = Statement.nullaryCommandExpression.firstMatch(in: line, range: range) {
-			self = try .nullaryCommand(instruction: instruction(in: match, at: 1), syntaxMap: .init())	// TODO
-		} else if let match = Statement.registerCommandExpression.firstMatch(in: line, range: range) {
-			self = try .registerCommand(
-				instruction:		instruction(in: match, at: 1),
-				primaryRegister:	register(in: match, at: 2),
-				secondaryRegister:	optionalRegister(in: match, at: 3),
-				syntaxMap:			.init()	// TODO
-			)
-		} else if let match = Statement.addressCommandExpression.firstMatch(in: line, range: range) {
-			self = try .addressCommand(
-				instruction:	instruction(in: match, at: 1),
-				addressingMode:	optionalAddressingMode(in: match, at: 2),
-				register:		optionalRegister(in: match, at: 3),
-				address:		.init(from: string(in: match, at: 4)),
-				index:			index(in: match, from: 5),
-				syntaxMap:		.init()	// TODO
-			)
-		} else if let match = Statement.conditionCommandExpression.firstMatch(in: line, range: range) {
-			self = try .conditionCommand(
-				instruction:	instruction(in: match, at: 1),
-				addressingMode:	optionalAddressingMode(in: match, at: 2),
-				condition:		condition(in: match, at: 3),
-				address:		.init(from: string(in: match, at: 4)),
-				index:			index(in: match, from: 5),
-				syntaxMap:		.init()	// TODO
-			)
-		} else if let match = Statement.arrayExpression.firstMatch(in: line, range: range) {
-			self = .array(
-				string(in: match, at: 1).components(separatedBy: ",").map { Word(wrapping: Int($0.trimmingCharacters(in: .whitespaces))!) },
-				syntaxMap:	.init()
-			)
-		} else if let match = Statement.zeroArrayExpression.firstMatch(in: line, range: range) {
-			self = .zeroArray(
-				length:		Int(string(in: match, at: 1))!,
-				syntaxMap:	.init()
-			)
-		} else {
-			throw ParsingError.illegalFormat
+		do {
+			switch lexicalUnit {
+				
+				case .nullaryCommand(instruction: let range, fullRange: _):
+				self = try .nullaryCommand(instruction: instruction(in: range))
+				
+				case .registerCommand(instruction: let instructionRange, primaryRegister: let primaryRegister, secondaryRegister: let secondaryRegister, fullRange: _):
+				self = try .registerCommand(
+					instruction:		instruction(in: instructionRange),
+					primaryRegister:	register(in: primaryRegister),
+					secondaryRegister:	secondaryRegister.flatMap(register(in:))
+				)
+				
+				case .addressCommand(instruction: let instructionRange, addressingMode: let addrMode, register: let registerRange, address: let address, index: let indexRange, fullRange: _):
+				self = try .addressCommand(
+					instruction:	instruction(in: instructionRange),
+					addressingMode:	addrMode.flatMap(addressingMode(in:)),
+					register:		registerRange.flatMap(register(in:)),
+					address:		.init(from: source[address]),
+					index:			indexRange.flatMap(index(from:))
+				)
+				
+				case .conditionCommand(instruction: let instructionRange, addressingMode: let addrMode, condition: let conditionRange, address: let address, index: let indexRange, fullRange: _):
+				self = try .conditionCommand(
+					instruction:	instruction(in: instructionRange),
+					addressingMode:	addrMode.flatMap(addressingMode(in:)),
+					condition:		condition(in: conditionRange),
+					address:		.init(from: source[address]),
+					index:			indexRange.flatMap(index(from:))
+				)
+				
+				case .array(let wordsRange, fullRange: _):
+				self = .array(source[wordsRange].components(separatedBy: ",").map {
+					Word(wrapping: Int($0.trimmingCharacters(in: .whitespaces))!)
+				})
+				
+				case .zeroArray(length: let lengthRange, fullRange: _):
+				self = .zeroArray(length: Int(source[lengthRange])!)
+				
+				case .label, .comment:
+				self = .noop
+				
+				case .error(let error):
+				throw error
+				
+			}
+		} catch {
+			self = .error(error)
 		}
 		
 	}
@@ -150,102 +144,33 @@ enum Statement {
 		case unknownAddressingMode(String)
 		
 		/// An unknown condition is specified.
-		case unknownCondition
+		case unknownCondition(String)
 		
 		// See protocol.
 		var errorDescription: String? {
 			switch self {
 				case .illegalFormat:					return "Bevel met ongeldig formaat"
 				case .doubleIndexModification:			return "Dubbele indexatie"
-				case .unknownMnemonic(let mnemonic):	return "Onbekend bevel ‘\(mnemonic)’"
-				case .unknownAddressingMode(let mode):	return "Onbekende interpretatie ‘\(mode)’"
-				case .unknownCondition:					return "Onbekende voorwaarde"
+				case .unknownMnemonic(let mnemonic):	return "Onbekend bevel “\(mnemonic)”"
+				case .unknownAddressingMode(let mode):	return "Onbekende interpretatie “\(mode)”"
+				case .unknownCondition(let condition):	return "Onbekende voorwaarde “\(condition)”"
 			}
 		}
 		
 	}
 	
-	/// A regular expression for matching nullary commands.
-	///
-	/// Groups: operation
-	private static let nullaryCommandExpression = expression(operationPattern)
-	
-	/// A regular expression for matching unary and binary register commands.
-	///
-	/// Groups: operation, primary register, secondary register (opt.)
-	private static let registerCommandExpression = expression(operationPattern, reqSpace, registerPattern, argSeparator, opt(registerPattern))
-	
-	/// A regular expression for matching address and register–address commands.
-	///
-	/// Groups: operation, addressing mode (opt.), register (opt.), base address, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
-	private static let addressCommandExpression = expression(qualifiedOperationPattern, reqSpace, opt(registerPattern, argSeparator), addressPattern)
-	
-	/// A regular expression for matching condition–address commands.
-	///
-	/// Groups: operation, addressing mode (opt.), condition, base address, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
-	private static let conditionCommandExpression = expression(qualifiedOperationPattern, reqSpace, conditionPattern, argSeparator, addressPattern)
-	
-	/// A regular expression for matching zero-initialised arrays.
-	///
-	/// Groups: comma-separated literals
-	private static let arrayExpression = expression("(", literalConstantPattern, "(?:", optSpace, ",", optSpace, literalConstantPattern, ")*", ")")
-	
-	/// A regular expression for matching zero-initialised arrays.
-	///
-	/// Groups: array length
-	private static let zeroArrayExpression = expression("RESGR", reqSpace, arrayLengthPattern)
-	
 	/// The number of machine words used by the statement.
 	var wordLength: Int {
 		switch self {
-			
-			case .nullaryCommand, .registerCommand, .addressCommand, .conditionCommand:
-			return 1
-			
-			case .array(let words, syntaxMap: _):
-			return words.count
-			
-			case .zeroArray(let length, syntaxMap: _):
-			return length
-			
-		}
-	}
-	
-	/// The syntax map for the statement.
-	var syntaxMap: SyntaxMap {
-		switch self {
-			case .nullaryCommand(instruction: _, syntaxMap: let map):															return map
-			case .registerCommand(instruction: _, primaryRegister: _, secondaryRegister: _, syntaxMap: let map):				return map
-			case .addressCommand(instruction: _, addressingMode: _, register: _, address: _, index: _, syntaxMap: let map):		return map
-			case .conditionCommand(instruction: _, addressingMode: _, condition: _, address: _, index: _, syntaxMap: let map):	return map
-			case .array(_, syntaxMap: let map):																					return map
-			case .zeroArray(length: _, syntaxMap: let map):																		return map
+			case .nullaryCommand:			return 1
+			case .registerCommand:			return 1
+			case .addressCommand:			return 1
+			case .conditionCommand:			return 1
+			case .array(let words):			return words.count
+			case .zeroArray(let length):	return length
+			case .noop:						return 0
+			case .error:					return 0
 		}
 	}
 	
 }
-
-private func expression(_ subpatterns: String...) -> NSRegularExpression {
-	return try! NSRegularExpression(pattern: "^\(subpatterns.joined())$", options: .caseInsensitive)
-}
-
-private let reqSpace = "\\s+"
-private let optSpace = "\\s*"
-private let argSeparator = "\(optSpace),\(optSpace)"
-
-private func opt(_ expressions: String...) -> String {
-	return "(?:\(expressions.joined()))?"
-}
-
-private let operationPattern = "([A-Z]{3})"
-private let addressingModePattern = "\\.(w|a|d|i)"
-private let qualifiedOperationPattern = "\(operationPattern)(?:\(addressingModePattern))?"
-private let registerPattern = "R([0-9])"
-private let conditionPattern = "([A-Z]{2,4})"
-private let addressPattern = "(\(baseAddressPattern))(?:\(indexPattern))?"
-private let baseAddressPattern = "\(addressTermPattern)(?:\\+\(addressTermPattern))*"
-private let addressTermPattern = "(?:[a-z][a-z0-9]*|[0-9]*)"
-private let indexPattern = "\\(\(optIndexModifier)\(registerPattern)\(optIndexModifier)\\)"
-private let optIndexModifier = "(\\+|\\-)?"
-private let literalConstantPattern = "-?[0-9]{1,10}"
-private let arrayLengthPattern = "([0-9]{1,4})"

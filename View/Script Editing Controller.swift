@@ -10,11 +10,6 @@ final class ScriptEditingController : UIViewController {
 		didSet { updatePresentedScript() }
 	}
 	
-	/// A presented source error that is not part of the script.
-	var additionalSourceError: SourceError?	{	// FIXME: Code smell
-		didSet { updatePresentedScript() }
-	}
-	
 	/// The font for presenting source text.
 	private static let sourceFont = UIFont(name: "Menlo", size: 18)!
 	
@@ -22,50 +17,78 @@ final class ScriptEditingController : UIViewController {
 		
 		guard let errorBar = errorBar, let errorLabel = errorLabel, let textView = textView else { return }
 		
-		let sourceErrors: [SourceError]
-		if let error = additionalSourceError {
-			sourceErrors = script.sourceErrors() + [error]
-		} else {
-			sourceErrors = script.sourceErrors()
+		let formattedText = NSMutableAttributedString(string: script.sourceText, attributes: [.font: type(of: self).sourceFont])
+		
+		func mark(_ range: SourceRange?, in colour: UIColor) {
+			guard let range = range else { return }
+			formattedText.addAttribute(.foregroundColor, value: colour, range: NSRange(range, in: script.sourceText))
 		}
 		
-		if sourceErrors.isEmpty {
+		for unit in script.lexicalUnits {
+			switch unit {
+				
+				case .nullaryCommand(instruction: let mnemonicRange, fullRange: _):
+				mark(mnemonicRange, in: .mnemonic)
+				
+				case .registerCommand(instruction: let mnemonicRange, primaryRegister: let firstRegisterRange, secondaryRegister: let secondRegisterRange, fullRange: _):
+				mark(mnemonicRange, in: .mnemonic)
+				mark(firstRegisterRange.fullRange, in: .operand)
+				mark(secondRegisterRange?.fullRange, in: .operand)
+				
+				case .addressCommand(instruction: let mnemonicRange, addressingMode: let modeRange, register: let registerRange, address: let addressRange, index: _, fullRange: _):
+				mark(mnemonicRange, in: .mnemonic)
+				mark(modeRange, in: .addressingMode)
+				mark(registerRange?.fullRange, in: .operand)
+				mark(addressRange, in: .operand)
+				
+				case .conditionCommand(instruction: let mnemonicRange, addressingMode: let modeRange, condition: let conditionRange, address: let addressRange, index: _, fullRange: _):
+				mark(mnemonicRange, in: .mnemonic)
+				mark(modeRange, in: .addressingMode)
+				mark(conditionRange, in: .operand)
+				mark(addressRange, in: .operand)
+				
+				case .array:
+				break
+				
+				case .zeroArray:
+				break
+				
+				case .label(symbol: _, fullRange: let range):
+				formattedText.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: NSRange(range, in: script.sourceText))
+				mark(range, in: .label)
+				
+				case .comment(let range):
+				mark(range, in: .comment)
+				
+				case .error(let error):
+				formattedText.addAttribute(.backgroundColor, value: #colorLiteral(red: 0.9179999828, green: 0.8460000157, blue: 0.8140000105, alpha: 1), range: NSRange(error.sourceRange, in: script.sourceText))
+				
+			}
+			
+		}
+		
+		let errors: [Error]
+		switch script.program {
+			case .program:							errors = []
+			case .sourceErrors(let sourceErrors):	errors = sourceErrors
+			case .programError(let error):			errors = [error]
+		}
+		
+		if errors.isEmpty {
 			errorBar.isHidden = true
 			errorLabel.text = "Geen fouten"
 		} else {
 			errorBar.isHidden = false
-			errorLabel.text = sourceErrors.map { sourceError in
-				let error = sourceError.underlyingError
-				return "⚠️ \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)"
+			errorLabel.text = errors.map { error in
+				"⚠️ \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)"
 			}.joined(separator: "\n")
-		}
-		
-		let formattedText = NSMutableAttributedString(string: script.text, attributes: [.font: type(of: self).sourceFont])
-		
-		for error in sourceErrors {
-			formattedText.addAttribute(.backgroundColor, value: #colorLiteral(red: 0.9179999828, green: 0.8460000157, blue: 0.8140000105, alpha: 1), range: NSRange(error.range, in: script.text))
-		}
-		
-		let rangesByColour: KeyValuePairs<UIColor, [Script.SourceRange]> = [
-			.mnemonic:			script.syntaxMap.mnemonicRanges,
-			.addressingMode:	script.syntaxMap.addressingModeRanges,
-			.registerOperands:	script.syntaxMap.registerOperandRanges,
-			.baseAddress:		script.syntaxMap.baseAddressRanges,
-			.addressIndex:		script.syntaxMap.addressIndexRanges,
-			.comment:			script.syntaxMap.commentRanges
-		]
-		
-		for (colour, ranges) in rangesByColour {
-			for range in ranges {
-				formattedText.addAttribute(.foregroundColor, value: colour, range: NSRange(range, in: script.text))
-			}
 		}
 		
 		let oldSelectedRange = textView.selectedRange
 		let oldText = textView.text ?? ""
 		textView.attributedText = formattedText
-		if let newSelectedRange = Range(oldSelectedRange, in: oldText)?.clamped(to: script.text.startIndex..<script.text.endIndex) {
-			textView.selectedRange = NSRange(newSelectedRange, in: script.text)
+		if let newSelectedRange = Range(oldSelectedRange, in: oldText)?.clamped(to: script.sourceText.startIndex..<script.sourceText.endIndex) {
+			textView.selectedRange = NSRange(newSelectedRange, in: script.sourceText)
 		}
 		
 	}
@@ -91,7 +114,7 @@ final class ScriptEditingController : UIViewController {
 
 extension ScriptEditingController : UITextViewDelegate {
 	func textViewDidChange(_ textView: UITextView) {
-		script.text = textView.text
+		script.sourceText = textView.text
 		delegate?.sourceTextDidChange(on: self)
 	}
 }
@@ -103,11 +126,10 @@ protocol ScriptEditingControllerDelegate : class {
 	
 }
 
-extension UIColor {
-	static let mnemonic = red
-	static let addressingMode = green
-	static let baseAddress = blue
-	static let registerOperands = cyan
-	static let addressIndex = brown
-	static let comment = gray
+fileprivate extension UIColor {
+	static let mnemonic = #colorLiteral(red: 0, green: 0.3289999962, blue: 0.5749999881, alpha: 1)
+	static let addressingMode = #colorLiteral(red: 0.5809999704, green: 0.1289999932, blue: 0.5749999881, alpha: 1)
+	static let operand = #colorLiteral(red: 0, green: 0.5690000057, blue: 0.5749999881, alpha: 1)
+	static let label = #colorLiteral(red: 0.5809999704, green: 0.08799999952, blue: 0.3190000057, alpha: 1)
+	static let comment = #colorLiteral(red: 0.476000011, green: 0.476000011, blue: 0.476000011, alpha: 1)
 }

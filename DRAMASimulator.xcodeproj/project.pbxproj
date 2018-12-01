@@ -10,7 +10,6 @@
 		4F139C0221A3104100F817A6 /* Script Editing Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F139C0121A3104100F817A6 /* Script Editing Controller.swift */; };
 		4F139C0421A3142400F817A6 /* Machine View Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F139C0321A3142400F817A6 /* Machine View Controller.swift */; };
 		4F1B6EE021A1A3D700751511 /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1B6EDF21A1A3D700751511 /* Script.swift */; };
-		4F1F1E6321AAF428001445FF /* Syntax Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1F1E6221AAF428001445FF /* Syntax Map.swift */; };
 		4F30B52F21A218DC00BDEDCC /* Symbolic Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */; };
 		4F346B722199DBE700D6D8AD /* DRAMASimulator Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B712199DBE700D6D8AD /* DRAMASimulator Delegate.swift */; };
 		4F346B742199DBE700D6D8AD /* Document Browser View Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B732199DBE700D6D8AD /* Document Browser View Controller.swift */; };
@@ -42,6 +41,7 @@
 		4FA7EBA821A0895E00C52F98 /* Program.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EBA721A0895E00C52F98 /* Program.swift */; };
 		4FA7EBAA21A0A55800C52F98 /* Read Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EBA921A0A55800C52F98 /* Read Command.swift */; };
 		4FD8ADB621A1B206001AD860 /* Statement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD8ADB521A1B206001AD860 /* Statement.swift */; };
+		4FEEF00621B03FFC00F6CDC2 /* Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FEEF00521B03FFC00F6CDC2 /* Lexical Unit.swift */; };
 		4FFEB7D4219C6C480049D0A5 /* Nullary Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFEB7D3219C6C480049D0A5 /* Nullary Command.swift */; };
 		4FFEB7D6219C6ED50049D0A5 /* Unary Register Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFEB7D5219C6ED50049D0A5 /* Unary Register Command.swift */; };
 		4FFEB7D8219C6EDD0049D0A5 /* Binary Register Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFEB7D7219C6EDD0049D0A5 /* Binary Register Command.swift */; };
@@ -58,7 +58,6 @@
 		4F139C0121A3104100F817A6 /* Script Editing Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script Editing Controller.swift"; sourceTree = "<group>"; };
 		4F139C0321A3142400F817A6 /* Machine View Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Machine View Controller.swift"; sourceTree = "<group>"; };
 		4F1B6EDF21A1A3D700751511 /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
-		4F1F1E6221AAF428001445FF /* Syntax Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Syntax Map.swift"; sourceTree = "<group>"; };
 		4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Symbolic Address.swift"; sourceTree = "<group>"; };
 		4F346B6E2199DBE700D6D8AD /* DRAMASimulator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = DRAMASimulator.app; path = DRAMA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F346B712199DBE700D6D8AD /* DRAMASimulator Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DRAMASimulator Delegate.swift"; sourceTree = "<group>"; };
@@ -93,6 +92,7 @@
 		4FA7EBA721A0895E00C52F98 /* Program.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Program.swift; sourceTree = "<group>"; };
 		4FA7EBA921A0A55800C52F98 /* Read Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Read Command.swift"; sourceTree = "<group>"; };
 		4FD8ADB521A1B206001AD860 /* Statement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Statement.swift; sourceTree = "<group>"; };
+		4FEEF00521B03FFC00F6CDC2 /* Lexical Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Lexical Unit.swift"; sourceTree = "<group>"; };
 		4FFEB7D3219C6C480049D0A5 /* Nullary Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Nullary Command.swift"; sourceTree = "<group>"; };
 		4FFEB7D5219C6ED50049D0A5 /* Unary Register Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Unary Register Command.swift"; sourceTree = "<group>"; };
 		4FFEB7D7219C6EDD0049D0A5 /* Binary Register Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binary Register Command.swift"; sourceTree = "<group>"; };
@@ -223,8 +223,8 @@
 			isa = PBXGroup;
 			children = (
 				4F1B6EDF21A1A3D700751511 /* Script.swift */,
+				4FEEF00521B03FFC00F6CDC2 /* Lexical Unit.swift */,
 				4FD8ADB521A1B206001AD860 /* Statement.swift */,
-				4F1F1E6221AAF428001445FF /* Syntax Map.swift */,
 				4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */,
 				4FA7EBA721A0895E00C52F98 /* Program.swift */,
 				4F85A2E821A9C42E0061E505 /* Source Error.swift */,
@@ -316,8 +316,8 @@
 				4FA7EBAA21A0A55800C52F98 /* Read Command.swift in Sources */,
 				4F346B742199DBE700D6D8AD /* Document Browser View Controller.swift in Sources */,
 				4FA7EB9A21A0682100C52F98 /* Jump Command.swift in Sources */,
+				4FEEF00621B03FFC00F6CDC2 /* Lexical Unit.swift in Sources */,
 				4FD8ADB621A1B206001AD860 /* Statement.swift in Sources */,
-				4F1F1E6321AAF428001445FF /* Syntax Map.swift in Sources */,
 				4F85A2E721A9BB590061E505 /* Error Presentation on View Controller.swift in Sources */,
 				4F44C7F2219A4426003798AF /* Machine.swift in Sources */,
 				4F820F30219B06AB004EE2C9 /* Command.swift in Sources */,

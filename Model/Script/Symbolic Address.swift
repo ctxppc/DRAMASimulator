@@ -2,10 +2,13 @@
 
 import Foundation
 
+/// An address that may contain a combination of literals and symbols.
+///
+/// A symbolic address's effective address can be computed if the symbols' addresses are known. This is typically done while lowering statements into machine words.
 struct SymbolicAddress {
 	
 	/// Parses a symbolic address from given string.
-	init(from string: String) throws {
+	init<S : StringProtocol>(from string: S) throws where S.Index == String.Index {
 		terms = try string.split(separator: "+", omittingEmptySubsequences: false).map { term in
 			let term = term.trimmingCharacters(in: .whitespaces)
 			guard !term.isEmpty else { throw Error.emptyTerm }

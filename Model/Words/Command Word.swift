@@ -111,8 +111,7 @@ extension CommandWord {
 	func command() throws -> Command {
 		
 		guard let instruction = Instruction(opcode: opcode) else { throw DecodingError.illegalInstruction(opcode: opcode) }
-		guard let commandType = supportedCommandTypes.first(where: { $0.supportedInstructions.contains(instruction) })
-			else { throw DecodingError.unimplementedInstruction(instruction) }
+		let commandType = instruction.commandType
 		
 		func addressingMode() throws -> AddressingMode {
 			guard let mode = AddressingMode(code: self.addressingMode, directAccessOnly: commandType.directAccessOnly) else { throw DecodingError.illegalAddressingMode(code: self.addressingMode) }
@@ -151,9 +150,6 @@ extension CommandWord {
 		/// The opcode is illegal.
 		case illegalInstruction(opcode: Int)
 		
-		/// The instruction is not implemented.
-		case unimplementedInstruction(Instruction)
-		
 		/// The addressing mode code is illegal.
 		case illegalAddressingMode(code: Int)
 		
@@ -167,7 +163,6 @@ extension CommandWord {
 		var errorDescription: String? {
 			switch self {
 				case .illegalInstruction(let opcode):	return "\(opcode) is geen geldige functiecode."
-				case .unimplementedInstruction(let i):	return "De instructie \(i) is niet geïmplementeerd."
 				case .illegalAddressingMode(let code):	return "\(code) is geen geldige interpretatiecode."
 				case .illegalCondition(let code):		return "\(code) is geen geldige voorwaarde."
 				case .undecodableCommand(let type):		return "Het bevel van type \(type) kan niet gedecodeerd worden."

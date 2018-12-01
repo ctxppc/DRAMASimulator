@@ -3,6 +3,8 @@
 import Foundation
 
 /// A parsed script that can be readily converted into machine words.
+///
+/// A program is usually created from an array of statements and a mapping of symbols to indices in that array.
 struct Program {
 	
 	/// Creates an empty program.
@@ -11,6 +13,11 @@ struct Program {
 	}
 	
 	/// Assembles a program with given statements and mapping from symbols to statement indices.
+	///
+	/// - Requires: Every statement index in `statementIndicesBySymbol` is a valid index in the `statements` array.
+	///
+	/// - Parameter statements: The program's statements.
+	/// - Parameter statementIndicesBySymbol: A mapping from symbols to indices in the `statements` array.
 	///
 	/// - Throws: An error if an undefined symbol is referenced.
 	init(statements: [Statement], statementIndicesBySymbol: [String : Int]) throws {
@@ -43,11 +50,11 @@ struct Program {
 	var wordSequences: [WordSequence]
 	enum WordSequence {
 		
+		/// Lowers given statement into a sequence of words.
 		init(from statement: Statement, addressesBySymbol: [Script.Symbol : Int]) throws {
 			
 			func command(instruction: Instruction, initialiser: (Command.Type) throws -> Command?) throws -> Command {
-				guard let type = supportedCommandTypes.first(where: { $0.supportedInstructions.contains(instruction) }) else { preconditionFailure("Unimplemented mnemonic") }
-				guard let command = try initialiser(type) else { throw EncodingError.incorrectFormat }
+				guard let command = try initialiser(instruction.commandType) else { throw EncodingError.incorrectFormat }
 				return command
 			}
 			
@@ -57,41 +64,47 @@ struct Program {
 			
 			switch statement {
 				
-				case .nullaryCommand(let instruction, syntaxMap: _):
+				case .nullaryCommand(let instruction):
 				self = .command(try command(instruction: instruction) { type in
 					try (type as? NullaryCommand.Type)?.init(instruction: instruction)
 				})
 				
-				case .registerCommand(let instruction, primaryRegister: let register, secondaryRegister: nil, syntaxMap: _):
+				case .registerCommand(let instruction, primaryRegister: let register, secondaryRegister: nil):
 				self = .command(try command(instruction: instruction) { type in
 					try (type as? UnaryRegisterCommand.Type)?.init(instruction: instruction, register: register)
 				})
 				
-				case .registerCommand(let instruction, let primaryRegister, let secondaryRegister?, syntaxMap: _):
+				case .registerCommand(let instruction, let primaryRegister, let secondaryRegister?):
 				self = .command(try command(instruction: instruction) { type in
 					try (type as? BinaryRegisterCommand.Type)?.init(instruction: instruction, primaryRegister: primaryRegister, secondaryRegister: secondaryRegister)
 				})
 				
-				case .addressCommand(let instruction, let addressingMode, register: nil, let address, let index, syntaxMap: _):
+				case .addressCommand(let instruction, let addressingMode, register: nil, let address, let index):
 				self = .command(try command(instruction: instruction) { type in
 					try (type as? AddressCommand.Type)?.init(instruction: instruction, addressingMode: addressingMode, address: addressSpecification(from: address, index: index))
 				})
 				
-				case .addressCommand(let instruction, let addressingMode, let register?, let address, let index, syntaxMap: _):
+				case .addressCommand(let instruction, let addressingMode, let register?, let address, let index):
 				self = .command(try command(instruction: instruction) { type in
 					try (type as? RegisterAddressCommand.Type)?.init(instruction: instruction, addressingMode: addressingMode, register: register, address: addressSpecification(from: address, index: index))
 				})
 				
-				case .conditionCommand(let instruction, let addressingMode, let condition, let address, let index, syntaxMap: _):
+				case .conditionCommand(let instruction, let addressingMode, let condition, let address, let index):
 				self = .command(try command(instruction: instruction) { type in
 					try (type as? ConditionAddressCommand.Type)?.init(instruction: instruction, addressingMode: addressingMode, condition: condition, address: addressSpecification(from: address, index: index))
 				})
 				
-				case .array(let words, syntaxMap: _):
+				case .array(let words):
 				self = .array(words)
 				
-				case .zeroArray(let length, syntaxMap: _):
+				case .zeroArray(let length):
 				self = .zeroArray(length: length)
+				
+				case .noop:
+				self = .array([])
+				
+				case .error(let error):
+				throw error
 				
 			}
 		}
@@ -140,7 +153,7 @@ struct Program {
 	}
 	
 	/// An error related to assembly such as memory management or command lowering.
-	enum AssemblyError : LocalizedError {
+	enum AssemblyError : LocalizedError, StatementError {
 		
 		/// The program does not fit in memory.
 		case overflow
@@ -161,6 +174,15 @@ struct Program {
 				case .overflow:											return "Programma past niet in geheugen"
 				case .incorrectFormat:									return "Bevel met onjuist formaat"
 				case .undefinedSymbol(let symbol, statementIndex: _):	return "“\(symbol)” is niet gedefinieerd"
+			}
+		}
+		
+		// See protocol.
+		var statementIndex: Int? {
+			switch self {
+				case .overflow:											return nil
+				case .incorrectFormat(statementIndex: let index):		return index
+				case .undefinedSymbol(_, statementIndex: let index):	return index
 			}
 		}
 		

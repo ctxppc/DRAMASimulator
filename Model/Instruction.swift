@@ -76,4 +76,24 @@ enum Instruction : String, Hashable {
 		}
 	}
 	
+	/// The command type that implements the instruction.
+	var commandType: Command.Type {
+		guard let type = supportedCommandTypes.first(where: { $0.supportedInstructions.contains(self) }) else { preconditionFailure("Unimplemented instruction") }
+		return type
+	}
+	
 }
+
+/// The command types supported by the DRAMA Simulator.
+private let supportedCommandTypes: [Command.Type] = [
+	LoadCommand.self,
+	StoreCommand.self,
+	ArithmeticCommand.self,
+	CompareCommand.self,
+	JumpCommand.self,
+	ConditionalJumpCommand.self,
+	ReadCommand.self,
+	PrintCommand.self,
+	StackCommand.self,
+	HaltCommand.self
+]

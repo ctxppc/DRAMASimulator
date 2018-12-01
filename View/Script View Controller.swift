@@ -39,17 +39,13 @@ final class ScriptViewController : UIViewController {
 	private func loadProgram() {
 		
 		discardTimeline()
-		editingController.additionalSourceError = nil
 		
-		guard let document = scriptDocument else { return }
+		guard let document = scriptDocument, case .program(let program) = document.script.program else { return }
+		
 		do {
-			let machine = Machine(memoryWords: try document.program().machineWords())
+			let machine = Machine(memoryWords: try program.machineWords())
 			timeline = .init(machine: machine)
 			machineViewController.machine = machine
-		} catch _ as ScriptDocument.PartialScriptError {
-			// Partial script errors are already handled by the editing controller.
-		} catch let error as SourceError {
-			editingController.additionalSourceError = error
 		} catch {
 			present(error)
 		}
