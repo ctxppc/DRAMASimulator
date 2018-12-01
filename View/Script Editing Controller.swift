@@ -17,7 +17,49 @@ final class ScriptEditingController : UIViewController {
 		
 		guard let errorBar = errorBar, let errorLabel = errorLabel, let textView = textView else { return }
 		
-		let formattedText = NSMutableAttributedString(string: script.sourceText, attributes: [.font: type(of: self).sourceFont])
+		if textView.text == script.sourceText {
+			applyFormatting(on: textView.textStorage, removingPrevious: true)
+		} else {
+			
+			let formattedText = NSMutableAttributedString(string: script.sourceText, attributes: [.font: type(of: self).sourceFont])
+			applyFormatting(on: formattedText, removingPrevious: false)
+			
+			let oldSelectedRange = textView.selectedRange
+			let oldText = textView.text ?? ""
+			textView.attributedText = formattedText
+			if let newSelectedRange = Range(oldSelectedRange, in: oldText)?.clamped(to: script.sourceText.startIndex..<script.sourceText.endIndex) {
+				textView.selectedRange = NSRange(newSelectedRange, in: script.sourceText)
+			}
+			
+		}
+		
+		let errors: [Error]
+		switch script.program {
+			case .program:							errors = []
+			case .sourceErrors(let sourceErrors):	errors = sourceErrors
+			case .programError(let error):			errors = [error]
+		}
+		
+		if errors.isEmpty {
+			errorBar.isHidden = true
+			errorLabel.text = "Geen fouten"
+		} else {
+			errorBar.isHidden = false
+			errorLabel.text = errors.map { error in
+				"⚠️ \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)"
+			}.joined(separator: "\n")
+		}
+		
+	}
+	
+	private func applyFormatting(on formattedText: NSMutableAttributedString, removingPrevious: Bool) {
+		
+		formattedText.beginEditing()
+		defer { formattedText.endEditing() }
+		
+		if removingPrevious {
+			formattedText.setAttributes([.font: type(of: self).sourceFont], range: NSRange(location: 0, length: formattedText.length))
+		}
 		
 		func mark(_ range: SourceRange?, in colour: UIColor) {
 			guard let range = range else { return }
@@ -65,30 +107,6 @@ final class ScriptEditingController : UIViewController {
 				
 			}
 			
-		}
-		
-		let errors: [Error]
-		switch script.program {
-			case .program:							errors = []
-			case .sourceErrors(let sourceErrors):	errors = sourceErrors
-			case .programError(let error):			errors = [error]
-		}
-		
-		if errors.isEmpty {
-			errorBar.isHidden = true
-			errorLabel.text = "Geen fouten"
-		} else {
-			errorBar.isHidden = false
-			errorLabel.text = errors.map { error in
-				"⚠️ \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)"
-			}.joined(separator: "\n")
-		}
-		
-		let oldSelectedRange = textView.selectedRange
-		let oldText = textView.text ?? ""
-		textView.attributedText = formattedText
-		if let newSelectedRange = Range(oldSelectedRange, in: oldText)?.clamped(to: script.sourceText.startIndex..<script.sourceText.endIndex) {
-			textView.selectedRange = NSRange(newSelectedRange, in: script.sourceText)
 		}
 		
 	}
