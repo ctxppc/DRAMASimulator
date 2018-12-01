@@ -111,7 +111,7 @@ extension CommandWord {
 	func command() throws -> Command {
 		
 		guard let instruction = Instruction(opcode: opcode) else { throw DecodingError.illegalInstruction(opcode: opcode) }
-		let commandType = instruction.commandType
+		guard let commandType = instruction.commandType else { throw DecodingError.unimplementedInstruction(instruction) }
 		
 		func addressingMode() throws -> AddressingMode {
 			guard let mode = AddressingMode(code: self.addressingMode, directAccessOnly: commandType.directAccessOnly) else { throw DecodingError.illegalAddressingMode(code: self.addressingMode) }
@@ -159,6 +159,9 @@ extension CommandWord {
 		/// The command type does not have a decodable structure.
 		case undecodableCommand(type: Command.Type)
 		
+		/// The instruction is not implemented.
+		case unimplementedInstruction(Instruction)
+		
 		// See protocol.
 		var errorDescription: String? {
 			switch self {
@@ -166,6 +169,7 @@ extension CommandWord {
 				case .illegalAddressingMode(let code):	return "\(code) is geen geldige interpretatiecode."
 				case .illegalCondition(let code):		return "\(code) is geen geldige voorwaarde."
 				case .undecodableCommand(let type):		return "Het bevel van type \(type) kan niet gedecodeerd worden."
+				case .unimplementedInstruction(let i):	return "\(i.rawValue)-bevelen zijn niet ondersteund."
 			}
 		}
 		

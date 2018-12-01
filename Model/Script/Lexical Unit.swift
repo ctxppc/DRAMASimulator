@@ -194,7 +194,7 @@ enum LexicalUnit {
 	/// A regular expression matching unary and binary register commands.
 	///
 	/// Groups: operation, primary register, reg. #, secondary register (opt.), reg. # (opt.)
-	private static let registerCommandExpression = expression(operationPattern, reqSpace, group(registerPattern), argSeparator, opt(group(registerPattern)))
+	private static let registerCommandExpression = expression(operationPattern, reqSpace, group(registerPattern), opt(argSeparator, group(registerPattern)))
 	
 	/// A regular expression matching address and register–address commands.
 	///
@@ -237,7 +237,7 @@ enum LexicalUnit {
 		// See protocol.
 		var errorDescription: String? {
 			switch self {
-				case .illegalFormat:	return "Bevel met ongeldig formaat"
+				case .illegalFormat:	return "Lijn met ongeldig formaat"
 			}
 		}
 		
@@ -295,10 +295,10 @@ private let conditionPattern = "([A-Z]{2,4})"
 
 private let addressPattern = "(\(baseAddressPattern))(?:\(indexPattern))?"
 private let baseAddressPattern = "\(addressTermPattern)(?:\(optSpace)\\+\(optSpace)\(addressTermPattern))*"
-private let addressTermPattern = "(?:\(symbolPattern)|[0-9]+)"
+private let addressTermPattern = "(?:\(symbolPattern)|-?[0-9]+)"
 private let indexPattern = "\\(\(optIndexModifier)\(registerPattern)\(optIndexModifier)\\)"
 private let optIndexModifier = "(\\+|\\-)?"
 
 private let literalConstantPattern = "-?[0-9]{1,10}"
 private let arrayLengthPattern = "([0-9]{1,4})"
-private let symbolPattern = "[a-z][a-z0-9]*"
+private let symbolPattern = "[a-z_][a-z0-9_]*"

@@ -39,6 +39,8 @@ struct Program {
 				return try WordSequence(from: statement, addressesBySymbol: addressesBySymbol)
 			} catch WordSequence.EncodingError.incorrectFormat {
 				throw AssemblyError.incorrectFormat(statementIndex: index)
+			} catch WordSequence.EncodingError.unimplementedInstruction(let instruction) {
+				throw AssemblyError.unimplementedInstruction(instruction, statementIndex: index)
 			} catch SymbolicAddress.Error.undefinedSymbol(let symbol) {
 				throw AssemblyError.undefinedSymbol(symbol, statementIndex: index)
 			}
@@ -54,7 +56,8 @@ struct Program {
 		init(from statement: Statement, addressesBySymbol: [Script.Symbol : Int]) throws {
 			
 			func command(instruction: Instruction, initialiser: (Command.Type) throws -> Command?) throws -> Command {
-				guard let command = try initialiser(instruction.commandType) else { throw EncodingError.incorrectFormat }
+				guard let type = instruction.commandType else { throw EncodingError.unimplementedInstruction(instruction) }
+				guard let command = try initialiser(type) else { throw EncodingError.incorrectFormat }
 				return command
 			}
 			
@@ -127,17 +130,15 @@ struct Program {
 			}
 		}
 		
-		enum EncodingError : LocalizedError {
+		enum EncodingError : Error {
 			
 			/// The command does not have the correct format.
 			case incorrectFormat
 			
-			// See protocol.
-			var errorDescription: String? {
-				switch self {
-					case .incorrectFormat:	return "Bevel met onjuist formaat"
-				}
-			}
+			/// The command specifies an unimplemented but valid instruction.
+			///
+			/// - Parameter 1: The instruction.
+			case unimplementedInstruction(Instruction)
 			
 		}
 		
@@ -165,24 +166,33 @@ struct Program {
 		
 		/// An undefined symbol is specified in a symbolic address.
 		///
+		/// - Parameter 1: The symbol.
 		/// - Parameter statementIndex: The index of the statement whose command contains an undefined symbol.
 		case undefinedSymbol(Script.Symbol, statementIndex: Int)
+		
+		/// An unimplemented but valid instruction is specified in a command.
+		///
+		/// - Parameter 1: The instruction.
+		/// - Parameter statementIndex: The index of the statement whose command contains an undefined instruction.
+		case unimplementedInstruction(Instruction, statementIndex: Int)
 		
 		// See protocol.
 		var errorDescription: String? {
 			switch self {
-				case .overflow:											return "Programma past niet in geheugen"
-				case .incorrectFormat:									return "Bevel met onjuist formaat"
-				case .undefinedSymbol(let symbol, statementIndex: _):	return "“\(symbol)” is niet gedefinieerd"
+				case .overflow:														return "Programma past niet in geheugen"
+				case .incorrectFormat:												return "Bevel met onjuist formaat"
+				case .undefinedSymbol(let symbol, statementIndex: _):				return "“\(symbol)” is niet gedefinieerd"
+				case .unimplementedInstruction(let instruction, statementIndex: _):	return "\(instruction.rawValue)-bevelen zijn niet ondersteund door deze versie van de simulator."
 			}
 		}
 		
 		// See protocol.
 		var statementIndex: Int? {
 			switch self {
-				case .overflow:											return nil
-				case .incorrectFormat(statementIndex: let index):		return index
-				case .undefinedSymbol(_, statementIndex: let index):	return index
+				case .overflow:													return nil
+				case .incorrectFormat(statementIndex: let index):				return index
+				case .undefinedSymbol(_, statementIndex: let index):			return index
+				case .unimplementedInstruction(_, statementIndex: let index):	return index
 			}
 		}
 		

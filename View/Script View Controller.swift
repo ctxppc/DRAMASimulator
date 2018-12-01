@@ -194,6 +194,7 @@ extension ScriptViewController : TimelineDelegate {
 }
 
 extension ScriptViewController : ScriptEditingControllerDelegate {
+	
 	func sourceTextDidChange(on controller: ScriptEditingController) {
 		
 		guard let scriptDocument = scriptDocument else { return }
@@ -207,4 +208,9 @@ extension ScriptViewController : ScriptEditingControllerDelegate {
 		loadProgram()
 		
 	}
+	
+	func selectedRangeDidChange(on controller: ScriptEditingController) {
+		// TODO
+	}
+	
 }

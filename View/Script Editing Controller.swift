@@ -54,7 +54,7 @@ final class ScriptEditingController : UIViewController {
 				break
 				
 				case .label(symbol: _, fullRange: let range):
-				formattedText.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: NSRange(range, in: script.sourceText))
+				formattedText.addAttribute(.underlineStyle, value: NSUnderlineStyle.double.rawValue, range: NSRange(range, in: script.sourceText))
 				mark(range, in: .label)
 				
 				case .comment(let range):
@@ -96,6 +96,12 @@ final class ScriptEditingController : UIViewController {
 	/// The controller's delegate.
 	weak var delegate: ScriptEditingControllerDelegate?
 	
+	/// The selected range, or `nil` if nothing is selected.
+	var selectedRange: SourceRange? {
+		guard let textView = textView else { return nil }
+		return SourceRange(textView.selectedRange, in: textView.text)
+	}
+	
 	/// The text view presenting the script's text.
 	@IBOutlet var textView: UITextView!
 	
@@ -112,7 +118,13 @@ final class ScriptEditingController : UIViewController {
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-		keyboardWillChangeFrameObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillChangeFrameNotification, object: nil, queue: nil) { [weak self] in self?.keyboardWillChangeFrame($0) }
+		keyboardWillChangeFrameObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillChangeFrameNotification, object: nil, queue: nil) { [weak self] notification in
+			guard let controller = self else { return }
+			let keyboardFrame = notification.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
+			let viewFrame = controller.view.convert(controller.view.bounds, to: controller.view.window)
+			controller.textView.contentInset.bottom = viewFrame.maxY - keyboardFrame.minY
+			controller.textView.scrollIndicatorInsets.bottom = viewFrame.maxY - keyboardFrame.minY
+		}
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
@@ -122,27 +134,28 @@ final class ScriptEditingController : UIViewController {
 	
 	private var keyboardWillChangeFrameObserver: Any?
 	
-	/// Notifies the view controller that the keyboard will change its frame.
-	private func keyboardWillChangeFrame(_ notification: Notification) {
-		let keyboardFrame = notification.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
-		let viewFrame = view.convert(view.bounds, to: view.window)
-		textView.contentInset.bottom = viewFrame.maxY - keyboardFrame.minY
-		textView.scrollIndicatorInsets.bottom = viewFrame.maxY - keyboardFrame.minY
-	}
-	
 }
 
 extension ScriptEditingController : UITextViewDelegate {
+	
 	func textViewDidChange(_ textView: UITextView) {
 		script.sourceText = textView.text
 		delegate?.sourceTextDidChange(on: self)
 	}
+	
+	func textViewDidChangeSelection(_ textView: UITextView) {
+		delegate?.selectedRangeDidChange(on: self)
+	}
+	
 }
 
 protocol ScriptEditingControllerDelegate : class {
 	
-	/// Notifies the delegate that the source text has been changed.
+	/// Notifies the delegate that the source text has been modified.
 	func sourceTextDidChange(on controller: ScriptEditingController)
+	
+	/// Notifies the delegate that the selected range has changed.
+	func selectedRangeDidChange(on controller: ScriptEditingController)
 	
 }
 

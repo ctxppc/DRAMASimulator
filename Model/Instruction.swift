@@ -76,10 +76,9 @@ enum Instruction : String, Hashable {
 		}
 	}
 	
-	/// The command type that implements the instruction.
-	var commandType: Command.Type {
-		guard let type = supportedCommandTypes.first(where: { $0.supportedInstructions.contains(self) }) else { preconditionFailure("Unimplemented instruction") }
-		return type
+	/// The command type that implements the instruction, or `nil` if the instruction isn't implemented.
+	var commandType: Command.Type? {
+		return supportedCommandTypes.first(where: { $0.supportedInstructions.contains(self) })
 	}
 	
 }
@@ -95,5 +94,7 @@ private let supportedCommandTypes: [Command.Type] = [
 	ReadCommand.self,
 	PrintCommand.self,
 	StackCommand.self,
+	SubroutineJumpCommand.self,
+	SubroutineReturnCommand.self,
 	HaltCommand.self
 ]
