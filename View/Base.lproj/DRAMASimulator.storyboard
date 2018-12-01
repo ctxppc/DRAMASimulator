@@ -127,22 +127,8 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ZE8-k6-rEZ">
                                 <rect key="frame" x="0.0" y="20" width="512" height="678"/>
                                 <subviews>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="interactive" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="x8N-f6-xzC">
-                                        <rect key="frame" x="0.0" y="0.0" width="512" height="550"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <string key="text">ABC R0, R1
-DEF.g R0, 0(R2)
-GHI.k lmn, opqr+s
-TUV w
-XYZ</string>
-                                        <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="18"/>
-                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
-                                        <connections>
-                                            <outlet property="delegate" destination="lDX-M6-H4E" id="5u1-t0-28m"/>
-                                        </connections>
-                                    </textView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZBX-al-uWg" userLabel="Error Bar">
-                                        <rect key="frame" x="0.0" y="550" width="512" height="128"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="512" height="128"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error message" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xgw-Wg-wbN">
                                                 <rect key="frame" x="8" y="8" width="496" height="112"/>
@@ -159,6 +145,20 @@ XYZ</string>
                                             <constraint firstAttribute="trailingMargin" secondItem="Xgw-Wg-wbN" secondAttribute="trailing" id="VmF-ah-12q"/>
                                         </constraints>
                                     </view>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="interactive" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="x8N-f6-xzC">
+                                        <rect key="frame" x="0.0" y="128" width="512" height="550"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <string key="text">ABC R0, R1
+DEF.g R0, 0(R2)
+GHI.k lmn, opqr+s
+TUV w
+XYZ</string>
+                                        <fontDescription key="fontDescription" name="Menlo-Regular" family="Menlo" pointSize="18"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" smartDashesType="no" smartInsertDeleteType="no" smartQuotesType="no"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="lDX-M6-H4E" id="5u1-t0-28m"/>
+                                        </connections>
+                                    </textView>
                                 </subviews>
                             </stackView>
                         </subviews>

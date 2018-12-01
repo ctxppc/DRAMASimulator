@@ -110,6 +110,26 @@ final class ScriptEditingController : UIViewController {
 		updatePresentedScript()
 	}
 	
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+		keyboardWillChangeFrameObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillChangeFrameNotification, object: nil, queue: nil) { [weak self] in self?.keyboardWillChangeFrame($0) }
+	}
+	
+	override func viewWillDisappear(_ animated: Bool) {
+		super.viewWillDisappear(animated)
+		keyboardWillChangeFrameObserver.flatMap(NotificationCenter.default.removeObserver)
+	}
+	
+	private var keyboardWillChangeFrameObserver: Any?
+	
+	/// Notifies the view controller that the keyboard will change its frame.
+	private func keyboardWillChangeFrame(_ notification: Notification) {
+		let keyboardFrame = notification.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
+		let viewFrame = view.convert(view.bounds, to: view.window)
+		textView.contentInset.bottom = viewFrame.maxY - keyboardFrame.minY
+		textView.scrollIndicatorInsets.bottom = viewFrame.maxY - keyboardFrame.minY
+	}
+	
 }
 
 extension ScriptEditingController : UITextViewDelegate {
