@@ -42,6 +42,8 @@ enum Instruction : String, Hashable {
 			case 31:	self = .compare
 			case 32:	self = .jump
 			case 33:	self = .conditionalJump
+			case 41:	self = .subroutineJump
+			case 42:	self = .subroutineReturn
 			case 71:	self = .read
 			case 72:	self = .printInteger
 			case 73:	self = .printNewline
