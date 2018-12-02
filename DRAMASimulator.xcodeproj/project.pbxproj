@@ -33,6 +33,16 @@
 		4F820F35219B1CD6004EE2C9 /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E790B219A1FBE008E3E9B /* Instruction.swift */; };
 		4F85A2E721A9BB590061E505 /* Error Presentation on View Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F85A2E621A9BB590061E505 /* Error Presentation on View Controller.swift */; };
 		4F85A2E921A9C42E0061E505 /* Source Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F85A2E821A9C42E0061E505 /* Source Error.swift */; };
+		4FA523DD21B423DD00BE1FF2 /* Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523DC21B423DD00BE1FF2 /* Directive.swift */; };
+		4FA523DF21B4263800BE1FF2 /* Macro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523DE21B4263800BE1FF2 /* Macro.swift */; };
+		4FA523E321B4278E00BE1FF2 /* Output Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523E221B4278E00BE1FF2 /* Output Directive.swift */; };
+		4FA523E521B4279700BE1FF2 /* Fail Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523E421B4279700BE1FF2 /* Fail Directive.swift */; };
+		4FA523E721B427B000BE1FF2 /* Preprocessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523E621B427B000BE1FF2 /* Preprocessor.swift */; };
+		4FA523E921B4298200BE1FF2 /* Assignment Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523E821B4298200BE1FF2 /* Assignment Directive.swift */; };
+		4FA523EB21B4299800BE1FF2 /* Invocation Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523EA21B4299800BE1FF2 /* Invocation Directive.swift */; };
+		4FA523ED21B429A600BE1FF2 /* Null Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523EC21B429A600BE1FF2 /* Null Directive.swift */; };
+		4FA523EF21B429B700BE1FF2 /* Jump Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523EE21B429B700BE1FF2 /* Jump Directive.swift */; };
+		4FA523F121B42CF200BE1FF2 /* Comparison Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523F021B42CF200BE1FF2 /* Comparison Directive.swift */; };
 		4FA5A4E721AB210000799084 /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA5A4E621AB210000799084 /* Timeline.swift */; };
 		4FA7EB9821A0493C00C52F98 /* Word Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EB9721A0493C00C52F98 /* Word Protocol.swift */; };
 		4FA7EB9A21A0682100C52F98 /* Jump Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EB9921A0682100C52F98 /* Jump Command.swift */; };
@@ -86,6 +96,16 @@
 		4F820F33219B1614004EE2C9 /* Load Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Load Command.swift"; sourceTree = "<group>"; };
 		4F85A2E621A9BB590061E505 /* Error Presentation on View Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error Presentation on View Controller.swift"; sourceTree = "<group>"; };
 		4F85A2E821A9C42E0061E505 /* Source Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Source Error.swift"; sourceTree = "<group>"; };
+		4FA523DC21B423DD00BE1FF2 /* Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Directive.swift; sourceTree = "<group>"; };
+		4FA523DE21B4263800BE1FF2 /* Macro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Macro.swift; sourceTree = "<group>"; };
+		4FA523E221B4278E00BE1FF2 /* Output Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Output Directive.swift"; sourceTree = "<group>"; };
+		4FA523E421B4279700BE1FF2 /* Fail Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Fail Directive.swift"; sourceTree = "<group>"; };
+		4FA523E621B427B000BE1FF2 /* Preprocessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preprocessor.swift; sourceTree = "<group>"; };
+		4FA523E821B4298200BE1FF2 /* Assignment Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Assignment Directive.swift"; sourceTree = "<group>"; };
+		4FA523EA21B4299800BE1FF2 /* Invocation Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation Directive.swift"; sourceTree = "<group>"; };
+		4FA523EC21B429A600BE1FF2 /* Null Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Null Directive.swift"; sourceTree = "<group>"; };
+		4FA523EE21B429B700BE1FF2 /* Jump Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Jump Directive.swift"; sourceTree = "<group>"; };
+		4FA523F021B42CF200BE1FF2 /* Comparison Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Comparison Directive.swift"; sourceTree = "<group>"; };
 		4FA5A4E621AB210000799084 /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		4FA7EB9721A0493C00C52F98 /* Word Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Word Protocol.swift"; sourceTree = "<group>"; };
 		4FA7EB9921A0682100C52F98 /* Jump Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Jump Command.swift"; sourceTree = "<group>"; };
@@ -176,6 +196,7 @@
 			isa = PBXGroup;
 			children = (
 				4F346B772199DBE700D6D8AD /* Script Document.swift */,
+				4FA523DB21B423C900BE1FF2 /* Preprocessor */,
 				4FD8ADB421A1B1FD001AD860 /* Script */,
 				4FA5A4E621AB210000799084 /* Timeline.swift */,
 				4F44C7F1219A4426003798AF /* Machine.swift */,
@@ -223,6 +244,23 @@
 				4FFEB7DD219C6F060049D0A5 /* Condition Address Command.swift */,
 			);
 			path = "Command Protocols";
+			sourceTree = "<group>";
+		};
+		4FA523DB21B423C900BE1FF2 /* Preprocessor */ = {
+			isa = PBXGroup;
+			children = (
+				4FA523E621B427B000BE1FF2 /* Preprocessor.swift */,
+				4FA523DE21B4263800BE1FF2 /* Macro.swift */,
+				4FA523DC21B423DD00BE1FF2 /* Directive.swift */,
+				4FA523E221B4278E00BE1FF2 /* Output Directive.swift */,
+				4FA523E821B4298200BE1FF2 /* Assignment Directive.swift */,
+				4FA523F021B42CF200BE1FF2 /* Comparison Directive.swift */,
+				4FA523EE21B429B700BE1FF2 /* Jump Directive.swift */,
+				4FA523EA21B4299800BE1FF2 /* Invocation Directive.swift */,
+				4FA523E421B4279700BE1FF2 /* Fail Directive.swift */,
+				4FA523EC21B429A600BE1FF2 /* Null Directive.swift */,
+			);
+			path = Preprocessor;
 			sourceTree = "<group>";
 		};
 		4FD8ADB421A1B1FD001AD860 /* Script */ = {
@@ -320,6 +358,7 @@
 				4FA7EBA221A06B8400C52F98 /* Compare Command.swift in Sources */,
 				4F346B762199DBE700D6D8AD /* Script View Controller.swift in Sources */,
 				4FA7EBAA21A0A55800C52F98 /* Read Command.swift in Sources */,
+				4FA523E921B4298200BE1FF2 /* Assignment Directive.swift in Sources */,
 				4F346B742199DBE700D6D8AD /* Document Browser View Controller.swift in Sources */,
 				4FA7EB9A21A0682100C52F98 /* Jump Command.swift in Sources */,
 				4FEEF00621B03FFC00F6CDC2 /* Lexical Unit.swift in Sources */,
@@ -327,10 +366,15 @@
 				4FD8ADB621A1B206001AD860 /* Statement.swift in Sources */,
 				4F85A2E721A9BB590061E505 /* Error Presentation on View Controller.swift in Sources */,
 				4F44C7F2219A4426003798AF /* Machine.swift in Sources */,
+				4FA523EF21B429B700BE1FF2 /* Jump Directive.swift in Sources */,
 				4F820F30219B06AB004EE2C9 /* Command.swift in Sources */,
+				4FA523E321B4278E00BE1FF2 /* Output Directive.swift in Sources */,
 				4F346B722199DBE700D6D8AD /* DRAMASimulator Delegate.swift in Sources */,
+				4FA523E721B427B000BE1FF2 /* Preprocessor.swift in Sources */,
 				4FFEB7E1219C73650049D0A5 /* Register.swift in Sources */,
+				4FA523ED21B429A600BE1FF2 /* Null Directive.swift in Sources */,
 				4FA7EBA421A06C4C00C52F98 /* Condition State.swift in Sources */,
+				4FA523EB21B4299800BE1FF2 /* Invocation Directive.swift in Sources */,
 				4FA7EB9C21A0691800C52F98 /* Conditional Jump Command.swift in Sources */,
 				4FFEB7D4219C6C480049D0A5 /* Nullary Command.swift in Sources */,
 				4F3E7910219A2221008E3E9B /* Addressing Mode.swift in Sources */,
@@ -341,11 +385,14 @@
 				4F4FA73F21A5AD6800C1D2C7 /* Print Command.swift in Sources */,
 				4FFEB7DA219C6EE90049D0A5 /* Address Command.swift in Sources */,
 				4F1B6EE021A1A3D700751511 /* Script.swift in Sources */,
+				4FA523E521B4279700BE1FF2 /* Fail Directive.swift in Sources */,
 				4F35A3CE21A0D6EA00A4610D /* Command Word.swift in Sources */,
 				4FFEB7D6219C6ED50049D0A5 /* Unary Register Command.swift in Sources */,
 				4F85A2E921A9C42E0061E505 /* Source Error.swift in Sources */,
+				4FA523DD21B423DD00BE1FF2 /* Directive.swift in Sources */,
 				4FFEB7E5219C75DB0049D0A5 /* Arithmetic Command.swift in Sources */,
 				4F30B52F21A218DC00BDEDCC /* Symbolic Address.swift in Sources */,
+				4FA523DF21B4263800BE1FF2 /* Macro.swift in Sources */,
 				4FA5A4E721AB210000799084 /* Timeline.swift in Sources */,
 				4FFEB7DE219C6F060049D0A5 /* Condition Address Command.swift in Sources */,
 				4FFEB7DF219C72D50049D0A5 /* Load Command.swift in Sources */,
@@ -353,6 +400,7 @@
 				4FA7EBA821A0895E00C52F98 /* Program.swift in Sources */,
 				4F44C7F6219A4C40003798AF /* Address Word.swift in Sources */,
 				4F139C0221A3104100F817A6 /* Script Editing Controller.swift in Sources */,
+				4FA523F121B42CF200BE1FF2 /* Comparison Directive.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
