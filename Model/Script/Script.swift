@@ -83,7 +83,12 @@ struct Script {
 		
 		var units: [LexicalUnit] = []
 		
-		source.enumerateSubstrings(in: source.startIndex..<source.endIndex, options: [.byLines, .substringNotRequired]) { _, sRange, _, _ in
+		source.enumerateSubstrings(in: source.startIndex..<source.endIndex, options: [.byLines, .substringNotRequired]) { _, sRange, _, stop in
+			
+			if source[sRange].contains("EINDPR") {
+				stop = true
+				return
+			}
 			
 			let fRange = NSRange(sRange, in: source)
 			func range(in match: NSTextCheckingResult, at group: Int) -> SourceRange {
