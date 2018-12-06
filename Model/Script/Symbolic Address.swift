@@ -8,16 +8,30 @@ import Foundation
 struct SymbolicAddress {
 	
 	/// Parses a symbolic address from given string.
-	init<S : StringProtocol>(from string: S) throws where S.Index == String.Index {
-		terms = try string.split(separator: "+", omittingEmptySubsequences: false).map { term in
-			let term = term.trimmingCharacters(in: .whitespaces)
-			guard !term.isEmpty else { throw Error.emptyTerm }
-			if let literal = Int(term) {
-				return .literal(literal)
+	init<S : StringProtocol>(from string: S) throws {
+		
+		var terms = [Term]()
+		var termString = ""
+		func addTerm(negated: Bool) throws {
+			let trimmedTerm = termString.trimmingCharacters(in: .whitespaces)
+			guard !trimmedTerm.isEmpty else { throw Error.emptyTerm }
+			if let literal = Int(trimmedTerm) {
+				terms.append(.literal(literal, negated: negated))
 			} else {
-				return .symbol(term)
+				terms.append(.symbol(trimmedTerm, negated: negated))
 			}
 		}
+		
+		for character in string {
+			switch character {
+				case "+":	try addTerm(negated: false)
+				case "-":	try addTerm(negated: true)
+				default:	termString.append(character)
+			}
+		}
+		
+		self.terms = terms
+		
 	}
 	
 	/// The terms of the address.
@@ -28,21 +42,21 @@ struct SymbolicAddress {
 	enum Term {
 		
 		/// A term specifying a literal value.
-		case literal(Int)
+		case literal(Int, negated: Bool)
 		
 		/// A term referencing a symbol.
-		case symbol(String)
+		case symbol(String, negated: Bool)
 		
 		/// Returns the effective address given a mapping of symbols to addresses.
 		func effectiveAddress(addressesBySymbol: [Script.Symbol : Int]) throws -> Int {
 			switch self {
 				
-				case .literal(let value):
-				return value
+				case .literal(let value, negated: let negated):
+				return negated ? -value : value
 				
-				case .symbol(let symbol):
+				case .symbol(let symbol, negated: let negated):
 				guard let address = addressesBySymbol[symbol] else { throw Error.undefinedSymbol(symbol) }
-				return address
+				return negated ? -address : address
 				
 			}
 		}
