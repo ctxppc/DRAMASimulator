@@ -39,18 +39,12 @@ final class ScriptViewController : UIViewController {
 	private func loadProgram() {
 		
 		discardTimeline()
+		defer { updateToolbarButtons() }
 		
 		guard let document = scriptDocument, case .program(let program) = document.script.program else { return }
-		
-		do {
-			let machine = Machine(memoryWords: try program.machineWords())
-			timeline = .init(machine: machine)
-			machineViewController.machine = machine
-		} catch {
-			present(error)
-		}
-		
-		updateToolbarButtons()
+		let machine = Machine(memoryWords: program.words)
+		timeline = .init(machine: machine)
+		machineViewController.machine = machine
 		
 	}
 	

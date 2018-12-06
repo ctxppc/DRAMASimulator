@@ -9,33 +9,32 @@ struct Script {
 	init(from sourceText: String = "") {
 		
 		storedSourceText = sourceText
-		lexicalUnits = LexicalUnit.units(in: sourceText)
-		statements = lexicalUnits.map { Statement(from: $0, source: sourceText) }
+		lexicalUnits = Script.units(in: sourceText)
+		statements = lexicalUnits.compactMap { $0 as? Statement }
 		
-		var statementIndicesBySymbol: [Symbol : Int] = [:]
-		for (lexicalUnit, index) in zip(lexicalUnits, lexicalUnits.indices) {
-			if case .label(symbol: let range, fullRange: _) = lexicalUnit {
-				statementIndicesBySymbol[.init(sourceText[range])] = index
-			}
+		struct ReductionState {
+			var indicesBySymbol = [Symbol : Int]()
+			var indexOfNextStatement = 0
 		}
-		self.statementIndicesBySymbol = statementIndicesBySymbol
 		
-		let sourceErrors = lexicalUnits.compactMap { unit -> SourceError? in
-			guard case .error(let error) = unit else { return nil }
-			return error
+		statementIndicesBySymbol = lexicalUnits.reduce(into: ReductionState()) { (state, unit) in
+			if unit is Statement {
+				state.indexOfNextStatement += 1
+			} else if let label = unit as? LabelLexicalUnit {
+				state.indicesBySymbol[.init(sourceText[label.symbolRange])] = state.indexOfNextStatement
+			}
+		}.indicesBySymbol
+		
+		let sourceErrors = lexicalUnits.compactMap {
+			($0 as? PartialLexicalUnit)?.error as? SourceError
 		}
 		
 		if sourceErrors.isEmpty {
 			do {
 				program = .program(try Program(statements: statements, statementIndicesBySymbol: statementIndicesBySymbol))
-			} catch let error as SourceError {
-				program = .sourceErrors([error])
-			} catch let error as StatementError {
-				if let sourceError = StatementSourceError(from: error, lexicalUnits: lexicalUnits) {
-					program = .sourceErrors([sourceError])
-				} else {
-					program = .programError(error)
-				}
+			} catch let error as Program.StatementTranslationError {
+				let rewrappedError = StatementTranslationError(underlyingError: error.underlyingError, sourceRange: statements[error.statementIndex].fullSourceRange)
+				program = .sourceErrors([rewrappedError])
 			} catch {
 				program = .programError(error)
 			}
@@ -74,8 +73,117 @@ struct Script {
 		/// A program couldn't be assembled due to source errors.
 		case sourceErrors([SourceError])
 		
-		/// A program couldn't be assembled due to non-source errors.
+		/// A program couldn't be assembled due to a non-source error.
 		case programError(Error)
+		
+	}
+	
+	/// Determines all lexical units in given source.
+	private static func units(in source: String) -> [LexicalUnit] {
+		
+		var units: [LexicalUnit] = []
+		
+		source.enumerateSubstrings(in: source.startIndex..<source.endIndex, options: [.byLines, .substringNotRequired]) { _, sRange, _, _ in
+			
+			let fRange = NSRange(sRange, in: source)
+			func range(in match: NSTextCheckingResult, at group: Int) -> SourceRange {
+				return SourceRange(match.range(at: group), in: source)!
+			}
+			
+			let noncommentRange: SourceRange
+			let commentRange: SourceRange?
+			if let match = CommentLexicalUnit.regularExpression.firstMatch(in: source, range: fRange) {
+				noncommentRange = range(in: match, at: 1)
+				commentRange = range(in: match, at: 2)
+			} else {
+				noncommentRange = sRange
+				commentRange = nil
+			}
+			
+			let symbolLabelRange: (SourceRange, SourceRange)?
+			let statementRange: SourceRange
+			if let match = LabelLexicalUnit.regularExpression.firstMatch(in: source, range: .init(noncommentRange, in: source)) {
+				symbolLabelRange = (range(in: match, at: 2), range(in: match, at: 1))
+				statementRange = range(in: match, at: 3)
+			} else {
+				symbolLabelRange = nil
+				statementRange = noncommentRange
+			}
+			
+			if let (symbolRange, labelRange) = symbolLabelRange {
+				units.append(LabelLexicalUnit(fullSourceRange: labelRange, symbolRange: symbolRange))
+			}
+			
+			let lexicalUnitTypes: [Statement.Type] = [
+				NullaryCommandStatement.self,
+				RegisterCommandStatement.self,
+				AddressCommandStatement.self,
+				ArrayStatement.self
+			]
+			
+			if let lowerBound = source.rangeOfCharacter(from: nonwhitespaceSet, range: statementRange)?.lowerBound,
+				let upperBound = source.rangeOfCharacter(from: nonwhitespaceSet, options: .backwards, range: statementRange)?.lowerBound {
+				
+				let trimmedStatementRange = lowerBound...upperBound
+				let typeMatchPair = lexicalUnitTypes.lazy.compactMap { type -> (Statement.Type, NSTextCheckingResult)? in
+					guard let match = type.regularExpression.firstMatch(in: source, range: NSRange(trimmedStatementRange, in: source)) else { return nil }
+					return (type, match)
+				}.first
+				
+				do {
+					if let (type, match) = typeMatchPair {
+						units.append(try type.init(match: match, in: source))
+					} else {
+						throw ParsingError.illegalFormat(range: statementRange)
+					}
+				} catch {
+					units.append(PartialLexicalUnit(fullSourceRange: statementRange, error: error))
+				}
+				
+			}
+			
+			if let range = commentRange {
+				units.append(CommentLexicalUnit(fullSourceRange: range))
+			}
+			
+		}
+		
+		return units
+		
+	}
+	
+	/// A character set containing all characters except whitespaces.
+	private static let nonwhitespaceSet = CharacterSet.whitespaces.inverted
+	
+	enum ParsingError : LocalizedError, SourceError {
+		
+		/// A statement has an illegal format.
+		case illegalFormat(range: SourceRange)
+		
+		// See protocol.
+		var errorDescription: String? {
+			switch self {
+				case .illegalFormat:	return "Lijn met ongeldig formaat"
+			}
+		}
+		
+		// See protocol.
+		var sourceRange: SourceRange {
+			switch self {
+				case .illegalFormat(range: let range):	return range
+			}
+		}
+		
+	}
+	
+	/// An error that occured while translating a statement into words.
+	struct StatementTranslationError : SourceError {
+		
+		/// The error that occurred while translating the statement.
+		let underlyingError: Error
+		
+		// See protocol.
+		let sourceRange: SourceRange
 		
 	}
 	

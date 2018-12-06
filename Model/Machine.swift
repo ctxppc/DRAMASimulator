@@ -4,13 +4,21 @@
 struct Machine {
 	
 	/// Initialises a machine with given registers, memory cells, program counter, and condition state.
-	init(registers: [Word] = defaultRegisters, memoryWords: [Word] = emptyMemory, startingAt programCounter: AddressWord = .zero, conditionState: ConditionState = .zero) {
+	///
+	/// - Requires: `registers` has exactly 10 elements.
+	/// - Requires: `memoryWords` does not exceed the machine's address space.
+	///
+	/// - Parameter registers: The machine's registers. The default value is `defaultRegisters`.
+	/// - Parameter memoryWords: The words to load (starting from the beginning of the machine). The default value is an empty array.
+	/// - Parameter programCounter: The address of the next instruction to execute. The default value is zero.
+	/// - Parameter conditionState: The condition state. The default value is `.zero`.
+	init(registers: [Word] = defaultRegisters, memoryWords: [Word] = [], startingAt programCounter: AddressWord = .zero, conditionState: ConditionState = .zero) {
 		
 		precondition(registers.count == Machine.defaultRegisters.count, "Invalid register count")
-		precondition(memoryWords.count == Machine.emptyMemory.count, "Invalid memory cell count")
+		precondition(memoryWords.count < AddressWord.unsignedUpperBound, "Memory space exceeds address space")
 		
 		self.registers = registers
-		self.memoryWords = memoryWords
+		self.memoryWords = memoryWords + repeatElement(.zero, count: AddressWord.unsignedUpperBound - memoryWords.count)
 		self.programCounter = programCounter
 		self.conditionState = conditionState
 		
@@ -86,9 +94,6 @@ struct Machine {
 			return specification.base
 		}
 	}
-	
-	/// An array representing empty memory.
-	static let emptyMemory = Array(repeating: Word.zero, count: AddressWord.unsignedUpperBound)
 	
 	/// The address in memory of the next command to be executed.
 	var programCounter: AddressWord

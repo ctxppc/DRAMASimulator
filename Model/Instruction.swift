@@ -1,5 +1,7 @@
 // DRAMASimulator © 2018 Constantino Tsarouhas
 
+import Foundation
+
 /// A value that identifies the kind of operation a command performs.
 enum Instruction : String, Hashable {
 	
@@ -81,6 +83,30 @@ enum Instruction : String, Hashable {
 	/// The command type that implements the instruction, or `nil` if the instruction isn't implemented.
 	var commandType: Command.Type? {
 		return supportedCommandTypes.first(where: { $0.supportedInstructions.contains(self) })
+	}
+	
+}
+
+extension Instruction {
+	
+	init(in source: String, at range: SourceRange) throws {
+		let mnemonic = source[range].uppercased()
+		guard let instruction = Instruction(rawValue: mnemonic) else { throw ParsingError.unknownMnemonic(mnemonic) }
+		self = instruction
+	}
+	
+	enum ParsingError : LocalizedError {
+		
+		/// An unknown mnemonic is specified.
+		case unknownMnemonic(String)
+		
+		// See protocol.
+		var errorDescription: String? {
+			switch self {
+				case .unknownMnemonic(let mnemonic):	return "Onbekend bevel “\(mnemonic)”"
+			}
+		}
+		
 	}
 	
 }

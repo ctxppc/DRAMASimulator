@@ -61,52 +61,45 @@ final class ScriptEditingController : UIViewController {
 			formattedText.setAttributes([.font: type(of: self).sourceFont], range: NSRange(location: 0, length: formattedText.length))
 		}
 		
-		func mark(_ range: SourceRange?, in colour: UIColor) {
+		func mark(_ range: SourceRange?, _ attribute: NSAttributedString.Key = .foregroundColor, in colour: UIColor) {
 			guard let range = range else { return }
-			formattedText.addAttribute(.foregroundColor, value: colour, range: NSRange(range, in: script.sourceText))
+			formattedText.addAttribute(attribute, value: colour, range: NSRange(range, in: script.sourceText))
 		}
 		
 		for unit in script.lexicalUnits {
+			
+			if let unit = unit as? CommandStatement {
+				mark(unit.instructionSourceRange, in: .mnemonic)
+			}
+			
 			switch unit {
 				
-				case .nullaryCommand(instruction: let mnemonicRange, fullRange: _):
-				mark(mnemonicRange, in: .mnemonic)
+				case let unit as RegisterCommandStatement:
+				mark(unit.primaryRegisterSourceRange.fullRange, in: .operand)
+				mark(unit.secondaryRegisterSourceRange?.fullRange, in: .operand)
 				
-				case .registerCommand(instruction: let mnemonicRange, primaryRegister: let firstRegisterRange, secondaryRegister: let secondRegisterRange, fullRange: _):
-				mark(mnemonicRange, in: .mnemonic)
-				mark(firstRegisterRange.fullRange, in: .operand)
-				mark(secondRegisterRange?.fullRange, in: .operand)
+				case let unit as AddressCommandStatement:
+				mark(unit.argument?.sourceRange, in: .operand)
+				mark(unit.baseAddressSourceRange, in: .operand)
 				
-				case .addressCommand(instruction: let mnemonicRange, addressingMode: let modeRange, register: let registerRange, address: let addressRange, index: _, fullRange: _):
-				mark(mnemonicRange, in: .mnemonic)
-				mark(modeRange, in: .addressingMode)
-				mark(registerRange?.fullRange, in: .operand)
-				mark(addressRange, in: .operand)
+				case let unit as LabelLexicalUnit:
+				formattedText.addAttribute(.underlineStyle, value: NSUnderlineStyle.double.rawValue, range: NSRange(unit.fullSourceRange, in: script.sourceText))
+				mark(unit.fullSourceRange, in: .label)
 				
-				case .conditionCommand(instruction: let mnemonicRange, addressingMode: let modeRange, condition: let conditionRange, address: let addressRange, index: _, fullRange: _):
-				mark(mnemonicRange, in: .mnemonic)
-				mark(modeRange, in: .addressingMode)
-				mark(conditionRange, in: .operand)
-				mark(addressRange, in: .operand)
+				case let unit as CommentLexicalUnit:
+				mark(unit.fullSourceRange, in: .comment)
 				
-				case .array:
-				break
-				
-				case .zeroArray:
-				break
-				
-				case .label(symbol: _, fullRange: let range):
-				formattedText.addAttribute(.underlineStyle, value: NSUnderlineStyle.double.rawValue, range: NSRange(range, in: script.sourceText))
-				mark(range, in: .label)
-				
-				case .comment(let range):
-				mark(range, in: .comment)
-				
-				case .error(let error):
-				formattedText.addAttribute(.backgroundColor, value: #colorLiteral(red: 0.9179999828, green: 0.8460000157, blue: 0.8140000105, alpha: 1), range: NSRange(error.sourceRange, in: script.sourceText))
+				default:
+				break	// Not a requirement to handle every possible type of unit
 				
 			}
 			
+		}
+		
+		if case .sourceErrors(let errors) = script.program {
+			for error in errors {
+				mark(error.sourceRange, .backgroundColor, in: #colorLiteral(red: 0.9179999828, green: 0.8460000157, blue: 0.8140000105, alpha: 1))
+			}
 		}
 		
 	}

@@ -1,5 +1,7 @@
 // DRAMASimulator © 2018 Constantino Tsarouhas
 
+import Foundation
+
 enum AddressingMode : String {
 	
 	/// The operand is to be interpreted as a signed value.
@@ -42,6 +44,30 @@ enum AddressingMode : String {
 			case (.indirect, false):	return 4
 			case (.indirect, true):		return 3
 		}
+	}
+	
+}
+
+extension AddressingMode {
+	
+	init(in source: String, at range: SourceRange) throws {
+		let code = source[range].lowercased()
+		guard let mode = AddressingMode(rawValue: code) else { throw ParsingError.unknownAddressingMode(code) }
+		self = mode
+	}
+	
+	enum ParsingError : LocalizedError {
+		
+		/// An unknown addressing mode is specified.
+		case unknownAddressingMode(String)
+		
+		// See protocol.
+		var errorDescription: String? {
+			switch self {
+				case .unknownAddressingMode(let mode):	return "Onbekende adresinterpretatie “\(mode)”"
+			}
+		}
+		
 	}
 	
 }

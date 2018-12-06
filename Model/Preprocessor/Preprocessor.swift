@@ -3,7 +3,7 @@
 import Foundation
 
 /// A value that transforms an unprocessed source into a processed source.
-struct ProcessableSource {
+struct Preprocessor {
 	
 	/// Initialises a preprocessor with given source text.
 	init(from text: String) throws {

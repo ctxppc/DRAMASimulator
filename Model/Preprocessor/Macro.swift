@@ -20,4 +20,7 @@ struct Macro {
 	/// The ranges in the unprocessed source where the parameters are written.
 	let parameterRanges: [SourceRange]
 	
+	/// The range of the body, including leading and trailing whitespace.
+	let bodyRange: SourceRange
+	
 }
