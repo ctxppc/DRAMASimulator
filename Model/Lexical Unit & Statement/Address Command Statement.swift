@@ -4,7 +4,7 @@ import Foundation
 
 /// A statement that contains an address, register–address, or condition-address command.
 ///
-/// Groups: operation, addressing mode (opt.), register (opt.), reg. # (opt.), condition (opt.), base address, pre-index modifier (opt.), index register (opt.), post-index modifier (opt.)
+/// Groups: mnemonic, addressing mode (opt.), register (opt.), reg. # (opt.), condition (opt.), base address, pre-index modifier (opt.), index register (opt.), index register # (opt.), post-index modifier (opt.)
 struct AddressCommandStatement : CommandStatement {
 	
 	// See protocol.
@@ -47,7 +47,7 @@ struct AddressCommandStatement : CommandStatement {
 				case (nil, "-"):	modification = .postdecrement
 				default:			throw ParsingError.doubleIndexModification
 			}
-			index = .init(indexRegister: Register(rawValue: Int(source[range.indexRegisterRange])!)!, modification: modification)
+			index = .init(indexRegister: Register(rawValue: Int(source[range.indexRegisterRange.numberRange])!)!, modification: modification)
 		} else {
 			index = nil
 		}
@@ -126,15 +126,15 @@ struct AddressCommandStatement : CommandStatement {
 		switch argument {
 			
 			case .register(let register, sourceRange: _)?:
-			guard let type = instruction.commandType as? RegisterAddressCommand.Type else { throw CommandStatementError.incorrectFormat(instruction: instruction) }
+			guard let type = instruction.commandType as? RegisterAddressCommand.Type else { throw CommandStatementError.incorrectArgumentFormat(instruction: instruction) }
 			return try type.init(instruction: instruction, addressingMode: addressingMode, register: register, address: addressSpecification)
 			
 			case .condition(let condition, sourceRange: _)?:
-			guard let type = instruction.commandType as? ConditionAddressCommand.Type else { throw CommandStatementError.incorrectFormat(instruction: instruction) }
+			guard let type = instruction.commandType as? ConditionAddressCommand.Type else { throw CommandStatementError.incorrectArgumentFormat(instruction: instruction) }
 			return try type.init(instruction: instruction, addressingMode: addressingMode, condition: condition, address: addressSpecification)
 			
 			case nil:
-			guard let type = instruction.commandType as? AddressCommand.Type else { throw CommandStatementError.incorrectFormat(instruction: instruction) }
+			guard let type = instruction.commandType as? AddressCommand.Type else { throw CommandStatementError.incorrectArgumentFormat(instruction: instruction) }
 			return try type.init(instruction: instruction, addressingMode: addressingMode, address: addressSpecification)
 			
 		}
@@ -146,19 +146,18 @@ struct IndexSourceRange {
 	
 	fileprivate init?(match: NSTextCheckingResult, firstGroup group: Int, source: String) {
 		
+		guard let indexRegisterRange = RegisterSourceRange(match: match, firstGroup: group + 1, source: source) else { return nil }
 		let preindexationOperationRange = match.range(at: group)
-		let indexRegisterRange = match.range(at: group + 1)
-		let postindexationOperationRange = match.range(at: group + 2)
-		guard indexRegisterRange.location != NSNotFound else { return nil }
+		let postindexationOperationRange = match.range(at: group + 3)
 		
-		self.indexRegisterRange = SourceRange(indexRegisterRange, in: source)!
+		self.indexRegisterRange = indexRegisterRange
 		self.preindexationOperationRange = preindexationOperationRange.location != NSNotFound ? SourceRange(preindexationOperationRange, in: source)! : nil
 		self.postindexationOperationRange = postindexationOperationRange.location != NSNotFound ? SourceRange(postindexationOperationRange, in: source)! : nil
 		
 	}
 	
 	/// The source range of the index register.
-	let indexRegisterRange: SourceRange
+	let indexRegisterRange: RegisterSourceRange
 	
 	/// The source range of the pre-indexation operation.
 	let preindexationOperationRange: SourceRange?

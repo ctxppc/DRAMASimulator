@@ -48,22 +48,22 @@ extension String {
 	static let optSpace = "\\s*"
 	static let elementSeparator = "\(optSpace),\(optSpace)"
 	
-	static let mnemonicPattern = "([A-Z]{3})"
-	static let addressingModePattern = "\\.(w|a|d|i)"
-	static let addressCommandMnemnonicPattern = "\(mnemonicPattern)(?:\(addressingModePattern))?"
+	static let mnemonicPattern = group("[A-Z]{3}")
+	static let addressingModePattern = "\\." + group("w|a|d|i")
+	static let addressCommandMnemnonicPattern = mnemonicPattern + opt(addressingModePattern)
 	
-	static let registerPattern = "(R([0-9]))"
-	static let conditionPattern = "([A-Z]{2,4})"
+	static let registerPattern = group("R", group("[0-9]"))
+	static let conditionPattern = group("[A-Z]{2,4}")
 	
-	static let addressPattern = "(\(baseAddressPattern))(?:\(indexPattern))?"
+	static let addressPattern = group(baseAddressPattern) + opt(indexPattern)
 	static let baseAddressPattern = "\(addressTermPattern)(?:\(optSpace)\(addressOperation)\(optSpace)\(addressTermPattern))*"
 	static let addressTermPattern = "(?:\(symbolPattern)|-?[0-9]+)"
 	static let addressOperation = alternatives(atomise: false, "\\+", "-")
-	static let indexPattern = "\\(\(optIndexModifier)\(registerPattern)\(optIndexModifier)\\)"
-	static let optIndexModifier = "(\\+|\\-)?"
+	static let indexPattern = "\\(\(indexOperatorPattern)\(registerPattern)\(indexOperatorPattern)\\)"
+	static let indexOperatorPattern = "(\\+|-)?"
 	
 	static let literalConstantPattern = "-?[0-9]{1,10}"
-	static let arrayLengthPattern = "RESGR ([0-9]{1,4})"
+	static let arrayLengthPattern = "RESGR\(reqSpace)([0-9]{1,4})"
 	static let symbolPattern = "[a-z_][a-z0-9_]*"
 	
 }

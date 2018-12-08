@@ -12,7 +12,9 @@ struct SymbolicAddress {
 		
 		var terms = [Term]()
 		var termString = ""
-		func addTerm(negated: Bool) throws {
+		var negated = false
+		func addTerm(nextTermNegated: Bool) throws {
+			
 			let trimmedTerm = termString.trimmingCharacters(in: .whitespaces)
 			guard !trimmedTerm.isEmpty else { throw Error.emptyTerm }
 			if let literal = Int(trimmedTerm) {
@@ -20,15 +22,20 @@ struct SymbolicAddress {
 			} else {
 				terms.append(.symbol(trimmedTerm, negated: negated))
 			}
+			
+			negated = nextTermNegated
+			
 		}
 		
 		for character in string {
 			switch character {
-				case "+":	try addTerm(negated: false)
-				case "-":	try addTerm(negated: true)
+				case "+":	try addTerm(nextTermNegated: false)
+				case "-":	try addTerm(nextTermNegated: true)
 				default:	termString.append(character)
 			}
 		}
+		
+		try addTerm(nextTermNegated: false)
 		
 		self.terms = terms
 		

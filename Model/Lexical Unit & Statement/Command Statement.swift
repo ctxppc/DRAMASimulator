@@ -37,11 +37,11 @@ extension CommandStatement {
 enum CommandStatementError : LocalizedError {
 	
 	/// The command has an incorrect format, e.g., register operands for an address–condition command type.
-	case incorrectFormat(instruction: Instruction)
+	case incorrectArgumentFormat(instruction: Instruction)
 	
 	var errorDescription: String? {
 		switch self {
-			case .incorrectFormat(instruction: let i):	return "\(i.rawValue)-bevel met onjuiste formaat"
+			case .incorrectArgumentFormat(instruction: let i):	return "\(i.rawValue)-bevel met onjuiste soort argumenten"
 		}
 	}
 	

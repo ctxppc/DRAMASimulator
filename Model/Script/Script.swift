@@ -182,13 +182,18 @@ struct Script {
 	}
 	
 	/// An error that occured while translating a statement into words.
-	struct StatementTranslationError : SourceError {
+	struct StatementTranslationError : SourceError, LocalizedError {
 		
 		/// The error that occurred while translating the statement.
 		let underlyingError: Error
 		
 		// See protocol.
 		let sourceRange: SourceRange
+		
+		// See protocol.
+		var errorDescription: String? {
+			return (underlyingError as? LocalizedError)?.errorDescription
+		}
 		
 	}
 	

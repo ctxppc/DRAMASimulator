@@ -4,7 +4,7 @@ import Foundation
 
 /// A statement that contains a nullary command.
 ///
-/// Groups: operation
+/// Groups: mnemonic
 struct NullaryCommandStatement : CommandStatement {
 	
 	// See protocol.
@@ -28,7 +28,7 @@ struct NullaryCommandStatement : CommandStatement {
 	
 	// See protocol.
 	func command(addressesBySymbol: [String : Int]) throws -> Command {
-		guard let type = instruction.commandType as? NullaryCommand.Type else { throw CommandStatementError.incorrectFormat(instruction: instruction) }
+		guard let type = instruction.commandType as? NullaryCommand.Type else { throw CommandStatementError.incorrectArgumentFormat(instruction: instruction) }
 		return try type.init(instruction: instruction)
 	}
 	

@@ -4,7 +4,7 @@ import Foundation
 
 /// A statement that contains a unary or binary register command.
 ///
-/// Groups: operation, primary register, reg. #, secondary register (opt.), reg. # (opt.)
+/// Groups: mnemonic, primary register, reg. #, secondary register (opt.), reg. # (opt.)
 struct RegisterCommandStatement : CommandStatement {
 	
 	// See protocol.
@@ -45,10 +45,10 @@ struct RegisterCommandStatement : CommandStatement {
 	// See protocol.
 	func command(addressesBySymbol: [String : Int]) throws -> Command {
 		if let secondaryRegister = secondaryRegister {
-			guard let type = instruction.commandType as? BinaryRegisterCommand.Type else { throw CommandStatementError.incorrectFormat(instruction: instruction) }
+			guard let type = instruction.commandType as? BinaryRegisterCommand.Type else { throw CommandStatementError.incorrectArgumentFormat(instruction: instruction) }
 			return try type.init(instruction: instruction, primaryRegister: primaryRegister, secondaryRegister: secondaryRegister)
 		} else {
-			guard let type = instruction.commandType as? UnaryRegisterCommand.Type else { throw CommandStatementError.incorrectFormat(instruction: instruction) }
+			guard let type = instruction.commandType as? UnaryRegisterCommand.Type else { throw CommandStatementError.incorrectArgumentFormat(instruction: instruction) }
 			return try type.init(instruction: instruction, register: primaryRegister)
 		}
 	}
