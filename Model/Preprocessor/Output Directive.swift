@@ -3,7 +3,7 @@
 import Foundation
 
 /// A directive that outputs source.
-struct OutputDirective {
+struct OutputDirective : Directive {
 	
 	/// The source to process and output.
 	let unprocessedOutputSource: String
@@ -12,6 +12,9 @@ struct OutputDirective {
 	///
 	/// - Invariant: Every range `r` in `expressionsByRanges.keys` is fully contained within `self.unprocessedOutputSource`.
 	let expressionsByRanges: [SourceRange : NSExpression]
+	
+	// See protocol.
+	let fullSourceRange: SourceRange
 	
 	/// The range in the unprocessed source where `unprocessedOutputSource` is written.
 	let unprocessedOutputSourceRange: SourceRange

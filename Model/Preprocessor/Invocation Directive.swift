@@ -3,13 +3,16 @@
 import Foundation
 
 /// A directive that invokes a macro.
-struct InvocationDirective {
+struct InvocationDirective : Directive {
 	
 	/// The name of the macro to invoke.
 	let macroName: String
 	
 	/// The expressions of the arguments.
 	let argumentExpressions: [NSExpression]
+	
+	// See protocol.
+	let fullSourceRange: SourceRange
 	
 	/// The range in the unprocessed source where `macroName` is written.
 	let macroNameRange: SourceRange

@@ -3,13 +3,16 @@
 import Foundation
 
 /// A directive that performs a jump.
-struct JumpDirective {
+struct JumpDirective : Directive {
 	
 	/// The symbol of the destination directive.
 	let destinationSymbol: String
 	
 	/// The condition, or `nil` if the jump is unconditional.
 	let condition: Condition?
+	
+	// See protocol.
+	let fullSourceRange: SourceRange
 	
 	/// The range in the unprocessed source where the directive's instruction is written.
 	let instructionRange: SourceRange

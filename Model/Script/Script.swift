@@ -2,7 +2,7 @@
 
 import Foundation
 
-/// A source file parsed into lexical units, mapped to statements, and assembled to a program.
+/// A source file processed into a processed text, parsed into lexical units, mapped to statements, and assembled to a program.
 struct Script {
 	
 	/// Parses a script from given text.
@@ -12,12 +12,7 @@ struct Script {
 		lexicalUnits = Script.units(in: sourceText)
 		statements = lexicalUnits.compactMap { $0 as? Statement }
 		
-		struct ReductionState {
-			var indicesBySymbol = [Symbol : Int]()
-			var indexOfNextStatement = 0
-		}
-		
-		statementIndicesBySymbol = lexicalUnits.reduce(into: ReductionState()) { (state, unit) in
+		statementIndicesBySymbol = lexicalUnits.reduce(into: (indicesBySymbol: [Symbol : Int](), indexOfNextStatement: 0)) { (state, unit) in
 			if unit is Statement {
 				state.indexOfNextStatement += 1
 			} else if let label = unit as? LabelLexicalUnit {

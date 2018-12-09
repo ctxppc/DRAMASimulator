@@ -66,4 +66,9 @@ extension String {
 	static let arrayLengthPattern = "RESGR\(reqSpace)([0-9]{1,4})"
 	static let symbolPattern = "[a-z_][a-z0-9_]*"
 	
+	static let macroPattern = "MACRO\(reqSpace)\(macroSignaturePattern)(.*?)\(reqSpace)MCREINDE"
+	static let macroSignaturePattern = group(symbolPattern) + opt(optHorizontalSpace + macroParametersPattern)
+	static let macroParametersPattern = group(atom(symbolPattern, optHorizontalSpace, ",", optHorizontalSpace) + "*" + symbolPattern)
+	static let optHorizontalSpace = "[\\t ]*"
+	
 }
