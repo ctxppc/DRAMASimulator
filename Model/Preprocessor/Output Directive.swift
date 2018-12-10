@@ -2,29 +2,27 @@
 
 import Foundation
 
-/// A directive that outputs source.
+/// A directive that outputs the value assigned to a symbol.
+///
+/// Output directives are written as `<s>` where _s_ is the symbol of the local or global variable whose value is being output.
 struct OutputDirective : Directive {
 	
-	/// The source to process and output.
-	let unprocessedOutputSource: String
+	// See protocol.
+	static let regularExpression = NSRegularExpression()	// TODO
 	
-	/// A mapping from ranges in the unprocessed source to expressions.
-	///
-	/// - Invariant: Every range `r` in `expressionsByRanges.keys` is fully contained within `self.unprocessedOutputSource`.
-	let expressionsByRanges: [SourceRange : NSExpression]
+	// See protocol.
+	init(match: NSTextCheckingResult, in source: String) throws {
+		fatalError("Unimplemented")	// TODO
+	}
+	
+	/// The symbol of the variable whose value is output.
+	let symbol: String
 	
 	// See protocol.
 	let fullSourceRange: SourceRange
 	
-	/// The range in the unprocessed source where `unprocessedOutputSource` is written.
-	let unprocessedOutputSourceRange: SourceRange
-	
-	/// Returns the processed output.
-	///
-	/// - Parameter valuesBySymbol: A mapping of symbols to values in the context the directive is being processed in.
-	///
-	/// - Returns: The processed output.
-	func output(valuesBySymbol: [String : Int]) throws -> String {
+	// See protocol.
+	func execute(on preprocessor: inout Preprocessor, in expansion: inout MacroExpansion) throws {
 		fatalError("Unimplemented")	// TODO
 	}
 	

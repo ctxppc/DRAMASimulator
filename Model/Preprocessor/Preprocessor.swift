@@ -10,8 +10,11 @@ struct Preprocessor {
 		
 		input = text
 		indexOfFirstUnprocessedCharacter = input.startIndex
+		
 		macros = Macro.regularExpression.matches(in: text, range: NSRange(text.startIndex..<text.endIndex, in: text)).map { .init(match: $0, in: text) }
 		substitutions = macros.map { .init(range: $0.fullSourceRange, newText: "") }
+		
+		macroInvocations = []	// TODO
 		
 		// TODO: Run preprocessor.
 		
@@ -72,7 +75,7 @@ struct Preprocessor {
 	/// The macros defined in the source.
 	let macros: [Macro]
 	
-	/// The directives in the source.
-//	let directives: [Directive]		// TODO
+	/// The macro invocations in the body of the source (outside of any macro body), in source order.
+	let macroInvocations: [InvocationDirective]
 	
 }

@@ -5,6 +5,14 @@ import Foundation
 /// A directive that compares two values and sets the condition state of the preprocessor accordingly.
 struct ComparisonDirective : Directive {
 	
+	// See protocol.
+	static let regularExpression = NSRegularExpression()	// TODO
+	
+	// See protocol.
+	init(match: NSTextCheckingResult, in source: String) throws {
+		fatalError("Unimplemented")	// TODO
+	}
+	
 	/// An expression of the first operand of the comparison.
 	let firstOperand: NSExpression
 	
@@ -22,5 +30,10 @@ struct ComparisonDirective : Directive {
 	
 	/// The range in the unprocessed source where `secondOperand` is written.
 	let secondOperandRange: SourceRange
+	
+	// See protocol.
+	func execute(on preprocessor: inout Preprocessor, in expansion: inout MacroExpansion) throws {
+		fatalError("Unimplemented")	// TODO
+	}
 	
 }

@@ -2,6 +2,7 @@
 
 import Foundation
 
+/// A function-like template that can be invoked from source text, optionally from within another macro, and that expands in place.
 struct Macro {
 	
 	/// A regular expression matching macros.
@@ -25,6 +26,9 @@ struct Macro {
 			source[range].components(separatedBy: ",")
 		} ?? []
 		
+		directives = []					// TODO
+		directiveIndicesBySymbol = [:]	// TODO
+		
 	}
 	
 	/// The macro's name.
@@ -36,11 +40,11 @@ struct Macro {
 	/// The macro's (unprocessed) body.
 	let body: Substring
 	
+	/// The directives of the macro, in source order.
+	let directives: [Directive]
+	
 	/// A mapping from symbols to indices in the `directives` array.
 	let directiveIndicesBySymbol: [String : Int]
-	
-	/// The directives of the macro.
-	let directives: [Directive]
 	
 	/// The range in the unprocessed source where the macro is written.
 	let fullSourceRange: SourceRange

@@ -5,6 +5,14 @@ import Foundation
 /// A directive that performs a jump.
 struct JumpDirective : Directive {
 	
+	// See protocol.
+	static let regularExpression = NSRegularExpression()	// TODO
+	
+	// See protocol.
+	init(match: NSTextCheckingResult, in source: String) throws {
+		fatalError("Unimplemented")	// TODO
+	}
+	
 	/// The symbol of the destination directive.
 	let destinationSymbol: String
 	
@@ -22,5 +30,10 @@ struct JumpDirective : Directive {
 	
 	/// The range in the unprocessed source where `condition` is written, or `nil` if the jump is unconditional.
 	let conditionRange: SourceRange?
+	
+	// See protocol.
+	func execute(on preprocessor: inout Preprocessor, in expansion: inout MacroExpansion) throws {
+		fatalError("Unimplemented")	// TODO
+	}
 	
 }

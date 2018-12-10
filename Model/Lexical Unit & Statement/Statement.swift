@@ -10,9 +10,12 @@ protocol Statement : LexicalUnit {
 	/// A regular expression matching a lexical unit of this type.
 	static var regularExpression: NSRegularExpression { get }
 	
-	/// Initialises the lexical unit with given match.
+	/// Initialises a lexical unit with given match.
 	///
 	/// - Requires: `match` is produced by `Self.regularExpression`.
+	///
+	/// - Parameter match: The match.
+	/// - Parameter source: The source text on which `match` was generated.
 	///
 	/// - Throws: An error if the matched groups cannot be interpreted.
 	init(match: NSTextCheckingResult, in source: String) throws

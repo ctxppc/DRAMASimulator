@@ -64,6 +64,7 @@
 		4FA7EBA821A0895E00C52F98 /* Program.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EBA721A0895E00C52F98 /* Program.swift */; };
 		4FA7EBAA21A0A55800C52F98 /* Read Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EBA921A0A55800C52F98 /* Read Command.swift */; };
 		4FEEF00621B03FFC00F6CDC2 /* Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FEEF00521B03FFC00F6CDC2 /* Lexical Unit.swift */; };
+		4FFD1A5F21BEA27E00D51B49 /* Macro Expansion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFD1A5E21BEA27E00D51B49 /* Macro Expansion.swift */; };
 		4FFEB7D4219C6C480049D0A5 /* Nullary Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFEB7D3219C6C480049D0A5 /* Nullary Command.swift */; };
 		4FFEB7D6219C6ED50049D0A5 /* Unary Register Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFEB7D5219C6ED50049D0A5 /* Unary Register Command.swift */; };
 		4FFEB7D8219C6EDD0049D0A5 /* Binary Register Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFEB7D7219C6EDD0049D0A5 /* Binary Register Command.swift */; };
@@ -137,6 +138,7 @@
 		4FA7EBA721A0895E00C52F98 /* Program.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Program.swift; sourceTree = "<group>"; };
 		4FA7EBA921A0A55800C52F98 /* Read Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Read Command.swift"; sourceTree = "<group>"; };
 		4FEEF00521B03FFC00F6CDC2 /* Lexical Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Lexical Unit.swift"; sourceTree = "<group>"; };
+		4FFD1A5E21BEA27E00D51B49 /* Macro Expansion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Macro Expansion.swift"; sourceTree = "<group>"; };
 		4FFEB7D3219C6C480049D0A5 /* Nullary Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Nullary Command.swift"; sourceTree = "<group>"; };
 		4FFEB7D5219C6ED50049D0A5 /* Unary Register Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Unary Register Command.swift"; sourceTree = "<group>"; };
 		4FFEB7D7219C6EDD0049D0A5 /* Binary Register Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binary Register Command.swift"; sourceTree = "<group>"; };
@@ -298,6 +300,7 @@
 			children = (
 				4FA523E621B427B000BE1FF2 /* Preprocessor.swift */,
 				4FA523DE21B4263800BE1FF2 /* Macro.swift */,
+				4FFD1A5E21BEA27E00D51B49 /* Macro Expansion.swift */,
 				4FA523DC21B423DD00BE1FF2 /* Directive.swift */,
 				4FA523E221B4278E00BE1FF2 /* Output Directive.swift */,
 				4FA523E821B4298200BE1FF2 /* Assignment Directive.swift */,
@@ -409,6 +412,7 @@
 				4FA7EBA221A06B8400C52F98 /* Compare Command.swift in Sources */,
 				4F346B762199DBE700D6D8AD /* Script View Controller.swift in Sources */,
 				4F166ED821B983AD001A8749 /* Parsing.swift in Sources */,
+				4FFD1A5F21BEA27E00D51B49 /* Macro Expansion.swift in Sources */,
 				4FA7EBAA21A0A55800C52F98 /* Read Command.swift in Sources */,
 				4FA523E921B4298200BE1FF2 /* Assignment Directive.swift in Sources */,
 				4F346B742199DBE700D6D8AD /* Document Browser View Controller.swift in Sources */,

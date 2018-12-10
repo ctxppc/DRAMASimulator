@@ -5,6 +5,14 @@ import Foundation
 /// A directive that assigns a value to a symbol.
 struct AssignmentDirective : Directive {
 	
+	// See protocol.
+	static let regularExpression = NSRegularExpression()	// TODO
+	
+	// See protocol.
+	init(match: NSTextCheckingResult, in source: String) throws {
+		fatalError("Unimplemented")	// TODO
+	}
+	
 	/// The symbol being assigned a value to.
 	let symbol: String
 	
@@ -22,5 +30,10 @@ struct AssignmentDirective : Directive {
 	
 	/// The range in the unprocessed source where `expression` is written.
 	let expressionRange: SourceRange
+	
+	// See protocol.
+	func execute(on preprocessor: inout Preprocessor, in expansion: inout MacroExpansion) throws {
+		fatalError("Unimplemented")	// TODO
+	}
 	
 }
