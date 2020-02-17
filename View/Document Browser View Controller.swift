@@ -57,6 +57,8 @@ final class DocumentBrowserViewController : UIDocumentBrowserViewController, UID
 		let navigationController = storyboard!.instantiateViewController(withIdentifier: "Root Navigation Controller") as! UINavigationController
 		let scriptViewController = navigationController.viewControllers.first as! ScriptViewController
 		scriptViewController.scriptDocument = ScriptDocument(fileURL: url)
+		scriptViewController.modalPresentationStyle = .fullScreen
+		scriptViewController.isModalInPresentation = true
         present(navigationController, animated: true)
     }
 	

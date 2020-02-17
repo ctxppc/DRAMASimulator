@@ -10,8 +10,8 @@ final class ScriptEditingController : UIViewController {
 		didSet { updatePresentedScript() }
 	}
 	
-	/// The font for presenting source text.
-	private static let sourceFont = UIFont(name: "Menlo", size: 18)!
+	/// The base attributes for presenting source text.
+	private static let baseAttributes = [NSAttributedString.Key.font: UIFont(name: "Menlo", size: 18)!, .foregroundColor: UIColor.label]
 	
 	private func updatePresentedScript() {
 		
@@ -21,7 +21,7 @@ final class ScriptEditingController : UIViewController {
 			applyFormatting(on: textView.textStorage, removingPrevious: true)
 		} else {
 			
-			let formattedText = NSMutableAttributedString(string: script.sourceText, attributes: [.font: type(of: self).sourceFont])
+			let formattedText = NSMutableAttributedString(string: script.sourceText, attributes: Self.baseAttributes)
 			applyFormatting(on: formattedText, removingPrevious: false)
 			
 			let oldSelectedRange = textView.selectedRange
@@ -58,7 +58,7 @@ final class ScriptEditingController : UIViewController {
 		defer { formattedText.endEditing() }
 		
 		if removingPrevious {
-			formattedText.setAttributes([.font: type(of: self).sourceFont], range: NSRange(location: 0, length: formattedText.length))
+			formattedText.setAttributes(Self.baseAttributes, range: NSRange(location: 0, length: formattedText.length))
 		}
 		
 		func mark(_ range: SourceRange?, _ attribute: NSAttributedString.Key = .foregroundColor, in colour: UIColor) {
@@ -90,7 +90,7 @@ final class ScriptEditingController : UIViewController {
 				mark(unit.fullSourceRange, in: .comment)
 				
 				default:
-				break	// Not a requirement to handle every possible type of unit
+				break	// no need to handle every possible type of unit
 				
 			}
 			
@@ -130,11 +130,17 @@ final class ScriptEditingController : UIViewController {
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		keyboardWillChangeFrameObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillChangeFrameNotification, object: nil, queue: nil) { [weak self] notification in
+			
 			guard let controller = self else { return }
+			
 			let keyboardFrame = notification.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
 			let viewFrame = controller.view.convert(controller.view.bounds, to: controller.view.window)
-			controller.textView.contentInset.bottom = viewFrame.maxY - keyboardFrame.minY
-			controller.textView.scrollIndicatorInsets.bottom = viewFrame.maxY - keyboardFrame.minY
+			let bottomInset = viewFrame.maxY - keyboardFrame.minY
+			
+			controller.textView.contentInset.bottom = bottomInset
+			controller.textView.horizontalScrollIndicatorInsets.bottom = bottomInset
+			controller.textView.verticalScrollIndicatorInsets.bottom = bottomInset
+			
 		}
 	}
 	

@@ -87,7 +87,7 @@ final class MachineViewController : UICollectionViewController {
 				switch marking {
 					case .none:		return nil
 					case .selected:	return #colorLiteral(red: 0.933940772, green: 0.7935731027, blue: 1, alpha: 1)
-					case .active:	return #colorLiteral(red: 0.7922119131, green: 0.9374318384, blue: 1, alpha: 1)
+					case .active:	return UIColor(inLightAppearance: #colorLiteral(red: 0.7922119131, green: 0.9374318384, blue: 1, alpha: 1), inDarkAppearance: #colorLiteral(red: 0.05882352963, green: 0.180392161, blue: 0.2470588237, alpha: 1))
 				}
 			}()
 			
@@ -141,4 +141,10 @@ final class WordCell : UICollectionViewCell {
 
 final class SectionHeaderView : UICollectionReusableView {
 	@IBOutlet weak var titleLabel: UILabel!
+}
+
+extension UIColor {
+	convenience init(inLightAppearance: UIColor, inDarkAppearance: UIColor) {
+		self.init { $0.userInterfaceStyle == .dark ? inDarkAppearance : inLightAppearance }
+	}
 }

@@ -84,7 +84,7 @@
 		4F166ED921B983D7001A8749 /* Source Range.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Source Range.swift"; sourceTree = "<group>"; };
 		4F1B6EDF21A1A3D700751511 /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
 		4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Symbolic Address.swift"; sourceTree = "<group>"; };
-		4F346B6E2199DBE700D6D8AD /* DRAMASimulator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = DRAMASimulator.app; path = DRAMA.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F346B6E2199DBE700D6D8AD /* DRAMA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DRAMA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F346B712199DBE700D6D8AD /* DRAMASimulator Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DRAMASimulator Delegate.swift"; sourceTree = "<group>"; };
 		4F346B732199DBE700D6D8AD /* Document Browser View Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Document Browser View Controller.swift"; sourceTree = "<group>"; };
 		4F346B752199DBE700D6D8AD /* Script View Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script View Controller.swift"; sourceTree = "<group>"; };
@@ -174,7 +174,7 @@
 		4F346B6F2199DBE700D6D8AD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				4F346B6E2199DBE700D6D8AD /* DRAMASimulator.app */,
+				4F346B6E2199DBE700D6D8AD /* DRAMA.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -342,7 +342,7 @@
 			);
 			name = DRAMASimulator;
 			productName = DRAMASimulator;
-			productReference = 4F346B6E2199DBE700D6D8AD /* DRAMASimulator.app */;
+			productReference = 4F346B6E2199DBE700D6D8AD /* DRAMA.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -357,6 +357,7 @@
 				TargetAttributes = {
 					4F346B6D2199DBE700D6D8AD = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1130;
 					};
 				};
 			};
@@ -535,7 +536,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "Support/$(TARGET_NAME).plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -544,7 +545,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -592,7 +593,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "Support/$(TARGET_NAME).plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "me.ctxppc.$(TARGET_NAME)";
@@ -600,7 +601,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
