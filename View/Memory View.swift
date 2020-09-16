@@ -19,7 +19,7 @@ struct MemoryView : View {
 						Text(address as NSNumber, formatter: Self.addressFormatter)
 							.foregroundColor(.secondary)
 							.font(.system(.caption, design: .monospaced))
-						Text(machine[address: .init(wrapping: address)].rawValue as NSNumber, formatter: Self.wordFormatter)
+						Text(machine.memory[.init(wrapping: address)].rawValue as NSNumber, formatter: Self.wordFormatter)
 							.font(.system(.body, design: .monospaced))
 					}.padding(3)
 					.border(Color.black)

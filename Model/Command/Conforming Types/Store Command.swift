@@ -35,10 +35,10 @@ struct StoreCommand : RegisterAddressCommand {
 			case .value:	fallthrough
 			case .address:	fallthrough
 			case .direct:	destinationAddress = machine.evaluate(destination)
-			case .indirect:	destinationAddress = .init(truncating: machine[address: machine.evaluate(destination)])
+			case .indirect:	destinationAddress = .init(truncating: machine.memory[machine.evaluate(destination)])
 		}
 		
-		machine[address: destinationAddress] = machine[register: source, updatingConditionState: true]
+		machine.memory[destinationAddress] = machine[register: source, updatingConditionState: true]
 		
 	}
 	

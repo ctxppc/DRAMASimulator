@@ -46,12 +46,12 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 			value = Word(machine.evaluate(addressSpec))
 			
 			case .memory(address: let addressSpec, mode: .direct):
-			value = machine[address: machine.evaluate(addressSpec)]
+			value = machine.memory[machine.evaluate(addressSpec)]
 			
 			case .memory(address: let addressSpec, mode: .indirect):
 			let addressOfReference = machine.evaluate(addressSpec)
-			let referencedAddress = AddressWord(truncating: machine[address: addressOfReference])
-			value = machine[address: referencedAddress]
+			let referencedAddress = AddressWord(truncating: machine.memory[addressOfReference])
+			value = machine.memory[referencedAddress]
 			
 		}
 		

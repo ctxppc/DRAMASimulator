@@ -33,7 +33,7 @@ struct ConditionalJumpCommand : ConditionAddressCommand {
 			case .value:	fallthrough
 			case .address:	fallthrough
 			case .direct:	machine.programCounter = machine.evaluate(destination)
-			case .indirect:	machine.programCounter = .init(truncating: machine[address: machine.evaluate(destination)])
+			case .indirect:	machine.programCounter = .init(truncating: machine.memory[machine.evaluate(destination)])
 		}
 	}
 	

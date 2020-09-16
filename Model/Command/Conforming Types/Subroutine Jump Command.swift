@@ -32,13 +32,13 @@ struct SubroutineJumpCommand : AddressCommand {
 	func execute(on machine: inout Machine) {
 		
 		machine[register: .r9].decrement()
-		machine[address: AddressWord(wrapping: machine[register: .r9].signedValue)] = .init(machine.programCounter)
+		machine.memory[AddressWord(wrapping: machine[register: .r9].signedValue)] = .init(machine.programCounter)
 		
 		switch addressingMode {
 			case .value:	fallthrough
 			case .address:	fallthrough
 			case .direct:	machine.programCounter = machine.evaluate(destination)
-			case .indirect:	machine.programCounter = .init(truncating: machine[address: machine.evaluate(destination)])
+			case .indirect:	machine.programCounter = .init(truncating: machine.memory[machine.evaluate(destination)])
 		}
 		
 	}

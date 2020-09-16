@@ -56,14 +56,8 @@ struct Machine {
 	static let defaultRegisters = Array(repeating: Word.zero, count: 9) + [stackBase]
 	static let stackBase = Word(rawValue: 9000)!
 	
-	/// The words stored in the machine's memory.
+	/// The machine's memory.
 	var memory = Memory()
-	
-	/// Accesses a memory word at given address.
-	subscript (address address: AddressWord) -> Word {
-		get { return memory[address] }
-		set { memory[address] = newValue }
-	}
 	
 	/// Evaluates an address specified by given address specification and performs any specified indexation.
 	///
@@ -146,7 +140,7 @@ struct Machine {
 	/// - Requires: The machine is ready, i.e., `state == .ready`.
 	mutating func executeNext() throws {
 		precondition(state == .ready, "The machine is not ready.")
-		let command = try CommandWord(self[address: programCounter]).command()
+		let command = try CommandWord(memory[programCounter]).command()
 		programCounter.increment()
 		try command.execute(on: &self)
 	}

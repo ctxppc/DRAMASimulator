@@ -126,7 +126,7 @@ final class MachineViewController : UICollectionViewController {
 			return cell(for: machine[register: Register(rawValue: indexPath.item)!], title: "R\(indexPath.item)")
 			
 			case .memory:
-			return cell(for: machine[address: AddressWord(rawValue: indexPath.item)!], title: "\(indexPath.item)", marking: marking)
+			return cell(for: machine.memory[AddressWord(rawValue: indexPath.item)!], title: "\(indexPath.item)", marking: marking)
 			
 		}
 		

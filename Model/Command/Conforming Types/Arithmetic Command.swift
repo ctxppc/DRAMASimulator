@@ -77,12 +77,12 @@ struct ArithmeticCommand : BinaryRegisterCommand, RegisterAddressCommand {
 			secondOperandValue = machine.evaluate(addressSpec).unsignedValue
 			
 			case .memory(address: let addressSpec, mode: .direct):
-			secondOperandValue = machine[address: machine.evaluate(addressSpec)].signedValue
+			secondOperandValue = machine.memory[machine.evaluate(addressSpec)].signedValue
 			
 			case .memory(address: let addressSpec, mode: .indirect):
 			let addressOfReference = machine.evaluate(addressSpec)
-			let referencedAddress = AddressWord(truncating: machine[address: addressOfReference])
-			secondOperandValue = machine[address: referencedAddress].signedValue
+			let referencedAddress = AddressWord(truncating: machine.memory[addressOfReference])
+			secondOperandValue = machine.memory[referencedAddress].signedValue
 			
 		}
 		
