@@ -21,6 +21,16 @@ struct DocumentView : View {
 	@Environment(\.horizontalSizeClass)
 	private var sizeClass
 	
+	/// A timer publisher for animating executions.
+	private let clock = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
+	
+	/// A value indicating whether and how the timeline is animated.
+	@State
+	private var timelineAnimation: TimelineAnimation = .still
+	enum TimelineAnimation {
+		case forward, backward, still
+	}
+	
 	// See protocol.
 	var body: some View {
 		contents
@@ -28,16 +38,56 @@ struct DocumentView : View {
 			.navigationBarTitleDisplayMode(.inline)
 			.toolbar {
 				Button(action: rewind) {
-					Label("Step Backward", systemImage: "backward.end")
+					Label("Step Backward", systemImage: "backward.frame")
 				}.disabled(!document.timeline.canRewind)
 				Button(action: advance) {
-					Label("Step Forward", systemImage: "forward.end")
+					Label("Step Forward", systemImage: "forward.frame")
 				}.disabled(!document.timeline.canAdvance)
+				Divider()
+				Button(action: { timelineAnimation = .backward }) {
+					Label("Reverse", systemImage: "backward.fill")
+				}.disabled(!document.timeline.canRewind || timelineAnimation == .backward)
+				Button(action: { timelineAnimation = .still }) {
+					Label("Stop", systemImage: "stop.fill")
+				}.disabled(timelineAnimation == .still)
+				Button(action: { timelineAnimation = .forward }) {
+					Label("Play", systemImage: "forward.fill")
+				}.disabled(!document.timeline.canAdvance || timelineAnimation == .forward)
 			}
 	}
 	
 	@ViewBuilder
 	private var contents: some View {
+		if timelineAnimation == .still {
+			stack
+		} else {
+			stack.onReceive(clock) { _ in
+				switch timelineAnimation {
+					
+					case .still:
+					break
+					
+					case .forward:
+					if document.timeline.canAdvance {
+						advance()
+					} else {
+						timelineAnimation = .still
+					}
+						
+					case .backward:
+					if document.timeline.canRewind {
+						rewind()
+					} else {
+						timelineAnimation = .still
+					}
+					
+				}
+			}
+		}
+	}
+	
+	@ViewBuilder
+	private var stack: some View {
 		switch sizeClass {
 			case .regular:	HStack { panels }
 			default:		VStack { panels }
