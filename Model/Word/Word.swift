@@ -72,7 +72,7 @@ extension Word : CustomStringConvertible {
 
 infix operator ** : BitwiseShiftPrecedence
 
-private func ** (base: Int, exponent: Int) -> Int {
+func ** (base: Int, exponent: Int) -> Int {
 	guard exponent > 0 else { return 1 }
 	return base * base ** (exponent - 1)
 }

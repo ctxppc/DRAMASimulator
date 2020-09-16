@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4F0BFEE125128E3F00ECC4D2 /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0BFEE025128E3F00ECC4D2 /* Memory.swift */; };
 		4F139C0221A3104100F817A6 /* Script Editing Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F139C0121A3104100F817A6 /* Script Editing Controller.swift */; };
 		4F139C0421A3142400F817A6 /* Machine View Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F139C0321A3142400F817A6 /* Machine View Controller.swift */; };
 		4F166ED821B983AD001A8749 /* Parsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F166ED721B983AD001A8749 /* Parsing.swift */; };
@@ -82,6 +83,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4F0BFEE025128E3F00ECC4D2 /* Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
 		4F139C0121A3104100F817A6 /* Script Editing Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script Editing Controller.swift"; sourceTree = "<group>"; };
 		4F139C0321A3142400F817A6 /* Machine View Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Machine View Controller.swift"; sourceTree = "<group>"; };
 		4F166ED721B983AD001A8749 /* Parsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parsing.swift; sourceTree = "<group>"; };
@@ -169,6 +171,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4F0BFEDF25128E1D00ECC4D2 /* Machine */ = {
+			isa = PBXGroup;
+			children = (
+				4F44C7F1219A4426003798AF /* Machine.swift */,
+				4F0BFEE025128E3F00ECC4D2 /* Memory.swift */,
+			);
+			path = Machine;
+			sourceTree = "<group>";
+		};
 		4F346B652199DBE700D6D8AD = {
 			isa = PBXGroup;
 			children = (
@@ -229,7 +240,7 @@
 				4F6BAE4F21B6CD9200A952BB /* Lexical Unit & Statement */,
 				4F820F2E219AFF71004EE2C9 /* Command */,
 				4FA5A4E621AB210000799084 /* Timeline.swift */,
-				4F44C7F1219A4426003798AF /* Machine.swift */,
+				4F0BFEDF25128E1D00ECC4D2 /* Machine */,
 				4FFEB7E0219C73650049D0A5 /* Register.swift */,
 				4F35A3C921A0D39A00A4610D /* Word */,
 				4F3E790B219A1FBE008E3E9B /* Instruction.swift */,
@@ -490,6 +501,7 @@
 				4FFEB7E5219C75DB0049D0A5 /* Arithmetic Command.swift in Sources */,
 				4F30B52F21A218DC00BDEDCC /* Symbolic Address.swift in Sources */,
 				4FA523DF21B4263800BE1FF2 /* Macro.swift in Sources */,
+				4F0BFEE125128E3F00ECC4D2 /* Memory.swift in Sources */,
 				4FA5A4E721AB210000799084 /* Timeline.swift in Sources */,
 				4FFEB7DE219C6F060049D0A5 /* Condition Address Command.swift in Sources */,
 				4FFEB7DF219C72D50049D0A5 /* Load Command.swift in Sources */,

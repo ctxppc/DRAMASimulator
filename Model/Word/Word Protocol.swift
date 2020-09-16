@@ -95,11 +95,25 @@ extension WordProtocol {
 		self = Self.init(rawValue: rawValue + 1 == Self.unsignedUpperBound ? 0 : rawValue + 1)!
 	}
 	
+	/// Returns the word, incremented by 1, looping back at overflow.
+	func incremented() -> Self {
+		var copy = self
+		copy.increment()
+		return copy
+	}
+	
 	/// Decrements the word's value by 1, looping back at overflow.
 	///
 	/// This method is equivalent to but more efficient than `self.modifySignedValueWithWrapping { $0 -= 1 }`.
 	mutating func decrement() {
 		self = Self.init(rawValue: rawValue - 1 == 0 ? Self.unsignedUpperBound : rawValue - 1)!
+	}
+	
+	/// Returns the word, decremented by 1, looping back at overflow.
+	func decremented() -> Self {
+		var copy = self
+		copy.decrement()
+		return copy
 	}
 	
 }

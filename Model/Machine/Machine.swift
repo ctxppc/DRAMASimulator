@@ -15,12 +15,11 @@ struct Machine {
 	init(registers: [Word] = defaultRegisters, memoryWords: [Word] = [], startingAt programCounter: AddressWord = .zero, conditionState: ConditionState = .zero) {
 		
 		precondition(registers.count == Machine.defaultRegisters.count, "Invalid register count")
-		precondition(memoryWords.count < AddressWord.unsignedUpperBound, "Memory space exceeds address space")
 		
 		self.registers = registers
-		self.memoryWords = memoryWords + repeatElement(.zero, count: AddressWord.unsignedUpperBound - memoryWords.count)
 		self.programCounter = programCounter
 		self.conditionState = conditionState
+		self.memory.load(memoryWords, startingFrom: programCounter)
 		
 	}
 	
@@ -58,12 +57,12 @@ struct Machine {
 	static let stackBase = Word(rawValue: 9000)!
 	
 	/// The words stored in the machine's memory.
-	private var memoryWords: [Word]
+	var memory = Memory()
 	
 	/// Accesses a memory word at given address.
 	subscript (address address: AddressWord) -> Word {
-		get { return memoryWords[address.rawValue] }
-		set { memoryWords[address.rawValue] = newValue }
+		get { return memory[address] }
+		set { memory[address] = newValue }
 	}
 	
 	/// Evaluates an address specified by given address specification and performs any specified indexation.
