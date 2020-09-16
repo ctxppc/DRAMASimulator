@@ -6,6 +6,9 @@ struct Word : WordProtocol {
 	// See protocol.
 	static let unsignedUpperBound = 1_00000_00000
 	
+	/// The zero word.
+	static let zero = Self(rawValue: 0)!
+	
 	// See protocol.
 	init?(rawValue: Int) {
 		guard Word.unsignedRange.contains(rawValue) else { return nil }

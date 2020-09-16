@@ -54,6 +54,7 @@ struct ScriptEditor : UIViewControllerRepresentable {
 	
 }
 
+#if DEBUG
 struct ScriptEditorPreviews: PreviewProvider {
 	
 	static var previews: some View {
@@ -71,11 +72,4 @@ struct ScriptEditorPreviews: PreviewProvider {
 	}
 	
 }
-
-let templateScript = Script(from:
-	"""
-	HIA.w R0, 20
-	OPT R0, R1
-	STP
-	"""
-)
+#endif

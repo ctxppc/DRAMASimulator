@@ -9,10 +9,15 @@ struct MachineView : View {
 	init(name: String, script: Binding<Script>) {
 		self.name = name
 		self._script = script
+		self._machine = .init(initialValue: Machine(for: script.wrappedValue))
 	}
 	
 	/// The document's name.
 	let name: String
+	
+	/// The machine.
+	@State
+	private var machine: Machine
 	
 	/// The script.
 	@Binding
@@ -26,6 +31,9 @@ struct MachineView : View {
 		contents
 			.navigationTitle(name)
 			.navigationBarTitleDisplayMode(.inline)
+			.onChange(of: script) { newScript in
+				machine = Machine(for: newScript)
+			}
 	}
 	
 	@ViewBuilder
@@ -39,10 +47,27 @@ struct MachineView : View {
 	@ViewBuilder
 	private var panels: some View {
 		ScriptEditor(script: $script)
+		MemoryView(machine: machine)
 	}
 	
 }
 
+private extension Machine {
+	
+	/// Creates a machine loaded with given script.
+	///
+	/// An empty machine is created if the script can't be compiled.
+	init(for script: Script) {
+		if case .program(let program) = script.program {
+			self = .init(memoryWords: program.words)
+		} else {
+			self = .init(memoryWords: .init(repeating: .zero, count: Word.unsignedUpperBound))
+		}
+	}
+	
+}
+
+#if DEBUG
 struct MachineViewPreviews : PreviewProvider {
 	
 	static var previews: some View {
@@ -62,3 +87,14 @@ struct MachineViewPreviews : PreviewProvider {
 	}
 	
 }
+
+let templateScript = Script(from:
+	"""
+	HIA.w R0, 20
+	OPT R0, R1
+	STP
+	"""
+)
+
+let templateMachine = Machine(for: templateScript)
+#endif

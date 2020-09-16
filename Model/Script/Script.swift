@@ -193,3 +193,9 @@ struct Script {
 	}
 	
 }
+
+extension Script : Equatable {
+	static func == (first: Self, other: Self) -> Bool {
+		first.sourceText == other.sourceText
+	}
+}
