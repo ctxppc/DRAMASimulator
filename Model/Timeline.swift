@@ -30,22 +30,34 @@ struct Timeline {
 	}
 	
 	/// Whether the timeline can move forward.
-	var canProceed: Bool { machine.state == .ready }
+	var canProceed: Bool { machine.state.isReady }
 	
 	/// Moves the timeline one step forward.
 	///
 	/// - Requires: `canProceed`.
-	mutating func proceed() throws {
-		let previousMachine = machine
-		try machine.executeNext()
-		previousMachines.append(previousMachine)
+	mutating func proceed() {
+		
+		previousMachines.append(machine)
+		machine.executeNext()
+		
+		if previousMachines.count >= purgeRange.upperBound {
+			previousMachines.removeFirst(purgeRange.upperBound - purgeRange.lowerBound)
+		}
+		
 	}
+	
+	/// The possible number of machines in the timeline where machines are purged.
+	///
+	/// When the number of machines in the timeline lies in this range, purging may have occurred. The number of machines does not exceed the range's upper bound.
+	///
+	/// The range should be sufficiently wide to avoid frequent reallocations.
+	private let purgeRange = 100...150
 	
 	/// Provides input to the machine and resumes execution if it paused to wait for input.
 	///
 	/// While the machine is modified by providing it input, the `currentMachineDidChange(on:)` delegate method is _not_ invoked as a result of that change.
 	///
-	/// - Requires: `machine.state` is `.waitingForInput`.
+	/// - Requires: `machine.state.isWaitingForInput`.
 	mutating func provideMachineInput(_ input: MachineWord) {
 		machine.provideInput(input)
 	}

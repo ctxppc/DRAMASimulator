@@ -12,7 +12,7 @@ struct Document : FileDocument {
 	/// Creates a document with given script and machine.
 	init(script: Script = .init(from: "")) {
 		self.script = script
-		machine.attemptReload(from: script)
+		timeline = Timeline(machine: initialMachine ?? .init())
 	}
 	
 	// See protocol.
@@ -35,11 +35,29 @@ struct Document : FileDocument {
 	
 	/// The document's script.
 	var script: Script {
-		didSet { machine.attemptReload(from: script) }
+		didSet {
+			if let machine = initialMachine {
+				timeline = Timeline(machine: machine)
+			}
+		}
 	}
 	
 	/// The document's machine (not persisted).
-	var machine = Machine()
+	var machine: Machine {
+		get { timeline.machine }
+		set { timeline.machine = newValue }
+	}
+	
+	/// The document's timeline (not persisted).
+	var timeline = Timeline(machine: Machine())
+	
+	/// The initial machine, or `nil` if the script cannot be compiled.
+	private var initialMachine: Machine? {
+		guard case .program(let program) = script.program else { return nil }
+		var machine = Machine()
+		machine.memory.load(program.words, startingFrom: .zero)
+		return machine
+	}
 	
 	// See protocol.
 	func write(to fileWrapper: inout FileWrapper, contentType: UTType) throws {
@@ -49,19 +67,6 @@ struct Document : FileDocument {
 	// See protocol.
 	func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
 		.init(regularFileWithContents: .init(script.sourceText.utf8))
-	}
-	
-}
-
-private extension Machine {
-	
-	/// Attempts to load given script, resetting `self` in the process.
-	///
-	/// This method does nothing if the script cannot be compiled.
-	mutating func attemptReload(from script: Script) {
-		guard case .program(let program) = script.program else { return }
-		self = .init()
-		memory.load(program.words, startingFrom: .zero)
 	}
 	
 }

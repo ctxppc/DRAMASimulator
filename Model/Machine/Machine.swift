@@ -103,8 +103,43 @@ struct Machine {
 		/// The client of a machine must request an input value (or use a predefined buffer) and invoke `provideInput()` before resuming execution.
 		case waitingForInput
 		
+		/// The machine has crashed due to an error.
+		case crashed(Error)
+		
 		/// The machine is stopped and can no longer perform commands.
 		case halted
+		
+		var isReady: Bool {
+			if case .ready = self {
+				return true
+			} else {
+				return false
+			}
+		}
+		
+		var error: Error? {
+			if case .crashed(let error) = self {
+				return error
+			} else {
+				return nil
+			}
+		}
+		
+		var isWaitingForInput: Bool {
+			if case .waitingForInput = self {
+				return true
+			} else {
+				return false
+			}
+		}
+		
+		var isHalted: Bool {
+			if case .halted = self {
+				return true
+			} else {
+				return false
+			}
+		}
 		
 	}
 	
@@ -112,7 +147,7 @@ struct Machine {
 	///
 	/// - Requires: The machine is waiting for input, i.e., `state == .waitingForInput`.
 	mutating func provideInput(_ word: MachineWord) {
-		precondition(state == .waitingForInput, "The machine is not waiting for input.")
+		precondition(state.isWaitingForInput, "The machine is not waiting for input.")
 		ioMessages.append(.input(word))
 		self[register: .r0, updatingConditionState: true] = word
 		state = .ready
@@ -132,12 +167,16 @@ struct Machine {
 	
 	/// Executes the next command.
 	///
-	/// - Requires: The machine is ready, i.e., `state == .ready`.
-	mutating func executeNext() throws {
-		precondition(state == .ready, "The machine is not ready.")
-		let command = try CommandWord(memory[programCounter]).command()
-		programCounter.increment()
-		try command.execute(on: &self)
+	/// - Requires: The machine is ready, i.e., `state.isReady`.
+	mutating func executeNext() {
+		precondition(state.isReady, "The machine is not ready.")
+		do {
+			let command = try CommandWord(memory[programCounter]).command()
+			programCounter.increment()
+			try command.execute(on: &self)
+		} catch {
+			state = .crashed(error)
+		}
 	}
 	
 }
