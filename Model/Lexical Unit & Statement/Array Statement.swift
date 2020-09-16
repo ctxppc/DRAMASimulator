@@ -23,7 +23,7 @@ struct ArrayStatement : Statement {
 		} else {
 			let range = match.range(at: 2, in: source)!
 			let words = source[range].components(separatedBy: ",").map {
-				Word(wrapping: Int($0.trimmingCharacters(in: .whitespaces))!)
+				MachineWord(wrapping: Int($0.trimmingCharacters(in: .whitespaces))!)
 			}
 			initialiser = .literals(words: words, sourceRange: range)
 		}
@@ -46,7 +46,7 @@ struct ArrayStatement : Statement {
 		///
 		/// - Parameter words: The words the array is initialised with.
 		/// - Parameter sourceRange: The range in the source where the (comma-separated) words are written.
-		case literals(words: [Word], sourceRange: SourceRange)
+		case literals(words: [MachineWord], sourceRange: SourceRange)
 		
 	}
 	
@@ -59,7 +59,7 @@ struct ArrayStatement : Statement {
 	}
 	
 	// See protocol.
-	func words(addressesBySymbol: [String : Int]) -> AnyCollection<Word> {
+	func words(addressesBySymbol: [String : Int]) -> AnyCollection<MachineWord> {
 		switch initialiser {
 			case .zeroArray(length: let length, sourceRange: _):	return .init(repeatElement(.zero, count: length))
 			case .literals(words: let words, sourceRange: _):		return .init(words)

@@ -1,78 +1,119 @@
 // DRAMASimulator © 2018–2020 Constantino Tsarouhas
 
-/// A 10-digit decimal.
-struct Word : WordProtocol {
+import Darwin
+
+/// A value that represents a decimal value of some fixed number of digits.
+///
+/// - Invariant: A raw value `v` is representable by `Self` iff `unsignedRange.contains(v)`.
+protocol Word : Equatable, RawRepresentable where RawValue == Int {
 	
-	// See protocol.
-	static let unsignedUpperBound = 1_00000_00000
+	/// The upper bound unsigned decimal value.
+	///
+	/// - Invariant: `unsignedUpperBound` = 10ⁿ for some nonnegative integer *n*.
+	static var unsignedUpperBound: Int { get }
+	
+}
+
+extension Word {
+	
+	/// The range of unsigned integers representable by words of this type.
+	static var unsignedRange: Range<Int> {
+		return 0..<unsignedUpperBound
+	}
+	
+	/// The range of signed integers representable by words of this type.
+	static var signedRange: Range<Int> {
+		return -(unsignedUpperBound/2)..<(unsignedUpperBound/2)
+	}
 	
 	/// The zero word.
-	static let zero = Self(rawValue: 0)!
-	
-	// See protocol.
-	init?(rawValue: Int) {
-		guard Word.unsignedRange.contains(rawValue) else { return nil }
-		self.rawValue = rawValue
+	static var zero: Self {
+		return Self(rawValue: 0)!
 	}
 	
-	/// Converts an address word losslessly into an address word.
-	init(_ addressWord: AddressWord) {
-		rawValue = addressWord.rawValue
+	/// Creates a word with given signed value, wrapping it if necessary.
+	init(wrapping signedValue: Int) {
+		let wrappedValue = signedValue % Self.unsignedUpperBound
+		self.init(rawValue: wrappedValue >= 0 ? wrappedValue : Self.unsignedUpperBound + wrappedValue)!
 	}
 	
-	// See protocol.
-	private(set) var rawValue: Int {
-		willSet { assert(rawValue >= 0) }
-	}
-	
-	/// Accesses the unsigned value's digits in given range, where the zeroth digit is the least significant digit.
+	/// Creates a word with given unsigned value, truncating it if necessary.
 	///
-	/// - Requires: `range.lowerBound` ≥ 0.
-	/// - Invariant: The number of decimal digits in `w[digitsAt: a...b]` for some word `w` and integers `a` and `b` is equal to or less than `b` - `a`.
-	subscript (digitsAt range: ClosedRange<Int>) -> Int {
+	/// - Requires: `unsignedValue` ≥ 0.
+	init(truncating unsignedValue: Int) {
+		precondition(unsignedValue >= 0, "Truncating negative value")
+		self.init(rawValue: unsignedValue % Self.unsignedUpperBound)!
+	}
+	
+	/// The word as an unsigned value.
+	///
+	/// - Invariant: `Self.unsignedRange.contains(unsignedValue)`.
+	var unsignedValue: Int {
 		
 		get {
-			let leftTruncated = unsignedValue / 10 ** range.lowerBound
-			return leftTruncated % 10 ** (range.upperBound - range.lowerBound + 1)
+			return rawValue
 		}
 		
 		set {
-			
-			assert(newValue < 10 ** (range.upperBound - range.lowerBound + 1), "Digits out of bounds")
-			
-			let lowMultiplier = 10 ** range.lowerBound
-			let highMultiplier = 10 ** (range.upperBound + 1)
-			
-			let low = unsignedValue % lowMultiplier
-			let middle = newValue * lowMultiplier
-			let high = unsignedValue / highMultiplier * highMultiplier
-			
-			self = Word(rawValue: low + middle + high)!
-			
+			guard let v = Self.init(rawValue: newValue) else { preconditionFailure("Unrepresentable unsigned value") }
+			self = v
 		}
+		
 	}
 	
-	/// Accesses the unsigned value's digit at given index, where the zeroth digit is the least significant digit.
+	/// The word as a signed value.
 	///
-	/// - Requires: `index` ≥ 0.
-	/// - Invariant: The value of `w[digitAt: a]` for some word `w` and integer `a` is between 0 and 9.
-	subscript (digitAt index: Int) -> Int {
-		get { return self[digitsAt: index...index] }
-		set { self[digitsAt: index...index] = newValue }
+	/// - Invariant: `Self.signedRange.contains(signedValue)`.
+	var signedValue: Int {
+		
+		get {
+			if rawValue < Self.unsignedUpperBound / 2 {
+				return rawValue
+			} else {
+				return rawValue - Self.unsignedUpperBound
+			}
+		}
+		
+		set {
+			guard let v = Self.init(rawValue: newValue > 0 ? newValue : Self.unsignedUpperBound + newValue) else { preconditionFailure("Unrepresentable signed value") }
+			self = v
+		}
+		
 	}
 	
-}
-
-extension Word : CustomStringConvertible {
-	var description: String {
-		let unpaddedCharacters = Array(String(rawValue))
-		return String(repeatElement("0", count: 10 - unpaddedCharacters.count) + unpaddedCharacters)
+	/// Modifies the word's signed value and wraps the result before storing it.
+	mutating func modifySignedValueWithWrapping(_ handler: (inout Int) -> ()) {
+		var signedValue = self.signedValue
+		handler(&signedValue)
+		self = Self.init(wrapping: signedValue)
 	}
-}
-
-infix operator ** : BitwiseShiftPrecedence
-
-func ** (base: Int, exponent: Int) -> Int {
-	guard exponent > 0 else { return 1 }
-	return base * base ** (exponent - 1)
+	
+	/// Increments the word's value by 1, looping back at overflow.
+	///
+	/// This method is equivalent to but more efficient than `self.modifySignedValueWithWrapping { $0 += 1 }`.
+	mutating func increment() {
+		self = Self.init(rawValue: rawValue + 1 == Self.unsignedUpperBound ? 0 : rawValue + 1)!
+	}
+	
+	/// Returns the word, incremented by 1, looping back at overflow.
+	func incremented() -> Self {
+		var copy = self
+		copy.increment()
+		return copy
+	}
+	
+	/// Decrements the word's value by 1, looping back at overflow.
+	///
+	/// This method is equivalent to but more efficient than `self.modifySignedValueWithWrapping { $0 -= 1 }`.
+	mutating func decrement() {
+		self = Self.init(rawValue: rawValue - 1 == 0 ? Self.unsignedUpperBound : rawValue - 1)!
+	}
+	
+	/// Returns the word, decremented by 1, looping back at overflow.
+	func decremented() -> Self {
+		var copy = self
+		copy.decrement()
+		return copy
+	}
+	
 }

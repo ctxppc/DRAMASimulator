@@ -12,7 +12,7 @@ struct Machine {
 	/// - Parameter memoryWords: The words to load (starting from the beginning of the machine). The default value is an empty array.
 	/// - Parameter programCounter: The address of the next instruction to execute. The default value is zero.
 	/// - Parameter conditionState: The condition state. The default value is `.zero`.
-	init(registers: [Word] = defaultRegisters, memoryWords: [Word] = [], startingAt programCounter: AddressWord = .zero, conditionState: ConditionState = .zero) {
+	init(registers: [MachineWord] = defaultRegisters, memoryWords: [MachineWord] = [], startingAt programCounter: AddressWord = .zero, conditionState: ConditionState = .zero) {
 		
 		precondition(registers.count == Machine.defaultRegisters.count, "Invalid register count")
 		
@@ -24,16 +24,16 @@ struct Machine {
 	}
 	
 	/// The words stored in the machine's registers.
-	private var registers: [Word]
+	private var registers: [MachineWord]
 	
 	/// Accesses a word stored in given register.
-	subscript (register register: Register) -> Word {
-		get { return registers[register.rawValue] }
+	subscript (register register: Register) -> MachineWord {
+		get { registers[register.rawValue] }
 		set { registers[register.rawValue] = newValue }
 	}
 	
 	/// Accesses a word stored in given register and optionally updates the condition state based on that value.
-	subscript (register register: Register, updatingConditionState updatesConditionState: Bool) -> Word {
+	subscript (register register: Register, updatingConditionState updatesConditionState: Bool) -> MachineWord {
 		
 		mutating get {
 			let value = registers[register.rawValue]
@@ -53,8 +53,8 @@ struct Machine {
 	}
 	
 	/// An array representing 10 empty registers.
-	static let defaultRegisters = Array(repeating: Word.zero, count: 9) + [stackBase]
-	static let stackBase = Word(rawValue: 9000)!
+	static let defaultRegisters = Array(repeating: MachineWord.zero, count: 9) + [stackBase]
+	static let stackBase = MachineWord(rawValue: 9000)!
 	
 	/// The machine's memory.
 	var memory = Memory()
@@ -116,7 +116,7 @@ struct Machine {
 	/// Provides input to the machine (in register 0).
 	///
 	/// - Requires: The machine is waiting for input, i.e., `state == .waitingForInput`.
-	mutating func provideInput(_ word: Word) {
+	mutating func provideInput(_ word: MachineWord) {
 		precondition(state == .waitingForInput, "The machine is not waiting for input.")
 		ioMessages.append(.input(word))
 		self[register: .r0, updatingConditionState: true] = word
@@ -131,8 +131,8 @@ struct Machine {
 	/// The messages inputted into or outputted by the machine.
 	private(set) var ioMessages = [IOMessage]()
 	enum IOMessage {
-		case input(Word)
-		case output(Word)
+		case input(MachineWord)
+		case output(MachineWord)
 	}
 	
 	/// Executes the next command.

@@ -8,7 +8,7 @@ enum ConditionState : Int {
 	case negative	= 2
 	
 	/// Creates a condition state for given word.
-	init(for word: Word) {
+	init(for word: MachineWord) {
 		switch word.signedValue {
 			case 0:		self = .zero
 			case 1...:	self = .positive

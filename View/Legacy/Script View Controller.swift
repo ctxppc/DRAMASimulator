@@ -119,7 +119,7 @@ final class ScriptViewController : UIViewController {
 		
 		let ok = UIAlertAction(title: "OK", style: .default) { [unowned self] _ in
 			if let integer = Int(alert.textFields![0].text ?? "") {
-				timeline.provideMachineInput(Word(wrapping: integer))
+				timeline.provideMachineInput(MachineWord(wrapping: integer))
 				self.updateToolbarButtons()
 			} else {
 				self.promptInput(message: "Geef een geldig getal in.")

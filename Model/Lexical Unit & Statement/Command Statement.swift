@@ -28,7 +28,7 @@ extension CommandStatement {
 		return 1
 	}
 	
-	func words(addressesBySymbol: [String : Int]) throws -> AnyCollection<Word> {
+	func words(addressesBySymbol: [String : Int]) throws -> AnyCollection<MachineWord> {
 		return .init(CollectionOfOne(CommandWord(try command(addressesBySymbol: addressesBySymbol)).base))
 	}
 	

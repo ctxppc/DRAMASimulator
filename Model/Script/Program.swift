@@ -36,7 +36,7 @@ struct Program {
 			addressesBySymbol[symbol] = addressesByStatementIndex[statementIndex]
 		}
 		
-		words = try zip(statements, statements.indices).flatMap { statement, index -> AnyCollection<Word> in
+		words = try zip(statements, statements.indices).flatMap { statement, index -> AnyCollection<MachineWord> in
 			do {
 				return try statement.words(addressesBySymbol: addressesBySymbol)
 			} catch {
@@ -47,7 +47,7 @@ struct Program {
 	}
 	
 	/// The program's words.
-	let words: [Word]
+	let words: [MachineWord]
 	
 	/// An error that occured while translating a statement into words.
 	struct StatementTranslationError : LocalizedError {

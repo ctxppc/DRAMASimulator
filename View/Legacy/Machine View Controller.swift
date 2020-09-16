@@ -26,7 +26,7 @@ final class MachineViewController : UICollectionViewController {
 	private static let zeroColour = UIColor.lightGray
 	
 	/// Returns an attributed string formatting given word.
-	private static func attributedString(for word: Word) -> NSAttributedString {
+	private static func attributedString(for word: MachineWord) -> NSAttributedString {
 		let string = wordFormatter.string(from: word.rawValue as NSNumber)!
 		if let indexOfLeadingDigit = string.firstIndex(where: { $0 != "0" }) {
 			let attributedString = NSMutableAttributedString(string: string)
@@ -77,7 +77,7 @@ final class MachineViewController : UICollectionViewController {
 	
 	override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		
-		func cell(for word: Word, title: String, marking: Marking = .none) -> UICollectionViewCell {
+		func cell(for word: MachineWord, title: String, marking: Marking = .none) -> UICollectionViewCell {
 			
 			let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Word Cell", for: indexPath) as! WordCell
 			
@@ -120,7 +120,7 @@ final class MachineViewController : UICollectionViewController {
 			}
 			
 			case .registers where indexPath.item == Register.indices.count:
-			return cell(for: Word(machine.programCounter), title: "Bevelenteller")
+			return cell(for: MachineWord(machine.programCounter), title: "Bevelenteller")
 				
 			case .registers:
 			return cell(for: machine[register: Register(rawValue: indexPath.item)!], title: "R\(indexPath.item)")

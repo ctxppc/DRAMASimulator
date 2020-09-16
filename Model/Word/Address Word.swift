@@ -1,7 +1,7 @@
 // DRAMASimulator © 2018–2020 Constantino Tsarouhas
 
 /// A 4-digit decimal, usually used to represent addresses.
-struct AddressWord : WordProtocol {
+struct AddressWord : Word {
 	
 	// See protocol.
 	static let unsignedUpperBound = 10000
@@ -13,7 +13,7 @@ struct AddressWord : WordProtocol {
 	}
 	
 	/// Converts a word into an address word by truncating it (if necessary).
-	init(truncating word: Word) {
+	init(truncating word: MachineWord) {
 		self.rawValue = word.rawValue % AddressWord.unsignedUpperBound
 	}
 	

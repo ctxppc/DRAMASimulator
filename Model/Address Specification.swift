@@ -29,7 +29,7 @@ struct AddressSpecification {
 	/// Evaluates the effective address given the value of the index register.
 	///
 	/// The method is only meaningful for address specifications with indexation.
-	func address(atIndex index: Word) -> AddressWord {
+	func address(atIndex index: MachineWord) -> AddressWord {
 		return AddressWord(truncating: base.rawValue + index.rawValue)
 	}
 	

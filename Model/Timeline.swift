@@ -31,7 +31,7 @@ final class Timeline {
 	/// While the machine is modified by providing it input, the `currentMachineDidChange(on:)` delegate method is _not_ invoked as a result of that change.
 	///
 	/// - Requires: `machine.state` is `.waitingForInput`.
-	func provideMachineInput(_ input: Word) {
+	func provideMachineInput(_ input: MachineWord) {
 		currentMachine.provideInput(input)
 		if pausedForInput {
 			direction = .forward

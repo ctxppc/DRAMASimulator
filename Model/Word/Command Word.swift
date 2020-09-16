@@ -6,16 +6,16 @@ struct CommandWord {
 	
 	/// Creates a command word with fully unitialised digits (i.e., 9).
 	init() {
-		self.init(Word(rawValue: 99999_99999)!)
+		self.init(MachineWord(rawValue: 99999_99999)!)
 	}
 	
 	/// Creates a command word for given word.
-	init(_ base: Word) {
+	init(_ base: MachineWord) {
 		self.base = base
 	}
 	
 	/// The command represented as a word.
-	var base: Word
+	var base: MachineWord
 	
 	/// A code identifying the instruction.
 	var opcode: Int {

@@ -4,7 +4,7 @@
 struct Memory : Equatable {
 	
 	/// Accesses the word at given address.
-	subscript (address: AddressWord) -> Word {
+	subscript (address: AddressWord) -> MachineWord {
 		get { bins[externalAddress(from: address)][internalAddress(from: address)] }
 		set { bins[externalAddress(from: address)][internalAddress(from: address)] = newValue }
 	}
@@ -23,7 +23,7 @@ struct Memory : Equatable {
 	///
 	/// - Parameter words: The words to load.
 	/// - Parameter startAddress: The address in `self` of the first word.
-	mutating func load(_ words: [Word], startingFrom startAddress: AddressWord) {
+	mutating func load(_ words: [MachineWord], startingFrom startAddress: AddressWord) {
 		let addresses = sequence(first: startAddress, next: { $0.incremented() })
 		for (word, address) in zip(words, addresses) {
 			self[address] = word
@@ -50,10 +50,10 @@ struct Memory : Equatable {
 		case zero
 		
 		/// A data bin.
-		case data(buffer: [Word])
+		case data(buffer: [MachineWord])
 		
 		/// Accesses the word at given internal address.
-		subscript (address: Int) -> Word {
+		subscript (address: Int) -> MachineWord {
 			
 			get {
 				switch self {
@@ -63,7 +63,7 @@ struct Memory : Equatable {
 			}
 			
 			set {
-				var buffer: [Word] = {
+				var buffer: [MachineWord] = {
 					switch self {
 						case .zero:			return .init(repeating: .zero, count: Memory.numberOfWordsPerBin)
 						case .data(let b):	return b

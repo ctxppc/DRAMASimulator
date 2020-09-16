@@ -32,6 +32,6 @@ protocol Statement : LexicalUnit {
 	/// - Throws: An error if an undefined symbol is used.
 	///
 	/// - Returns: A collection of words that can be loaded into a machine.
-	func words(addressesBySymbol: [String : Int]) throws -> AnyCollection<Word>
+	func words(addressesBySymbol: [String : Int]) throws -> AnyCollection<MachineWord>
 	
 }

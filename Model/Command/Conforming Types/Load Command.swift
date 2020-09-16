@@ -33,17 +33,17 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	// See protocol.
 	func execute(on machine: inout Machine) {
 		
-		let value: Word
+		let value: MachineWord
 		switch source {
 			
 			case .register(let register):
 			value = machine[register: register]
 			
 			case .memory(address: let valueSpec, mode: .value):
-			value = Word(wrapping: machine.evaluate(valueSpec).signedValue)
+			value = MachineWord(wrapping: machine.evaluate(valueSpec).signedValue)
 			
 			case .memory(address: let addressSpec, mode: .address):
-			value = Word(machine.evaluate(addressSpec))
+			value = MachineWord(machine.evaluate(addressSpec))
 			
 			case .memory(address: let addressSpec, mode: .direct):
 			value = machine.memory[machine.evaluate(addressSpec)]
