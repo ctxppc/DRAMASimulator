@@ -1,7 +1,12 @@
 // DRAMASimulator © 2018–2020 Constantino Tsarouhas
 
+import DepthKit
+
 /// A 4-digit decimal, usually used to represent addresses.
 struct AddressWord : Word {
+	
+	/// The range of the address space.
+	static let all = AddressWord.zero..<AddressWord(rawValue: unsignedUpperBound - 1)!
 	
 	// See protocol.
 	static let unsignedUpperBound = 10000
@@ -20,6 +25,18 @@ struct AddressWord : Word {
 	// See protocol.
 	private(set) var rawValue: Int {
 		willSet { assert(rawValue >= 0) }
+	}
+	
+}
+
+extension AddressWord : Strideable {
+	
+	func distance(to other: AddressWord) -> Int {
+		self.rawValue.distance(to: other.rawValue)
+	}
+	
+	func advanced(by distance: Int) -> AddressWord {
+		Self(rawValue: rawValue.advanced(by: distance)) !! "Address out of bounds"
 	}
 	
 }

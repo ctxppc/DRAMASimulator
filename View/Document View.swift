@@ -2,7 +2,7 @@
 
 import SwiftUI
 
-/// A view that presents a machine and its script.
+/// A view that presents a document.
 struct DocumentView : View {
 	
 	/// Creates a view for emulating and editing given script.
@@ -26,6 +26,14 @@ struct DocumentView : View {
 		contents
 			.navigationTitle(name)
 			.navigationBarTitleDisplayMode(.inline)
+			.toolbar {
+				Button(action: rewind) {
+					Label("Step Backward", systemImage: "backward.end")
+				}.disabled(!document.timeline.canRewind)
+				Button(action: advance) {
+					Label("Step Forward", systemImage: "forward.end")
+				}.disabled(!document.timeline.canAdvance)
+			}
 	}
 	
 	@ViewBuilder
@@ -40,6 +48,18 @@ struct DocumentView : View {
 	private var panels: some View {
 		ScriptEditor(script: $document.script)
 		MemoryView(machine: document.machine)
+	}
+	
+	private func rewind() {
+		withAnimation {
+			document.timeline.rewind()
+		}
+	}
+	
+	private func advance() {
+		withAnimation {
+			document.timeline.advance()
+		}
 	}
 	
 }

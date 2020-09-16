@@ -14,17 +14,53 @@ struct MemoryView : View {
 	var body: some View {
 		ScrollView {
 			LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))]) {
-				ForEach(0..<AddressWord.unsignedUpperBound) { address in
-					HStack {
-						Text(address as NSNumber, formatter: Self.addressFormatter)
-							.foregroundColor(.secondary)
-							.font(.system(.caption, design: .monospaced))
-						Text(machine.memory[.init(wrapping: address)].rawValue as NSNumber, formatter: Self.wordFormatter)
-							.font(.system(.body, design: .monospaced))
-					}.padding(3)
-					.border(Color.black)
+				ForEach(AddressWord.all, id: \.self) { address in
+					MemoryCell(
+						address:				address,
+						contents:				machine.memory[address],
+						previouslyExecuted:		machine.previousProgramCounter == address,
+						subsequentlyExecuted:	machine.programCounter == address
+					)
 				}
 			}
+		}
+	}
+	
+}
+
+private struct MemoryCell : View {
+	
+	/// The memory location.
+	let address: AddressWord
+	
+	/// The contents at the memory location.
+	let contents: MachineWord
+	
+	/// A Boolean value indicating whether the program counter pointed previously at the location.
+	let previouslyExecuted: Bool
+	
+	/// A Boolean value indicating whether the program counter is pointing at the location.
+	let subsequentlyExecuted: Bool
+	
+	var body: some View {
+		HStack {
+			Text(address.rawValue as NSNumber, formatter: Self.addressFormatter)
+				.foregroundColor(.secondary)
+				.font(.system(.caption, design: .monospaced))
+			Text(contents.rawValue as NSNumber, formatter: Self.wordFormatter)
+				.font(.system(.body, design: .monospaced))
+		}.padding(3)
+		.background(background.transition(.opacity))
+		.clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+		.padding(1)
+	}
+	
+	@ViewBuilder
+	private var background: some View {
+		if subsequentlyExecuted {
+			Self.executingColour
+		} else if previouslyExecuted {
+			Self.executedColour
 		}
 	}
 	
@@ -45,6 +81,13 @@ struct MemoryView : View {
 		formatter.maximumIntegerDigits = 10
 		return formatter
 	}()
+	
+	/// The colour used to mark cells being executed subsequently.
+	private static let executingColour = Color("Executing")
+	
+	/// The colour used to mark cells being executed previously.
+	private static let executedColour = Color("Executed")
+	
 }
 
 #if DEBUG

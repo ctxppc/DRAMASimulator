@@ -30,12 +30,12 @@ struct Timeline {
 	}
 	
 	/// Whether the timeline can move forward.
-	var canProceed: Bool { machine.state.isReady }
+	var canAdvance: Bool { machine.state.isReady }
 	
 	/// Moves the timeline one step forward.
 	///
-	/// - Requires: `canProceed`.
-	mutating func proceed() {
+	/// - Requires: `canAdvance`.
+	mutating func advance() {
 		
 		previousMachines.append(machine)
 		machine.executeNext()
