@@ -12,7 +12,7 @@ struct Document : FileDocument {
 	/// Creates a document with given script and machine.
 	init(script: Script = .init(from: "")) {
 		self.script = script
-		self.machine = Machine(for: script)
+		machine.attemptReload(from: script)
 	}
 	
 	// See protocol.
@@ -35,13 +35,11 @@ struct Document : FileDocument {
 	
 	/// The document's script.
 	var script: Script {
-		didSet {
-			machine = Machine(for: script)
-		}
+		didSet { machine.attemptReload(from: script) }
 	}
 	
 	/// The document's machine (not persisted).
-	var machine: Machine
+	var machine = Machine()
 	
 	// See protocol.
 	func write(to fileWrapper: inout FileWrapper, contentType: UTType) throws {
@@ -57,15 +55,13 @@ struct Document : FileDocument {
 
 private extension Machine {
 	
-	/// Creates a machine loaded with given script.
+	/// Attempts to load given script, resetting `self` in the process.
 	///
-	/// An empty machine is created if the script can't be compiled.
-	init(for script: Script) {
-		if case .program(let program) = script.program {
-			self = .init(memoryWords: program.words)
-		} else {
-			self = .init()
-		}
+	/// This method does nothing if the script cannot be compiled.
+	mutating func attemptReload(from script: Script) {
+		guard case .program(let program) = script.program else { return }
+		self = .init()
+		memory.load(program.words, startingFrom: .zero)
 	}
 	
 }

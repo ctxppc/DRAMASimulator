@@ -72,7 +72,7 @@ extension MachineWord : CustomStringConvertible {
 
 infix operator ** : BitwiseShiftPrecedence
 
-func ** (base: Int, exponent: Int) -> Int {
+func ** <Int : BinaryInteger> (base: Int, exponent: Int) -> Int {
 	guard exponent > 0 else { return 1 }
 	return base * base ** (exponent - 1)
 }

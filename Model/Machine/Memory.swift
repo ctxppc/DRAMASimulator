@@ -16,7 +16,7 @@ struct Memory : Equatable {
 	
 	/// Returns the address to the word at `address` in the appropriate bin.
 	private func internalAddress(from address: AddressWord) -> Int {
-		address.rawValue >> Self.internalAddressLength
+		Int(UInt(address.rawValue) & Self.internalAddressMask)
 	}
 	
 	/// Loads given buffer into the memory.
@@ -40,7 +40,7 @@ struct Memory : Equatable {
 	private static let numberOfBins = (AddressWord.unsignedUpperBound / numberOfWordsPerBin) + 1
 	
 	/// The mask
-	private static let internalAddressMask = ~0 << Self.internalAddressLength
+	private static let internalAddressMask: UInt = ~(~0 << Self.internalAddressLength)
 	
 	/// The bins.
 	private var bins = [Bin](repeating: .zero, count: numberOfBins)

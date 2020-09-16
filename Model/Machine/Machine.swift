@@ -9,18 +9,13 @@ struct Machine {
 	/// - Requires: `memoryWords` does not exceed the machine's address space.
 	///
 	/// - Parameter registers: The machine's registers. The default value is `defaultRegisters`.
-	/// - Parameter memoryWords: The words to load (starting from the beginning of the machine). The default value is an empty array.
 	/// - Parameter programCounter: The address of the next instruction to execute. The default value is zero.
 	/// - Parameter conditionState: The condition state. The default value is `.zero`.
-	init(registers: [MachineWord] = defaultRegisters, memoryWords: [MachineWord] = [], startingAt programCounter: AddressWord = .zero, conditionState: ConditionState = .zero) {
-		
+	init(registers: [MachineWord] = defaultRegisters, programCounter: AddressWord = .zero, conditionState: ConditionState = .zero) {
 		precondition(registers.count == Machine.defaultRegisters.count, "Invalid register count")
-		
 		self.registers = registers
 		self.programCounter = programCounter
 		self.conditionState = conditionState
-		self.memory.load(memoryWords, startingFrom: programCounter)
-		
 	}
 	
 	/// The words stored in the machine's registers.
