@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "DepthKit",
+        "repositoryURL": "https://github.com/ctxppc/DepthKit.git",
+        "state": {
+          "branch": null,
+          "revision": "f71fb8029baa04f6985fc9babf4d845b6063ae2d",
+          "version": "0.9.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

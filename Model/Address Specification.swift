@@ -1,4 +1,4 @@
-// DRAMASimulator © 2018 Constantino Tsarouhas
+// DRAMASimulator © 2018–2020 Constantino Tsarouhas
 
 /// An address specified in assembly code.
 struct AddressSpecification {

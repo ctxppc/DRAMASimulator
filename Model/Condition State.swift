@@ -1,4 +1,4 @@
-// DRAMASimulator © 2018 Constantino Tsarouhas
+// DRAMASimulator © 2018–2020 Constantino Tsarouhas
 
 /// A value indicating whether another value is smaller than, equal to, or greater than some other value or zero.
 enum ConditionState : Int {
