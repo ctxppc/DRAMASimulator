@@ -64,7 +64,7 @@ private extension Machine {
 		if case .program(let program) = script.program {
 			self = .init(memoryWords: program.words)
 		} else {
-			self = .init(memoryWords: .init(repeating: .zero, count: MachineWord.unsignedUpperBound))
+			self = .init()
 		}
 	}
 	
