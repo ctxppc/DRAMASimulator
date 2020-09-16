@@ -7,10 +7,10 @@ struct Application : App {
 	
 	// See protocol.
 	var body: some Scene {
-		DocumentGroup(newDocument: Script()) { configuration in
-			MachineView(
-				name:	configuration.fileURL?.deletingPathExtension().lastPathComponent ?? "Nieuwe machine",
-				script:	configuration.$document
+		DocumentGroup(newDocument: Document()) { configuration in
+			DocumentView(
+				name:		configuration.fileURL?.deletingPathExtension().lastPathComponent ?? "Nieuwe machine",
+				document:	configuration.$document
 			)
 		}
 	}

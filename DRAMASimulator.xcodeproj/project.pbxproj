@@ -9,13 +9,11 @@
 /* Begin PBXBuildFile section */
 		4F0BFEE125128E3F00ECC4D2 /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0BFEE025128E3F00ECC4D2 /* Memory.swift */; };
 		4F139C0221A3104100F817A6 /* Script Editing Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F139C0121A3104100F817A6 /* Script Editing Controller.swift */; };
-		4F139C0421A3142400F817A6 /* Machine View Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F139C0321A3142400F817A6 /* Machine View Controller.swift */; };
 		4F166ED821B983AD001A8749 /* Parsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F166ED721B983AD001A8749 /* Parsing.swift */; };
 		4F166EDA21B983D7001A8749 /* Source Range.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F166ED921B983D7001A8749 /* Source Range.swift */; };
 		4F1B6EE021A1A3D700751511 /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1B6EDF21A1A3D700751511 /* Script.swift */; };
 		4F30B52F21A218DC00BDEDCC /* Symbolic Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */; };
-		4F346B762199DBE700D6D8AD /* Script View Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B752199DBE700D6D8AD /* Script View Controller.swift */; };
-		4F346B782199DBE700D6D8AD /* Script Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B772199DBE700D6D8AD /* Script Document.swift */; };
+		4F346B782199DBE700D6D8AD /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B772199DBE700D6D8AD /* Document.swift */; };
 		4F346B7B2199DBE700D6D8AD /* DRAMASimulator.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F346B792199DBE700D6D8AD /* DRAMASimulator.storyboard */; };
 		4F346B7D2199DBEA00D6D8AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F346B7C2199DBEA00D6D8AD /* Assets.xcassets */; };
 		4F346B802199DBEA00D6D8AD /* Launch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F346B7E2199DBEA00D6D8AD /* Launch.storyboard */; };
@@ -41,13 +39,11 @@
 		4F6BAE6321B6D69500A952BB /* Statement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F6BAE6221B6D69500A952BB /* Statement.swift */; };
 		4F820F30219B06AB004EE2C9 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F820F2F219B06AB004EE2C9 /* Command.swift */; };
 		4F820F35219B1CD6004EE2C9 /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E790B219A1FBE008E3E9B /* Instruction.swift */; };
-		4F85A2E721A9BB590061E505 /* Error Presentation on View Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F85A2E621A9BB590061E505 /* Error Presentation on View Controller.swift */; };
 		4F85A2E921A9C42E0061E505 /* Source Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F85A2E821A9C42E0061E505 /* Source Error.swift */; };
 		4F8D1B2C251260A8002E2BE9 /* DepthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4F8D1B2B251260A8002E2BE9 /* DepthKit */; };
 		4F8D1B2F251260B3002E2BE9 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B2E251260B3002E2BE9 /* Application.swift */; };
-		4F8D1B342512662C002E2BE9 /* Script as File Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B332512662C002E2BE9 /* Script as File Document.swift */; };
 		4F8D1B3925126700002E2BE9 /* Script Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B3825126700002E2BE9 /* Script Editor.swift */; };
-		4F8D1B402512715F002E2BE9 /* Machine View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B3F2512715F002E2BE9 /* Machine View.swift */; };
+		4F8D1B402512715F002E2BE9 /* Document View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B3F2512715F002E2BE9 /* Document View.swift */; };
 		4F8D1B4525127CD0002E2BE9 /* Memory View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B4425127CD0002E2BE9 /* Memory View.swift */; };
 		4FA523DD21B423DD00BE1FF2 /* Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523DC21B423DD00BE1FF2 /* Directive.swift */; };
 		4FA523DF21B4263800BE1FF2 /* Macro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523DE21B4263800BE1FF2 /* Macro.swift */; };
@@ -85,14 +81,12 @@
 /* Begin PBXFileReference section */
 		4F0BFEE025128E3F00ECC4D2 /* Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
 		4F139C0121A3104100F817A6 /* Script Editing Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script Editing Controller.swift"; sourceTree = "<group>"; };
-		4F139C0321A3142400F817A6 /* Machine View Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Machine View Controller.swift"; sourceTree = "<group>"; };
 		4F166ED721B983AD001A8749 /* Parsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parsing.swift; sourceTree = "<group>"; };
 		4F166ED921B983D7001A8749 /* Source Range.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Source Range.swift"; sourceTree = "<group>"; };
 		4F1B6EDF21A1A3D700751511 /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
 		4F30B52E21A218DC00BDEDCC /* Symbolic Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Symbolic Address.swift"; sourceTree = "<group>"; };
 		4F346B6E2199DBE700D6D8AD /* DRAMA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DRAMA.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		4F346B752199DBE700D6D8AD /* Script View Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script View Controller.swift"; sourceTree = "<group>"; };
-		4F346B772199DBE700D6D8AD /* Script Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script Document.swift"; sourceTree = "<group>"; };
+		4F346B772199DBE700D6D8AD /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		4F346B7A2199DBE700D6D8AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/DRAMASimulator.storyboard; sourceTree = "<group>"; };
 		4F346B7C2199DBEA00D6D8AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4F346B7F2199DBEA00D6D8AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Launch.storyboard; sourceTree = "<group>"; };
@@ -120,12 +114,10 @@
 		4F6BAE6221B6D69500A952BB /* Statement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Statement.swift; sourceTree = "<group>"; };
 		4F820F2F219B06AB004EE2C9 /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		4F820F33219B1614004EE2C9 /* Load Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Load Command.swift"; sourceTree = "<group>"; };
-		4F85A2E621A9BB590061E505 /* Error Presentation on View Controller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error Presentation on View Controller.swift"; sourceTree = "<group>"; };
 		4F85A2E821A9C42E0061E505 /* Source Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Source Error.swift"; sourceTree = "<group>"; };
 		4F8D1B2E251260B3002E2BE9 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
-		4F8D1B332512662C002E2BE9 /* Script as File Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script as File Document.swift"; sourceTree = "<group>"; };
 		4F8D1B3825126700002E2BE9 /* Script Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script Editor.swift"; sourceTree = "<group>"; };
-		4F8D1B3F2512715F002E2BE9 /* Machine View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Machine View.swift"; sourceTree = "<group>"; };
+		4F8D1B3F2512715F002E2BE9 /* Document View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Document View.swift"; sourceTree = "<group>"; };
 		4F8D1B4425127CD0002E2BE9 /* Memory View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Memory View.swift"; sourceTree = "<group>"; };
 		4FA523DC21B423DD00BE1FF2 /* Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Directive.swift; sourceTree = "<group>"; };
 		4FA523DE21B4263800BE1FF2 /* Macro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Macro.swift; sourceTree = "<group>"; };
@@ -223,10 +215,10 @@
 			isa = PBXGroup;
 			children = (
 				4F8D1B2E251260B3002E2BE9 /* Application.swift */,
-				4F8D1B3F2512715F002E2BE9 /* Machine View.swift */,
+				4F8D1B3F2512715F002E2BE9 /* Document View.swift */,
 				4F8D1B4425127CD0002E2BE9 /* Memory View.swift */,
 				4F8D1B3D2512714D002E2BE9 /* Script Editor */,
-				4F8D1B3625126682002E2BE9 /* Legacy */,
+				4F346B792199DBE700D6D8AD /* DRAMASimulator.storyboard */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -234,7 +226,7 @@
 		4F3E790A219A1FA4008E3E9B /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				4F346B772199DBE700D6D8AD /* Script Document.swift */,
+				4F346B772199DBE700D6D8AD /* Document.swift */,
 				4FA523DB21B423C900BE1FF2 /* Preprocessor */,
 				4FD8ADB421A1B1FD001AD860 /* Script */,
 				4F6BAE4F21B6CD9200A952BB /* Lexical Unit & Statement */,
@@ -312,17 +304,6 @@
 			path = Command;
 			sourceTree = "<group>";
 		};
-		4F8D1B3625126682002E2BE9 /* Legacy */ = {
-			isa = PBXGroup;
-			children = (
-				4F346B792199DBE700D6D8AD /* DRAMASimulator.storyboard */,
-				4F346B752199DBE700D6D8AD /* Script View Controller.swift */,
-				4F139C0321A3142400F817A6 /* Machine View Controller.swift */,
-				4F85A2E621A9BB590061E505 /* Error Presentation on View Controller.swift */,
-			);
-			path = Legacy;
-			sourceTree = "<group>";
-		};
 		4F8D1B3D2512714D002E2BE9 /* Script Editor */ = {
 			isa = PBXGroup;
 			children = (
@@ -358,7 +339,6 @@
 				4FA7EBA721A0895E00C52F98 /* Program.swift */,
 				4F85A2E821A9C42E0061E505 /* Source Error.swift */,
 				4F166ED921B983D7001A8749 /* Source Range.swift */,
-				4F8D1B332512662C002E2BE9 /* Script as File Document.swift */,
 			);
 			path = Script;
 			sourceTree = "<group>";
@@ -442,7 +422,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4F6BAE6321B6D69500A952BB /* Statement.swift in Sources */,
-				4F139C0421A3142400F817A6 /* Machine View Controller.swift in Sources */,
 				4FFEB7E3219C75140049D0A5 /* Store Command.swift in Sources */,
 				4F4FA73D21A5AB5C00C1D2C7 /* Stack Command.swift in Sources */,
 				4F6BAE5F21B6CE4000A952BB /* Partial Lexical Unit.swift in Sources */,
@@ -450,25 +429,22 @@
 				4F6BAE5321B6CDBA00A952BB /* Address Command Statement.swift in Sources */,
 				4F6BAE6121B6CEDD00A952BB /* Command Statement.swift in Sources */,
 				4F3E7914219A2324008E3E9B /* Address Specification.swift in Sources */,
-				4F8D1B402512715F002E2BE9 /* Machine View.swift in Sources */,
-				4F346B782199DBE700D6D8AD /* Script Document.swift in Sources */,
+				4F8D1B402512715F002E2BE9 /* Document View.swift in Sources */,
+				4F346B782199DBE700D6D8AD /* Document.swift in Sources */,
 				4F6BAE5121B6CDAD00A952BB /* Nullary Command Statement.swift in Sources */,
 				4FFEB7D8219C6EDD0049D0A5 /* Binary Register Command.swift in Sources */,
 				4FA7EB9821A0493C00C52F98 /* Word.swift in Sources */,
 				4FA7EBA221A06B8400C52F98 /* Compare Command.swift in Sources */,
-				4F346B762199DBE700D6D8AD /* Script View Controller.swift in Sources */,
 				4F166ED821B983AD001A8749 /* Parsing.swift in Sources */,
 				4FFD1A5F21BEA27E00D51B49 /* Macro Expansion.swift in Sources */,
 				4FA7EBAA21A0A55800C52F98 /* Read Command.swift in Sources */,
 				4FA523E921B4298200BE1FF2 /* Assignment Directive.swift in Sources */,
-				4F8D1B342512662C002E2BE9 /* Script as File Document.swift in Sources */,
 				4FA7EB9A21A0682100C52F98 /* Jump Command.swift in Sources */,
 				4F6BAE5521B6CDC900A952BB /* Register Command Statement.swift in Sources */,
 				4FEEF00621B03FFC00F6CDC2 /* Lexical Unit.swift in Sources */,
 				4F6BAE5921B6CE1700A952BB /* Array Statement.swift in Sources */,
 				4F8D1B2F251260B3002E2BE9 /* Application.swift in Sources */,
 				4F63EC6721B3058000F00E9B /* Subroutine Return Command.swift in Sources */,
-				4F85A2E721A9BB590061E505 /* Error Presentation on View Controller.swift in Sources */,
 				4F44C7F2219A4426003798AF /* Machine.swift in Sources */,
 				4F6BAE5D21B6CE3600A952BB /* Comment Lexical Unit.swift in Sources */,
 				4FA523EF21B429B700BE1FF2 /* Jump Directive.swift in Sources */,

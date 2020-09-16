@@ -52,7 +52,7 @@ struct MemoryViewPreviews : PreviewProvider {
 	static var previews: some View {
 		ForEach(ColorScheme.allCases, id: \.self) { scheme in
 			NavigationView {
-				MemoryView(machine: templateMachine)
+				MemoryView(machine: Document(script: templateScript).machine)
 			}.preferredColorScheme(scheme)
 			.navigationViewStyle(StackNavigationViewStyle())
 		}

@@ -1,6 +1,7 @@
 // DRAMASimulator © 2018–2020 Constantino Tsarouhas
 
 import Darwin
+import DepthKit
 
 /// A value that represents a decimal value of some fixed number of digits.
 ///
@@ -27,9 +28,7 @@ extension Word {
 	}
 	
 	/// The zero word.
-	static var zero: Self {
-		return Self(rawValue: 0)!
-	}
+	static var zero: Self { Self(rawValue: 0)! }
 	
 	/// Creates a word with given signed value, wrapping it if necessary.
 	init(wrapping signedValue: Int) {
@@ -49,36 +48,16 @@ extension Word {
 	///
 	/// - Invariant: `Self.unsignedRange.contains(unsignedValue)`.
 	var unsignedValue: Int {
-		
-		get {
-			return rawValue
-		}
-		
-		set {
-			guard let v = Self.init(rawValue: newValue) else { preconditionFailure("Unrepresentable unsigned value") }
-			self = v
-		}
-		
+		get { rawValue }
+		set { self = Self.init(rawValue: newValue) !! "Unrepresentable unsigned value" }
 	}
 	
 	/// The word as a signed value.
 	///
 	/// - Invariant: `Self.signedRange.contains(signedValue)`.
 	var signedValue: Int {
-		
-		get {
-			if rawValue < Self.unsignedUpperBound / 2 {
-				return rawValue
-			} else {
-				return rawValue - Self.unsignedUpperBound
-			}
-		}
-		
-		set {
-			guard let v = Self.init(rawValue: newValue > 0 ? newValue : Self.unsignedUpperBound + newValue) else { preconditionFailure("Unrepresentable signed value") }
-			self = v
-		}
-		
+		get { rawValue < Self.unsignedUpperBound / 2 ? rawValue : rawValue - Self.unsignedUpperBound }
+		set { self = Self.init(rawValue: newValue > 0 ? newValue : Self.unsignedUpperBound + newValue) !! "Unrepresentable signed value" }
 	}
 	
 	/// Modifies the word's signed value and wraps the result before storing it.
