@@ -10,10 +10,13 @@ struct MemoryView : View {
 	@Environment(\.colorScheme)
 	private var colourScheme
 	
+	@ScaledMetric
+	private var minimumColumnWidth: CGFloat = 180
+	
 	// See protocol.
 	var body: some View {
 		ScrollView {
-			LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))]) {
+			LazyVGrid(columns: [GridItem(.adaptive(minimum: minimumColumnWidth))]) {
 				ForEach(AddressWord.all, id: \.self) { address in
 					MemoryCell(
 						address:				address,
@@ -95,8 +98,8 @@ struct MemoryViewPreviews : PreviewProvider {
 		ForEach(ColorScheme.allCases, id: \.self) { scheme in
 			NavigationView {
 				MemoryView(machine: Document(script: templateScript).machine)
-			}.preferredColorScheme(scheme)
-			.navigationViewStyle(StackNavigationViewStyle())
+			}.navigationViewStyle(StackNavigationViewStyle())
+			.preferredColorScheme(scheme)
 		}
 	}
 }
