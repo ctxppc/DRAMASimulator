@@ -84,24 +84,26 @@ private struct SplitViewControl : View {
 	
 	// See protocol.
 	var body: some View {
-		switch axis {
-			
-			case .vertical:
-			HStack {
-				Spacer()
-				capsule
-					.frame(width: 50, height: 8)
-				Spacer()
-			}.background(Color(.systemBackground))
+		ZStack {
+			switch axis {
 				
-			case .horizontal:
-			VStack {
-				Spacer()
-				capsule
-					.frame(width: 8, height: 50)
-				Spacer()
-			}.background(Color(.systemBackground))
-			
+				case .vertical:
+				HStack {
+					Spacer()
+					capsule
+						.frame(width: 50, height: 8)
+					Spacer()
+				}.background(separatorBackground)
+					
+				case .horizontal:
+				VStack {
+					Spacer()
+					capsule
+						.frame(width: 8, height: 50)
+					Spacer()
+				}.background(separatorBackground)
+				
+			}
 		}
 	}
 	
@@ -115,6 +117,12 @@ private struct SplitViewControl : View {
 						originalRatio = originalRatio ?? ratio
 					}.onChanged(dragged)
 			)
+	}
+	
+	/// The background of the separator line.
+	private var separatorBackground: some View {
+		Color(.tertiarySystemFill)
+			.ignoresSafeArea()
 	}
 	
 	/// Updates the ratio in response to a drag update.

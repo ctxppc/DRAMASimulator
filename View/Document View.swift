@@ -19,8 +19,12 @@ struct DocumentView : View {
 	private var document: Document
 	
 	/// The split view's ratio.
-	@SceneStorage(wrappedValue: 0.2, "splitRatio")
+	@SceneStorage(wrappedValue: 0.25, "splitRatio")
 	private var splitRatio
+	
+	/// The view's horizontal size class.
+	@Environment(\.horizontalSizeClass)
+	private var sizeClass
 	
 	/// A timer publisher for animating executions.
 	private let clock = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
@@ -38,22 +42,25 @@ struct DocumentView : View {
 			.navigationTitle(name)
 			.navigationBarTitleDisplayMode(.inline)
 			.toolbar {
-				Button(action: rewind) {
-					Label("Step Backward", systemImage: "backward.frame")
-				}.disabled(!document.timeline.canRewind)
-				Button(action: advance) {
-					Label("Step Forward", systemImage: "forward.frame")
-				}.disabled(!document.timeline.canAdvance)
-				Divider()
-				Button(action: { timelineAnimation = .backward }) {
-					Label("Reverse", systemImage: "backward.fill")
-				}.disabled(!document.timeline.canRewind || timelineAnimation == .backward)
-				Button(action: { timelineAnimation = .still }) {
-					Label("Stop", systemImage: "stop.fill")
-				}.disabled(timelineAnimation == .still)
-				Button(action: { timelineAnimation = .forward }) {
-					Label("Play", systemImage: "forward.fill")
-				}.disabled(!document.timeline.canAdvance || timelineAnimation == .forward)
+				ToolbarItemGroup(placement: sizeClass == .compact ? .bottomBar : .navigationBarLeading) {
+					Button(action: rewind) {
+						Label("Step Backward", systemImage: "backward.frame")
+					}.disabled(!document.timeline.canRewind)
+					Button(action: advance) {
+						Label("Step Forward", systemImage: "forward.frame")
+					}.disabled(!document.timeline.canAdvance)
+				}
+				ToolbarItemGroup(placement: sizeClass == .compact ? .bottomBar : .navigationBarTrailing) {
+					Button(action: { timelineAnimation = .backward }) {
+						Label("Reverse", systemImage: "backward.fill")
+					}.disabled(!document.timeline.canRewind || timelineAnimation == .backward)
+					Button(action: { timelineAnimation = .still }) {
+						Label("Stop", systemImage: "stop.fill")
+					}.disabled(timelineAnimation == .still)
+					Button(action: { timelineAnimation = .forward }) {
+						Label("Play", systemImage: "forward.fill")
+					}.disabled(!document.timeline.canAdvance || timelineAnimation == .forward)
+				}
 			}
 	}
 	
@@ -130,7 +137,7 @@ struct DocumentViewPreviews : PreviewProvider {
 		var body: some View {
 			NavigationView {
 				DocumentView(name: "Preview", document: $document)
-			}
+			}.navigationViewStyle(StackNavigationViewStyle())
 		}
 		
 	}

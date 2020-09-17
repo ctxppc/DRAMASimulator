@@ -68,6 +68,8 @@ struct MachineView : View {
 		Text(text)
 			.font(.headline)
 			.foregroundColor(.secondary)
+			.padding(.top)
+			.padding(.bottom, 4)
 	}
 	
 }

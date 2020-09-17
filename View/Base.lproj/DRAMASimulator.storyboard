@@ -11,7 +11,7 @@
         <scene sceneID="d2C-cB-vh1">
             <objects>
                 <viewController storyboardIdentifier="EditorController" id="lDX-M6-H4E" customClass="ScriptEditingController" customModule="DRAMA" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="nvO-XW-Ygk">
+                    <view key="view" opaque="NO" contentMode="scaleToFill" id="nvO-XW-Ygk">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -36,9 +36,8 @@
                                             <constraint firstAttribute="trailingMargin" secondItem="Xgw-Wg-wbN" secondAttribute="trailing" id="VmF-ah-12q"/>
                                         </constraints>
                                     </view>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="interactive" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="x8N-f6-xzC">
+                                    <textView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" keyboardDismissMode="interactive" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="x8N-f6-xzC">
                                         <rect key="frame" x="0.0" y="128" width="1024" height="640"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <string key="text">ABC R0, R1
 DEF.g R0, 0(R2)
 GHI.k lmn, opqr+s
@@ -54,7 +53,6 @@ XYZ</string>
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="NKg-l5-0UO"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="ZE8-k6-rEZ" firstAttribute="leading" secondItem="NKg-l5-0UO" secondAttribute="leading" id="ZmF-QC-asW"/>
                             <constraint firstItem="ZE8-k6-rEZ" firstAttribute="top" secondItem="nvO-XW-Ygk" secondAttribute="topMargin" id="c6V-GL-XCX"/>
