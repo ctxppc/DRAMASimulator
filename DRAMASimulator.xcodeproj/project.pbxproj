@@ -45,7 +45,7 @@
 		4F8D1B2F251260B3002E2BE9 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B2E251260B3002E2BE9 /* Application.swift */; };
 		4F8D1B3925126700002E2BE9 /* Script Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B3825126700002E2BE9 /* Script Editor.swift */; };
 		4F8D1B402512715F002E2BE9 /* Document View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B3F2512715F002E2BE9 /* Document View.swift */; };
-		4F8D1B4525127CD0002E2BE9 /* Memory View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B4425127CD0002E2BE9 /* Memory View.swift */; };
+		4F8D1B4525127CD0002E2BE9 /* Machine View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B4425127CD0002E2BE9 /* Machine View.swift */; };
 		4FA523DD21B423DD00BE1FF2 /* Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523DC21B423DD00BE1FF2 /* Directive.swift */; };
 		4FA523DF21B4263800BE1FF2 /* Macro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523DE21B4263800BE1FF2 /* Macro.swift */; };
 		4FA523E321B4278E00BE1FF2 /* Output Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523E221B4278E00BE1FF2 /* Output Directive.swift */; };
@@ -120,7 +120,7 @@
 		4F8D1B2E251260B3002E2BE9 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		4F8D1B3825126700002E2BE9 /* Script Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script Editor.swift"; sourceTree = "<group>"; };
 		4F8D1B3F2512715F002E2BE9 /* Document View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Document View.swift"; sourceTree = "<group>"; };
-		4F8D1B4425127CD0002E2BE9 /* Memory View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Memory View.swift"; sourceTree = "<group>"; };
+		4F8D1B4425127CD0002E2BE9 /* Machine View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Machine View.swift"; sourceTree = "<group>"; };
 		4FA523DC21B423DD00BE1FF2 /* Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Directive.swift; sourceTree = "<group>"; };
 		4FA523DE21B4263800BE1FF2 /* Macro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Macro.swift; sourceTree = "<group>"; };
 		4FA523E221B4278E00BE1FF2 /* Output Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Output Directive.swift"; sourceTree = "<group>"; };
@@ -226,7 +226,7 @@
 			children = (
 				4F8D1B2E251260B3002E2BE9 /* Application.swift */,
 				4F8D1B3F2512715F002E2BE9 /* Document View.swift */,
-				4F8D1B4425127CD0002E2BE9 /* Memory View.swift */,
+				4F8D1B4425127CD0002E2BE9 /* Machine View.swift */,
 				4F8D1B3D2512714D002E2BE9 /* Script Editor */,
 				4F0DA00D2513899300311BD2 /* Utility Views */,
 				4F346B792199DBE700D6D8AD /* DRAMASimulator.storyboard */,
@@ -481,7 +481,7 @@
 				4F1B6EE021A1A3D700751511 /* Script.swift in Sources */,
 				4F0DA00F251389A600311BD2 /* Split View.swift in Sources */,
 				4FA523E521B4279700BE1FF2 /* Fail Directive.swift in Sources */,
-				4F8D1B4525127CD0002E2BE9 /* Memory View.swift in Sources */,
+				4F8D1B4525127CD0002E2BE9 /* Machine View.swift in Sources */,
 				4F35A3CE21A0D6EA00A4610D /* Command Word.swift in Sources */,
 				4FFEB7D6219C6ED50049D0A5 /* Unary Register Command.swift in Sources */,
 				4F85A2E921A9C42E0061E505 /* Source Error.swift in Sources */,

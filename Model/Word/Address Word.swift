@@ -3,7 +3,7 @@
 import DepthKit
 
 /// A 4-digit decimal, usually used to represent addresses.
-struct AddressWord : Word {
+struct AddressWord : Word, Comparable {
 	
 	/// The range of the address space.
 	static let all = AddressWord.zero..<AddressWord(rawValue: unsignedUpperBound - 1)!
@@ -31,11 +31,11 @@ struct AddressWord : Word {
 
 extension AddressWord : Strideable {
 	
-	func distance(to other: AddressWord) -> Int {
+	func distance(to other: Self) -> Int {
 		self.rawValue.distance(to: other.rawValue)
 	}
 	
-	func advanced(by distance: Int) -> AddressWord {
+	func advanced(by distance: Int) -> Self {
 		Self(rawValue: rawValue.advanced(by: distance)) !! "Address out of bounds"
 	}
 	

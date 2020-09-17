@@ -18,6 +18,10 @@ struct DocumentView : View {
 	@Binding
 	private var document: Document
 	
+	/// The split view's ratio.
+	@SceneStorage(wrappedValue: 0.2, "splitRatio")
+	private var splitRatio
+	
 	/// A timer publisher for animating executions.
 	private let clock = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
 	
@@ -85,9 +89,9 @@ struct DocumentView : View {
 	
 	@ViewBuilder
 	private var panels: some View {
-		SplitView {
+		SplitView(ratio: $splitRatio.cgFloat) {
 			ScriptEditor(script: $document.script)
-			MemoryView(machine: document.machine)
+			MachineView(machine: document.machine)
 		}
 	}
 	
@@ -105,8 +109,15 @@ struct DocumentView : View {
 	
 }
 
+private extension Double {
+	var cgFloat: CGFloat {
+		get { .init(self) }
+		set { self = .init(newValue) }
+	}
+}
+
 #if DEBUG
-struct MachineViewPreviews : PreviewProvider {
+struct DocumentViewPreviews : PreviewProvider {
 	
 	static var previews: some View {
 		Demo()

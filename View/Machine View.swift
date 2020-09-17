@@ -2,14 +2,17 @@
 
 import SwiftUI
 
-struct MemoryView : View {
+/// A view presenting a machine.
+struct MachineView : View {
 	
-	/// The machine whose memory is presented.
+	/// The machine being presented.
 	let machine: Machine
 	
+	/// The active colour scheme.
 	@Environment(\.colorScheme)
 	private var colourScheme
 	
+	/// The minimum width of the grid's columns.
 	@ScaledMetric
 	private var minimumColumnWidth: CGFloat = 180
 	
@@ -17,24 +20,68 @@ struct MemoryView : View {
 	var body: some View {
 		ScrollView {
 			LazyVGrid(columns: [GridItem(.adaptive(minimum: minimumColumnWidth))]) {
-				ForEach(AddressWord.all, id: \.self) { address in
-					MemoryCell(
-						address:				address,
-						contents:				machine.memory[address],
-						previouslyExecuted:		machine.previousProgramCounter == address,
-						subsequentlyExecuted:	machine.programCounter == address
+				
+				Section(header: header("Processor")) {
+					
+					ForEach(Register.all, id: \.self) { register in
+						WordCell(
+							location:				.register(register),
+							contents:				machine[register: register],
+							previouslyExecuted:		false,
+							subsequentlyExecuted:	false
+						)
+					}
+					
+					WordCell(
+						location:				.programCounter,
+						contents:				.init(machine.programCounter),
+						previouslyExecuted:		false,
+						subsequentlyExecuted:	false
 					)
+					
+					WordCell(
+						location:				.conditionState,
+						contents:				.init(wrapping: machine.conditionState.rawValue),
+						previouslyExecuted:		false,
+						subsequentlyExecuted:	false
+					)
+					
 				}
+				
+				Section(header: header("Geheugen")) {
+					ForEach(AddressWord.all, id: \.self) { address in
+						WordCell(
+							location:				.memory(address),
+							contents:				machine.memory[address],
+							previouslyExecuted:		machine.previousProgramCounter == address,
+							subsequentlyExecuted:	machine.programCounter == address
+						)
+					}
+				}
+				
 			}
 		}
 	}
 	
+	/// Returns a header with given text.
+	private func header(_ text: LocalizedStringKey) -> some View {
+		Text(text)
+			.font(.headline)
+			.foregroundColor(.secondary)
+	}
+	
 }
 
-private struct MemoryCell : View {
+private struct WordCell : View {
 	
 	/// The memory location.
-	let address: AddressWord
+	let location: Location
+	enum Location {
+		case programCounter
+		case conditionState
+		case register(Register)
+		case memory(AddressWord)
+	}
 	
 	/// The contents at the memory location.
 	let contents: MachineWord
@@ -47,7 +94,7 @@ private struct MemoryCell : View {
 	
 	var body: some View {
 		HStack {
-			Text(address.rawValue as NSNumber, formatter: Self.addressFormatter)
+			locationLabel
 				.foregroundColor(.secondary)
 				.font(.system(.caption, design: .monospaced))
 			Text(contents.rawValue as NSNumber, formatter: Self.wordFormatter)
@@ -57,6 +104,17 @@ private struct MemoryCell : View {
 		.clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
 	}
 	
+	@ViewBuilder
+	private var locationLabel: some View {
+		switch location {
+			case .programCounter:		Text("BT")
+			case .conditionState:		Text("CT")
+			case .register(let reg):	Text("R\(reg.rawValue)")
+			case .memory(let address):	Text(address.rawValue as NSNumber, formatter: Self.addressFormatter)
+		}
+	}
+	
+	/// The cell background.
 	@ViewBuilder
 	private var background: some View {
 		if subsequentlyExecuted {
@@ -93,11 +151,11 @@ private struct MemoryCell : View {
 }
 
 #if DEBUG
-struct MemoryViewPreviews : PreviewProvider {
+struct MachineViewPreviews : PreviewProvider {
 	static var previews: some View {
 		ForEach(ColorScheme.allCases, id: \.self) { scheme in
 			NavigationView {
-				MemoryView(machine: Document(script: templateScript).machine)
+				MachineView(machine: Document(script: templateScript).machine)
 			}.navigationViewStyle(StackNavigationViewStyle())
 			.preferredColorScheme(scheme)
 		}

@@ -6,9 +6,9 @@ import SwiftUI
 struct SplitView<First : View, Second : View> : View {
 	
 	/// Creates a split view with given contents.
-	init(ratio: CGFloat = 0.5, @ViewBuilder content: () -> TupleView<(First, Second)>) {
+	init(ratio: Binding<CGFloat>, @ViewBuilder content: () -> TupleView<(First, Second)>) {
 		(first, second) = content().value
-		_ratio = .init(initialValue: ratio)
+		_ratio = ratio
 	}
 	
 	/// The first view.
@@ -22,7 +22,7 @@ struct SplitView<First : View, Second : View> : View {
 	private var sizeClass
 	
 	/// The ratio of the first view's size to the total size.
-	@State
+	@Binding
 	private var ratio: CGFloat
 	
 	/// The split view's namespace.
@@ -138,10 +138,20 @@ private struct SplitViewControl : View {
 }
 
 struct SplitViewPreviews : PreviewProvider {
+	
     static var previews: some View {
-		SplitView {
-			Text("a")
-			Text("b")
-		}.previewLayout(.device)
+		Demo()
+			.previewLayout(.device)
     }
+	
+	private struct Demo : View {
+		@State var ratio: CGFloat = 0.5
+		var body: some View {
+			SplitView(ratio: $ratio) {
+				Text("a")
+				Text("b")
+			}
+		}
+	}
+	
 }
