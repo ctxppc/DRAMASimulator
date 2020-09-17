@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4F0BFEE125128E3F00ECC4D2 /* Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0BFEE025128E3F00ECC4D2 /* Memory.swift */; };
+		4F0DA00F251389A600311BD2 /* Split View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0DA00E251389A600311BD2 /* Split View.swift */; };
 		4F139C0221A3104100F817A6 /* Script Editing Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F139C0121A3104100F817A6 /* Script Editing Controller.swift */; };
 		4F166ED821B983AD001A8749 /* Parsing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F166ED721B983AD001A8749 /* Parsing.swift */; };
 		4F166EDA21B983D7001A8749 /* Source Range.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F166ED921B983D7001A8749 /* Source Range.swift */; };
@@ -80,6 +81,7 @@
 
 /* Begin PBXFileReference section */
 		4F0BFEE025128E3F00ECC4D2 /* Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory.swift; sourceTree = "<group>"; };
+		4F0DA00E251389A600311BD2 /* Split View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Split View.swift"; sourceTree = "<group>"; };
 		4F139C0121A3104100F817A6 /* Script Editing Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script Editing Controller.swift"; sourceTree = "<group>"; };
 		4F166ED721B983AD001A8749 /* Parsing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parsing.swift; sourceTree = "<group>"; };
 		4F166ED921B983D7001A8749 /* Source Range.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Source Range.swift"; sourceTree = "<group>"; };
@@ -172,6 +174,14 @@
 			path = Machine;
 			sourceTree = "<group>";
 		};
+		4F0DA00D2513899300311BD2 /* Utility Views */ = {
+			isa = PBXGroup;
+			children = (
+				4F0DA00E251389A600311BD2 /* Split View.swift */,
+			);
+			path = "Utility Views";
+			sourceTree = "<group>";
+		};
 		4F346B652199DBE700D6D8AD = {
 			isa = PBXGroup;
 			children = (
@@ -218,6 +228,7 @@
 				4F8D1B3F2512715F002E2BE9 /* Document View.swift */,
 				4F8D1B4425127CD0002E2BE9 /* Memory View.swift */,
 				4F8D1B3D2512714D002E2BE9 /* Script Editor */,
+				4F0DA00D2513899300311BD2 /* Utility Views */,
 				4F346B792199DBE700D6D8AD /* DRAMASimulator.storyboard */,
 			);
 			path = View;
@@ -468,6 +479,7 @@
 				4F4FA73F21A5AD6800C1D2C7 /* Print Command.swift in Sources */,
 				4FFEB7DA219C6EE90049D0A5 /* Address Command.swift in Sources */,
 				4F1B6EE021A1A3D700751511 /* Script.swift in Sources */,
+				4F0DA00F251389A600311BD2 /* Split View.swift in Sources */,
 				4FA523E521B4279700BE1FF2 /* Fail Directive.swift in Sources */,
 				4F8D1B4525127CD0002E2BE9 /* Memory View.swift in Sources */,
 				4F35A3CE21A0D6EA00A4610D /* Command Word.swift in Sources */,

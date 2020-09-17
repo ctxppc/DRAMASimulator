@@ -18,9 +18,6 @@ struct DocumentView : View {
 	@Binding
 	private var document: Document
 	
-	@Environment(\.horizontalSizeClass)
-	private var sizeClass
-	
 	/// A timer publisher for animating executions.
 	private let clock = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
 	
@@ -59,9 +56,9 @@ struct DocumentView : View {
 	@ViewBuilder
 	private var contents: some View {
 		if timelineAnimation == .still {
-			stack
+			panels
 		} else {
-			stack.onReceive(clock) { _ in
+			panels.onReceive(clock) { _ in
 				switch timelineAnimation {
 					
 					case .still:
@@ -87,17 +84,11 @@ struct DocumentView : View {
 	}
 	
 	@ViewBuilder
-	private var stack: some View {
-		switch sizeClass {
-			case .regular:	HStack { panels }
-			default:		VStack { panels }
-		}
-	}
-	
-	@ViewBuilder
 	private var panels: some View {
-		ScriptEditor(script: $document.script)
-		MemoryView(machine: document.machine)
+		SplitView {
+			ScriptEditor(script: $document.script)
+			MemoryView(machine: document.machine)
+		}
 	}
 	
 	private func rewind() {

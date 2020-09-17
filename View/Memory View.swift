@@ -49,10 +49,9 @@ private struct MemoryCell : View {
 				.font(.system(.caption, design: .monospaced))
 			Text(contents.rawValue as NSNumber, formatter: Self.wordFormatter)
 				.font(.system(.body, design: .monospaced))
-		}.padding(3)
+		}.padding(.horizontal)
 		.background(background.transition(.opacity))
 		.clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-		.padding(1)
 	}
 	
 	@ViewBuilder
