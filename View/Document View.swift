@@ -103,7 +103,7 @@ struct DocumentView : View {
 			StatusBar(
 				machineNeedsInput: 	document.machine.state.isWaitingForInput,
 				errors:				document.script.program.errors + [document.machine.state.error].compactMap { $0 }
-			), alignment: .bottom
+			), alignment: .top
 		)
 	}
 	
@@ -129,12 +129,22 @@ private struct StatusBar : View {
 	/// Any errors that have occurred or been found.
 	let errors: [Error]
 	
+	/// The input.
+	@State
+	private var input: Int = 0
+	
 	// See protocol.
 	var body: some View {
 		if machineNeedsInput || !errors.isEmpty {
 			VStack(alignment: .leading, spacing: 8) {
 				if machineNeedsInput {
-					Label("Invoer vereist", systemImage: "text.cursor")
+					HStack {
+						Label("Invoer vereist:", systemImage: "text.cursor")
+						TextField("Invoer", value: $input, formatter: Self.inputFormatter, onCommit: submitInput)
+							.keyboardType(.asciiCapableNumberPad)
+							.frame(maxWidth: 200)
+						Button("Ga door", action: submitInput)
+					}
 				}
 				ForEach(errors.indices, id: \.self) { index in
 					Label((errors[index] as? LocalizedError)?.errorDescription ?? errors[index].localizedDescription, systemImage: "xmark.octagon.fill")
@@ -145,6 +155,21 @@ private struct StatusBar : View {
 			.padding()
 		}
 	}
+	
+	func submitInput() {
+		// TODO
+	}
+	
+	private static let inputFormatter: NumberFormatter = {
+		let f = NumberFormatter()
+		f.numberStyle = .none
+		f.usesGroupingSeparator = true
+		f.allowsFloats = false
+		f.minimum = MachineWord.signedRange.lowerBound as NSNumber
+		f.maximum = MachineWord.signedRange.upperBound as NSNumber
+		f.isLenient = true
+		return f
+	}()
 	
 }
 
