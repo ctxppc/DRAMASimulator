@@ -1,7 +1,15 @@
 // DRAMASimulator © 2020 Constantino Tsarouhas
 
+import DepthKit
+
 /// A value representing a machine memory.
-struct Memory : Equatable {
+struct Memory : Equatable, RandomAccessCollection, MutableCollection {
+	
+	// See protocol.
+	var startIndex: AddressWord { .zero }
+	
+	// See protocol.
+	var endIndex: AddressWord { AddressWord.all.upperBound }
 	
 	/// Accesses the word at given address.
 	subscript (address: AddressWord) -> MachineWord {
@@ -19,6 +27,10 @@ struct Memory : Equatable {
 		Int(UInt(address.rawValue) & Self.internalAddressMask)
 	}
 	
+	private func address(externalAddress: Int, internalAddress: Int) -> AddressWord {
+		AddressWord(rawValue: (externalAddress << Self.internalAddressLength) + internalAddress) !! "External or internal address overflow"
+	}
+	
 	/// Loads given buffer into the memory.
 	///
 	/// - Parameter words: The words to load.
@@ -28,6 +40,38 @@ struct Memory : Equatable {
 		for (word, address) in zip(words, addresses) {
 			self[address] = word
 		}
+	}
+	
+	/// Returns the largest address from the lower address space containing a non-zero word.
+	func highestLowAddress() -> AddressWord {
+		
+		let middleBin = bins.count / 2
+		let lowerBins = bins.startIndex..<middleBin
+		
+		for externalAddress in lowerBins.reversed() {
+			if let internalAddress = bins[externalAddress].indexOfLastNonzeroWord() {
+				return address(externalAddress: externalAddress, internalAddress: internalAddress)
+			}
+		}
+		
+		return indices.first!
+		
+	}
+	
+	/// Returns the smallest address from the higher address space containing a non-zero word.
+	func lowestHighAddress() -> AddressWord {
+		
+		let middleBin = bins.count / 2
+		let upperBins = middleBin..<bins.endIndex
+		
+		for externalAddress in upperBins {
+			if let internalAddress = bins[externalAddress].indexOfLastNonzeroWord() {
+				return address(externalAddress: externalAddress, internalAddress: internalAddress)
+			}
+		}
+		
+		return indices.last!
+		
 	}
 	
 	/// The number of bits in an internal address.
@@ -44,13 +88,19 @@ struct Memory : Equatable {
 	
 	/// The bins.
 	private var bins = [Bin](repeating: .zero, count: numberOfBins)
-	private enum Bin : Equatable {
+	private enum Bin : Equatable, MutableCollection, RandomAccessCollection {
 		
 		/// A zero-filled bin.
 		case zero
 		
 		/// A data bin.
 		case data(buffer: [MachineWord])
+		
+		// See protocol.
+		var startIndex: Int { 0 }
+		
+		// See protocol.
+		var endIndex: Int { Memory.numberOfWordsPerBin }
 		
 		/// Accesses the word at given internal address.
 		subscript (address: Int) -> MachineWord {
@@ -73,6 +123,22 @@ struct Memory : Equatable {
 				self = .data(buffer: buffer)
 			}
 			
+		}
+		
+		/// Returns the index to the first non-zero word in the bin.
+		func indexOfFirstNonzeroWord() -> Int? {
+			switch self {
+				case .zero:				return nil
+				case .data(let buffer):	return buffer.firstIndex(where: { $0 != .zero })
+			}
+		}
+		
+		/// Returns the index to the last non-zero word in the bin.
+		func indexOfLastNonzeroWord() -> Int? {
+			switch self {
+				case .zero:				return nil
+				case .data(let buffer):	return buffer.lastIndex(where: { $0 != .zero })
+			}
 		}
 		
 	}

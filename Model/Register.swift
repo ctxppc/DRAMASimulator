@@ -20,7 +20,7 @@ struct Register : RawRepresentable, Hashable, Comparable {
 	static let indices = 0...9
 	
 	/// The range of the address space.
-	static let all = r0..<r9
+	static let all = r0...r9
 	
 	// See protocol.
 	init?(rawValue: Int) {
