@@ -99,6 +99,15 @@ struct DocumentView : View {
 		SplitView(ratio: $splitRatio.cgFloat) {
 			ScriptEditor(script: $document.script)
 			MachineView(machine: document.machine)
+		}.overlay(errorBar, alignment: .bottom)
+	}
+	
+	@ViewBuilder
+	private var errorBar: some View {
+		switch document.script.program {
+			case .program:							EmptyView()
+			case .sourceErrors(let sourceErrors):	ErrorBar(errors: sourceErrors)
+			case .programError(let error):			ErrorBar(errors: [error])
 		}
 	}
 	
@@ -112,6 +121,23 @@ struct DocumentView : View {
 		withAnimation {
 			document.timeline.advance()
 		}
+	}
+	
+}
+
+private struct ErrorBar : View {
+	
+	let errors: [Error]
+	
+	var body: some View {
+		VStack(alignment: .leading) {
+			ForEach(errors.indices, id: \.self) { index in
+				Label((errors[index] as? LocalizedError)?.errorDescription ?? errors[index].localizedDescription, systemImage: "xmark.octagon.fill")
+			}
+		}.padding()
+		.background(Color(.secondarySystemBackground).opacity(0.75))
+		.clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+		.padding()
 	}
 	
 }

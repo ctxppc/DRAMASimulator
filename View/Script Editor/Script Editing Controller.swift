@@ -15,7 +15,7 @@ final class ScriptEditingController : UIViewController {
 	
 	private func updatePresentedScript() {
 		
-		guard let errorBar = errorBar, let errorLabel = errorLabel, let textView = textView else { return }
+		guard let textView = textView else { return }
 		
 		if textView.text == script.sourceText {
 			applyFormatting(on: textView.textStorage, removingPrevious: true)
@@ -31,23 +31,6 @@ final class ScriptEditingController : UIViewController {
 				textView.selectedRange = NSRange(newSelectedRange, in: script.sourceText)
 			}
 			
-		}
-		
-		let errors: [Error]
-		switch script.program {
-			case .program:							errors = []
-			case .sourceErrors(let sourceErrors):	errors = sourceErrors
-			case .programError(let error):			errors = [error]
-		}
-		
-		if errors.isEmpty {
-			errorBar.isHidden = true
-			errorLabel.text = "Geen fouten"
-		} else {
-			errorBar.isHidden = false
-			errorLabel.text = errors.map { error in
-				"⚠️ \((error as? LocalizedError)?.errorDescription ?? error.localizedDescription)"
-			}.joined(separator: "\n")
 		}
 		
 	}
@@ -115,12 +98,6 @@ final class ScriptEditingController : UIViewController {
 	
 	/// The text view presenting the script's text.
 	@IBOutlet var textView: UITextView!
-	
-	/// The arranged view hosting the error label.
-	@IBOutlet weak var errorBar: UIView!
-	
-	/// The label presenting a description of the script's source errors.
-	@IBOutlet weak var errorLabel: UILabel!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
