@@ -53,13 +53,4 @@ struct Timeline {
 	/// The range should be sufficiently wide to avoid frequent reallocations.
 	private let purgeRange = 100...150
 	
-	/// Provides input to the machine and resumes execution if it paused to wait for input.
-	///
-	/// While the machine is modified by providing it input, the `currentMachineDidChange(on:)` delegate method is _not_ invoked as a result of that change.
-	///
-	/// - Requires: `machine.state.isWaitingForInput`.
-	mutating func provideMachineInput(_ input: MachineWord) {
-		machine.provideInput(input)
-	}
-	
 }

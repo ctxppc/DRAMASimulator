@@ -101,8 +101,8 @@ struct DocumentView : View {
 			MachineView(machine: document.machine)
 		}.overlay(
 			StatusBar(
-				machineNeedsInput: 	document.machine.state.isWaitingForInput,
-				errors:				document.script.program.errors + [document.machine.state.error].compactMap { $0 }
+				machine:		$document.machine,
+				scriptErrors:	document.script.program.errors
 			), alignment: .top
 		)
 	}
@@ -123,11 +123,18 @@ struct DocumentView : View {
 
 private struct StatusBar : View {
 	
-	/// A Boolean value indicating whether the machine needs input.
-	let machineNeedsInput: Bool
+	/// Creates a status bar.
+	init(machine: Binding<Machine>, scriptErrors: [Error]) {
+		self._machine = machine
+		self.scriptErrors = scriptErrors
+	}
 	
-	/// Any errors that have occurred or been found.
-	let errors: [Error]
+	/// The machine whose status is being presented.
+	@Binding
+	private var machine: Machine
+	
+	/// Any errors in the script.
+	let scriptErrors: [Error]
 	
 	/// The input.
 	@State
@@ -135,19 +142,23 @@ private struct StatusBar : View {
 	
 	// See protocol.
 	var body: some View {
-		if machineNeedsInput || !errors.isEmpty {
+		if machine.state.isWaitingForInput || machine.state.error != nil || !scriptErrors.isEmpty {
 			VStack(alignment: .leading, spacing: 8) {
-				if machineNeedsInput {
+				if machine.state.isWaitingForInput {
 					HStack {
 						Label("Invoer vereist:", systemImage: "text.cursor")
 						TextField("Invoer", value: $input, formatter: Self.inputFormatter, onCommit: submitInput)
 							.keyboardType(.asciiCapableNumberPad)
 							.frame(maxWidth: 200)
+							.padding()
 						Button("Ga door", action: submitInput)
 					}
 				}
-				ForEach(errors.indices, id: \.self) { index in
-					Label((errors[index] as? LocalizedError)?.errorDescription ?? errors[index].localizedDescription, systemImage: "xmark.octagon.fill")
+				if let error = machine.state.error {
+					Label((error as? LocalizedError)?.errorDescription ?? error.localizedDescription, systemImage: "xmark.octagon.fill")
+				}
+				ForEach(scriptErrors.indices, id: \.self) { index in
+					Label((scriptErrors[index] as? LocalizedError)?.errorDescription ?? scriptErrors[index].localizedDescription, systemImage: "xmark.octagon.fill")
 				}
 			}.padding()
 			.background(Color(.secondarySystemBackground).opacity(0.75))
@@ -157,7 +168,7 @@ private struct StatusBar : View {
 	}
 	
 	func submitInput() {
-		// TODO
+		machine.provideInput(.init(truncating: input))
 	}
 	
 	private static let inputFormatter: NumberFormatter = {

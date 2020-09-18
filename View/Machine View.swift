@@ -25,29 +25,32 @@ struct MachineView : View {
 		ScrollView {
 			LazyVGrid(columns: [GridItem(.adaptive(minimum: minimumColumnWidth))]) {
 				
+				Section(header: header("In- en uitvoer")) {
+					ForEach(machine.ioMessages.indices, id: \.self) { index in
+						cell(for: machine.ioMessages[index], index: index)
+					}
+				}
+				
 				Section(header: header("Processor")) {
 					
 					ForEach(Register.all, id: \.self) { register in
 						WordCell(
-							location:				.register(register),
-							contents:				machine[register: register],
-							previouslyExecuted:		false,
-							subsequentlyExecuted:	false
+							label:		.register(register),
+							contents:	machine[register: register],
+							executing:	false
 						)
 					}
 					
 					WordCell(
-						location:				.programCounter,
-						contents:				.init(machine.programCounter),
-						previouslyExecuted:		false,
-						subsequentlyExecuted:	false
+						label:		.programCounter,
+						contents:	.init(machine.programCounter),
+						executing:	false
 					)
 					
 					WordCell(
-						location:				.conditionState,
-						contents:				.init(wrapping: machine.conditionState.rawValue),
-						previouslyExecuted:		false,
-						subsequentlyExecuted:	false
+						label:		.conditionState,
+						contents:	.init(wrapping: machine.conditionState.rawValue),
+						executing:	false
 					)
 					
 				}
@@ -67,6 +70,15 @@ struct MachineView : View {
 			.foregroundColor(.secondary)
 			.padding(.top)
 			.padding(.bottom, 4)
+	}
+	
+	/// Returns words cells omitting given address space.
+	@ViewBuilder
+	private func cell(for message: Machine.IOMessage, index: Int) -> some View {
+		switch message {
+			case .input(let contents):	WordCell(label: .input(index: index), contents: contents, executing: false)
+			case .output(let contents):	WordCell(label: .output(index: index), contents: contents, executing: false)
+		}
 	}
 	
 	/// Returns words cells omitting given address space.
@@ -125,10 +137,9 @@ struct MachineView : View {
 	@ViewBuilder
 	private func memoryWordCell(at address: AddressWord) -> some View {
 		WordCell(
-			location:				.memory(address),
-			contents:				machine.memory[address],
-			previouslyExecuted:		machine.previousProgramCounter == address,
-			subsequentlyExecuted:	machine.programCounter == address
+			label:		.address(address),
+			contents:	machine.memory[address],
+			executing:	machine.programCounter == address
 		)
 	}
 	
@@ -137,22 +148,21 @@ struct MachineView : View {
 private struct WordCell : View {
 	
 	/// The memory location.
-	let location: Location
-	enum Location {
+	let label: Label
+	enum Label {
+		case input(index: Int)
+		case output(index: Int)
 		case programCounter
 		case conditionState
 		case register(Register)
-		case memory(AddressWord)
+		case address(AddressWord)
 	}
 	
 	/// The contents at the memory location.
 	let contents: MachineWord
 	
-	/// A Boolean value indicating whether the program counter pointed previously at the location.
-	let previouslyExecuted: Bool
-	
 	/// A Boolean value indicating whether the program counter is pointing at the location.
-	let subsequentlyExecuted: Bool
+	let executing: Bool
 	
 	var body: some View {
 		HStack {
@@ -162,27 +172,19 @@ private struct WordCell : View {
 			Text(contents.rawValue as NSNumber, formatter: Self.wordFormatter)
 				.font(.system(.body, design: .monospaced))
 		}.padding(.horizontal)
-		.background(background.transition(.opacity))
+		.background((executing ? Self.executingColour : .clear).transition(.opacity))
 		.clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
 	}
 	
 	@ViewBuilder
 	private var locationLabel: some View {
-		switch location {
+		switch label {
+			case .input(let index):		Text("In \(index + 1)")
+			case .output(let index):	Text("Uit \(index + 1)")
 			case .programCounter:		Text("BT")
 			case .conditionState:		Text("CT")
 			case .register(let reg):	Text("R\(reg.rawValue)")
-			case .memory(let address):	Text(address.rawValue as NSNumber, formatter: Self.addressFormatter)
-		}
-	}
-	
-	/// The cell background.
-	@ViewBuilder
-	private var background: some View {
-		if subsequentlyExecuted {
-			Self.executingColour
-		} else if previouslyExecuted {
-			Self.executedColour
+			case .address(let address):	Text(address.rawValue as NSNumber, formatter: Self.addressFormatter)
 		}
 	}
 	
@@ -206,9 +208,6 @@ private struct WordCell : View {
 	
 	/// The colour used to mark cells being executed subsequently.
 	private static let executingColour = Color("Executing")
-	
-	/// The colour used to mark cells being executed previously.
-	private static let executedColour = Color("Executed")
 	
 }
 

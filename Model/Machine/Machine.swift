@@ -86,9 +86,6 @@ struct Machine {
 	/// The address in memory of the next command to be executed.
 	var programCounter: AddressWord
 	
-	/// The address in memory of the previously executed command, or `nil` if the machine is initial.
-	var previousProgramCounter: AddressWord?
-	
 	/// The condition state.
 	///
 	/// The machine does not use or modify the condition state but rather commands executed on the machine.
@@ -175,7 +172,6 @@ struct Machine {
 		precondition(state.isReady, "The machine is not ready.")
 		do {
 			let command = try CommandWord(memory[programCounter]).command()
-			previousProgramCounter = programCounter
 			programCounter.increment()
 			try command.execute(on: &self)
 		} catch {
