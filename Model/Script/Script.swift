@@ -71,6 +71,15 @@ struct Script {
 		/// A program couldn't be assembled due to a non-source error.
 		case programError(Error)
 		
+		/// Any errors in the programs.
+		var errors: [Error] {
+			switch self {
+				case .program:					return []
+				case .sourceErrors(let errors):	return errors
+				case .programError(let error):	return [error]
+			}
+		}
+		
 	}
 	
 	/// Determines all lexical units in given source.

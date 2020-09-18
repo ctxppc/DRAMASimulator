@@ -99,16 +99,12 @@ struct DocumentView : View {
 		SplitView(ratio: $splitRatio.cgFloat) {
 			ScriptEditor(script: $document.script)
 			MachineView(machine: document.machine)
-		}.overlay(errorBar, alignment: .bottom)
-	}
-	
-	@ViewBuilder
-	private var errorBar: some View {
-		switch document.script.program {
-			case .program:							EmptyView()
-			case .sourceErrors(let sourceErrors):	ErrorBar(errors: sourceErrors)
-			case .programError(let error):			ErrorBar(errors: [error])
-		}
+		}.overlay(
+			StatusBar(
+				machineNeedsInput: 	document.machine.state.isWaitingForInput,
+				errors:				document.script.program.errors + [document.machine.state.error].compactMap { $0 }
+			), alignment: .bottom
+		)
 	}
 	
 	private func rewind() {
@@ -125,19 +121,29 @@ struct DocumentView : View {
 	
 }
 
-private struct ErrorBar : View {
+private struct StatusBar : View {
 	
+	/// A Boolean value indicating whether the machine needs input.
+	let machineNeedsInput: Bool
+	
+	/// Any errors that have occurred or been found.
 	let errors: [Error]
 	
+	// See protocol.
 	var body: some View {
-		VStack(alignment: .leading) {
-			ForEach(errors.indices, id: \.self) { index in
-				Label((errors[index] as? LocalizedError)?.errorDescription ?? errors[index].localizedDescription, systemImage: "xmark.octagon.fill")
-			}
-		}.padding()
-		.background(Color(.secondarySystemBackground).opacity(0.75))
-		.clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-		.padding()
+		if machineNeedsInput || !errors.isEmpty {
+			VStack(alignment: .leading, spacing: 8) {
+				if machineNeedsInput {
+					Label("Invoer vereist", systemImage: "text.cursor")
+				}
+				ForEach(errors.indices, id: \.self) { index in
+					Label((errors[index] as? LocalizedError)?.errorDescription ?? errors[index].localizedDescription, systemImage: "xmark.octagon.fill")
+				}
+			}.padding()
+			.background(Color(.secondarySystemBackground).opacity(0.75))
+			.clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+			.padding()
+		}
 	}
 	
 }
