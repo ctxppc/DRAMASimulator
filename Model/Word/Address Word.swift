@@ -6,7 +6,7 @@ import DepthKit
 struct AddressWord : Word, Comparable {
 	
 	/// The range of the address space.
-	static let all = AddressWord.zero..<AddressWord(rawValue: unsignedUpperBound - 1)!
+	static let all = AddressWord.zero...AddressWord(rawValue: unsignedUpperBound - 1)!
 	
 	// See protocol.
 	static let unsignedUpperBound = 10000
