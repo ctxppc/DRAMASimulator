@@ -92,8 +92,7 @@ final class ScriptEditingController : UIViewController {
 	
 	/// The selected range, or `nil` if nothing is selected.
 	var selectedRange: SourceRange? {
-		guard let textView = textView else { return nil }
-		return SourceRange(textView.selectedRange, in: textView.text)
+		textView.flatMap { SourceRange($0.selectedRange, in: $0.text) }
 	}
 	
 	/// The text view presenting the script's text.
@@ -103,30 +102,6 @@ final class ScriptEditingController : UIViewController {
 		super.viewDidLoad()
 		updatePresentedScript()
 	}
-	
-	override func viewWillAppear(_ animated: Bool) {
-		super.viewWillAppear(animated)
-		keyboardWillChangeFrameObserver = NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillChangeFrameNotification, object: nil, queue: nil) { [weak self] notification in
-			
-			guard let controller = self else { return }
-			
-			let keyboardFrame = notification.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
-			let viewFrame = controller.view.convert(controller.view.bounds, to: controller.view.window)
-			let bottomInset = viewFrame.maxY - keyboardFrame.minY
-			
-			controller.textView.contentInset.bottom = bottomInset
-			controller.textView.horizontalScrollIndicatorInsets.bottom = bottomInset
-			controller.textView.verticalScrollIndicatorInsets.bottom = bottomInset
-			
-		}
-	}
-	
-	override func viewWillDisappear(_ animated: Bool) {
-		super.viewWillDisappear(animated)
-		keyboardWillChangeFrameObserver.flatMap(NotificationCenter.default.removeObserver)
-	}
-	
-	private var keyboardWillChangeFrameObserver: Any?
 	
 }
 
