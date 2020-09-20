@@ -10,6 +10,8 @@ struct Program {
 	/// Creates an empty program.
 	init() {
 		words = []
+		statements = []
+		statementIndexByWord = []
 	}
 	
 	/// Assembles a program with given statements and mapping from symbols to statement indices.
@@ -22,10 +24,10 @@ struct Program {
 	/// - Throws: An error if an undefined symbol is referenced.
 	init(statements: [Statement], statementIndicesBySymbol: [String : Int]) throws {
 		
-		var addressesByStatementIndex: [Int : Int] = [:]
+		var statementIndexByWord: [Int] = []
 		var nextAddress = 0
-		for (statementIndex, statement) in statements.enumerated() {
-			addressesByStatementIndex[statementIndex] = nextAddress
+		for statement in statements {
+			statementIndexByWord.append(nextAddress)
 			nextAddress += statement.wordCount
 		}
 		
@@ -33,9 +35,11 @@ struct Program {
 		
 		var addressesBySymbol: [Script.Symbol : Int] = [:]
 		for (symbol, statementIndex) in statementIndicesBySymbol {
-			addressesBySymbol[symbol] = addressesByStatementIndex[statementIndex]
+			addressesBySymbol[symbol] = statementIndexByWord[statementIndex]
 		}
 		
+		self.statements = statements
+		self.statementIndexByWord = statementIndexByWord
 		words = try zip(statements, statements.indices).flatMap { statement, index -> AnyCollection<MachineWord> in
 			do {
 				return try statement.words(addressesBySymbol: addressesBySymbol)
@@ -48,6 +52,14 @@ struct Program {
 	
 	/// The program's words.
 	let words: [MachineWord]
+	
+	/// The program's statements.
+	let statements: [Statement]
+	
+	/// An array mapping each word to an index in `statements`.
+	///
+	/// - Invariant: `statementIndexByWord.count == words.count`
+	let statementIndexByWord: [Int]
 	
 	/// An error that occured while translating a statement into words.
 	struct StatementTranslationError : LocalizedError {

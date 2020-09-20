@@ -1,5 +1,6 @@
 // DRAMASimulator © 2018–2020 Constantino Tsarouhas
 
+import DepthKit
 import UIKit
 
 /// A view controller that presents the contents of a document's source text.
@@ -7,45 +8,44 @@ final class ScriptEditingController : UIViewController {
 	
 	/// The presented script.
 	var script: Script = .init() {
-		didSet { updatePresentedScript() }
+		didSet {
+			guard script.sourceText != oldValue.sourceText else { return }
+			updatePresentedScript()
+		}
 	}
 	
-	/// The base attributes for presenting source text.
-	private static let baseAttributes = [
-		NSAttributedString.Key.font:	UIFont.monospacedSystemFont(ofSize: 18, weight: .regular),
-		.foregroundColor:				UIColor.label
-	]
+	/// The program counter.
+	var programCounter: AddressWord = .zero {
+		didSet { updateProgramCounterPresentation() }
+	}
 	
+	/// Updates the script presentation.
 	private func updatePresentedScript() {
 		
 		guard let textView = textView else { return }
 		
-		if textView.text == script.sourceText {
-			applyFormatting(on: textView.textStorage, removingPrevious: true)
-		} else {
-			
-			let formattedText = NSMutableAttributedString(string: script.sourceText, attributes: Self.baseAttributes)
-			applyFormatting(on: formattedText, removingPrevious: false)
-			
-			let oldSelectedRange = textView.selectedRange
-			let oldText = textView.text ?? ""
-			textView.attributedText = formattedText
-			if let newSelectedRange = Range(oldSelectedRange, in: oldText)?.clamped(to: script.sourceText.startIndex..<script.sourceText.endIndex) {
-				textView.selectedRange = NSRange(newSelectedRange, in: script.sourceText)
-			}
-			
+		let formattedText = NSMutableAttributedString(string: script.sourceText, attributes: [
+			NSAttributedString.Key.font:	UIFont.monospacedSystemFont(ofSize: 18, weight: .regular),
+			.foregroundColor:				UIColor.label
+		])
+		applyFormatting(on: formattedText)
+		
+		let oldSelectedRange = textView.selectedRange
+		let oldText = textView.text ?? ""
+		textView.attributedText = formattedText
+		if let newSelectedRange = Range(oldSelectedRange, in: oldText)?.clamped(to: script.sourceText.startIndex..<script.sourceText.endIndex) {
+			textView.selectedRange = NSRange(newSelectedRange, in: script.sourceText)
 		}
+		
+		highlightedExecutingRange = nil
+		updateProgramCounterPresentation()
 		
 	}
 	
-	private func applyFormatting(on formattedText: NSMutableAttributedString, removingPrevious: Bool) {
+	private func applyFormatting(on formattedText: NSMutableAttributedString) {
 		
 		formattedText.beginEditing()
 		defer { formattedText.endEditing() }
-		
-		if removingPrevious {
-			formattedText.setAttributes(Self.baseAttributes, range: NSRange(location: 0, length: formattedText.length))
-		}
 		
 		func addAttribute<V>(_ attribute: NSAttributedString.Key, value: V, range: SourceRange) {
 			formattedText.addAttribute(attribute, value: value, range: NSRange(range, in: script.sourceText))
@@ -95,6 +95,34 @@ final class ScriptEditingController : UIViewController {
 		
 	}
 	
+	private func updateProgramCounterPresentation() {
+		
+		guard let textView = textView, case .program(let program) = script.product else { return }
+		
+		let newRange: NSRange? = {
+			guard program.statements.indices.contains(programCounter.rawValue) else { return nil }
+			let sourceRange = program.statements[program.statementIndexByWord[programCounter.rawValue]].fullSourceRange
+			return NSRange(sourceRange, in: script.sourceText)
+		}()
+		guard highlightedExecutingRange != newRange else { return }
+		
+		if let oldRange = highlightedExecutingRange {
+			textView.textStorage.removeAttribute(.backgroundColor, range: oldRange)
+		}
+		
+		if let newRange = newRange {
+			textView.textStorage.addAttribute(.backgroundColor, value: UIColor.executing, range: newRange)
+		}
+		
+		highlightedExecutingRange = newRange
+		
+	}
+	
+	/// The string range highlighted as executing, or `nil` if no such highlighting applies to the current text view string.
+	///
+	/// This property is used to efficiently remove previous highlighting when updating the program counter presentation.
+	private var highlightedExecutingRange: NSRange?
+	
 	/// The controller's delegate.
 	weak var delegate: ScriptEditingControllerDelegate?
 	
@@ -137,6 +165,7 @@ protocol ScriptEditingControllerDelegate : class {
 }
 
 fileprivate extension UIColor {
+	static let executing = UIColor(named: "Executing") !! "Colour asset not found"
 	static let mnemonic = #colorLiteral(red: 0, green: 0.3289999962, blue: 0.5749999881, alpha: 1)
 	static let addressingMode = #colorLiteral(red: 0.5809999704, green: 0.1289999932, blue: 0.5749999881, alpha: 1)
 	static let operand = #colorLiteral(red: 0, green: 0.5690000057, blue: 0.5749999881, alpha: 1)

@@ -24,12 +24,10 @@ protocol CommandStatement : Statement {
 
 extension CommandStatement {
 	
-	var wordCount: Int {
-		return 1
-	}
+	var wordCount: Int { 1 }
 	
 	func words(addressesBySymbol: [String : Int]) throws -> AnyCollection<MachineWord> {
-		return .init(CollectionOfOne(CommandWord(try command(addressesBySymbol: addressesBySymbol)).base))
+		.init(CollectionOfOne(CommandWord(try command(addressesBySymbol: addressesBySymbol)).base))
 	}
 	
 }
