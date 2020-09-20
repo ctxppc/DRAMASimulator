@@ -11,7 +11,10 @@ final class ScriptEditingController : UIViewController {
 	}
 	
 	/// The base attributes for presenting source text.
-	private static let baseAttributes = [NSAttributedString.Key.font: UIFont(name: "Menlo", size: 18)!, .foregroundColor: UIColor.label]
+	private static let baseAttributes = [
+		NSAttributedString.Key.font:	UIFont.monospacedSystemFont(ofSize: 18, weight: .regular),
+		.foregroundColor:				UIColor.label
+	]
 	
 	private func updatePresentedScript() {
 		
@@ -44,9 +47,13 @@ final class ScriptEditingController : UIViewController {
 			formattedText.setAttributes(Self.baseAttributes, range: NSRange(location: 0, length: formattedText.length))
 		}
 		
+		func addAttribute<V>(_ attribute: NSAttributedString.Key, value: V, range: SourceRange) {
+			formattedText.addAttribute(attribute, value: value, range: NSRange(range, in: script.sourceText))
+		}
+		
 		func mark(_ range: SourceRange?, _ attribute: NSAttributedString.Key = .foregroundColor, in colour: UIColor) {
 			guard let range = range else { return }
-			formattedText.addAttribute(attribute, value: colour, range: NSRange(range, in: script.sourceText))
+			addAttribute(attribute, value: colour, range: range)
 		}
 		
 		for unit in script.lexicalUnits {
@@ -66,7 +73,7 @@ final class ScriptEditingController : UIViewController {
 				mark(unit.baseAddressSourceRange, in: .operand)
 				
 				case let unit as LabelLexicalUnit:
-				formattedText.addAttribute(.underlineStyle, value: NSUnderlineStyle.double.rawValue, range: NSRange(unit.fullSourceRange, in: script.sourceText))
+				addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: unit.fullSourceRange)
 				mark(unit.fullSourceRange, in: .label)
 				
 				case let unit as CommentLexicalUnit:
@@ -81,7 +88,8 @@ final class ScriptEditingController : UIViewController {
 		
 		if case .sourceErrors(let errors) = script.program {
 			for error in errors {
-				mark(error.sourceRange, .backgroundColor, in: #colorLiteral(red: 0.9179999828, green: 0.8460000157, blue: 0.8140000105, alpha: 1))
+				addAttribute(.underlineStyle, value: ([.single, .patternDot, .byWord] as NSUnderlineStyle).rawValue, range: error.sourceRange)
+				addAttribute(.underlineColor, value: UIColor.red, range: error.sourceRange)
 			}
 		}
 		

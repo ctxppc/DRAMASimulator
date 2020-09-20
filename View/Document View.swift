@@ -92,7 +92,7 @@ struct DocumentView : View {
 	
 	@ViewBuilder
 	private var panels: some View {
-		SplitView(ratio: 0.3, range: 0.25...0.75) {
+		SplitView(ratio: 0.4, range: 0.25...0.75) {
 			ScriptEditor(script: $document.script)
 			MachineView(machine: document.machine)
 		}.overlay(

@@ -95,7 +95,7 @@ struct MachineView : View {
 	}
 	
 	/// The number of zero words presented after the last and before the first non-zero word.
-	private var numberOfAdditionalZeroWordsPresented: Int { sizeClass == .compact ? 10 : 50 }
+	private var numberOfAdditionalZeroWordsPresented: Int { sizeClass == .compact ? 3 : 10 }
 	
 	/// Returns word cells for given memory locations, plus any overflow word cells.
 	private func memoryWordCells(at range: PartialRangeUpTo<AddressWord>) -> some View {
@@ -171,6 +171,7 @@ private struct WordCell : View {
 				.font(.system(.caption, design: .monospaced))
 			Text(contents.rawValue as NSNumber, formatter: Self.wordFormatter)
 				.font(.system(.body, design: .monospaced))
+				.foregroundColor(contents == .zero ? .secondary : .primary)
 		}.padding(.horizontal)
 		.background((executing ? Self.executingColour : .clear).transition(.opacity))
 		.clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
