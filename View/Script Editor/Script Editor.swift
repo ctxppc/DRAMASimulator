@@ -63,7 +63,8 @@ struct ScriptEditorPreviews: PreviewProvider {
 	
 	private struct Demo : View {
 		
-		@State var script = templateScript
+		@State
+		var script = templateScript
 		
 		var body: some View {
 			ScriptEditor(script: $script)

@@ -18,10 +18,6 @@ struct DocumentView : View {
 	@Binding
 	private var document: Document
 	
-	/// The split view's ratio.
-	@SceneStorage(wrappedValue: 0.25, "splitRatio")
-	private var splitRatio
-	
 	/// The view's horizontal size class.
 	@Environment(\.horizontalSizeClass)
 	private var sizeClass
@@ -96,7 +92,7 @@ struct DocumentView : View {
 	
 	@ViewBuilder
 	private var panels: some View {
-		SplitView(ratio: $splitRatio.cgFloat) {
+		SplitView(ratio: 0.3, range: 0.25...0.75) {
 			ScriptEditor(script: $document.script)
 			MachineView(machine: document.machine)
 		}.overlay(

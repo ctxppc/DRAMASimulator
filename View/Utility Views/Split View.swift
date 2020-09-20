@@ -6,9 +6,10 @@ import SwiftUI
 struct SplitView<First : View, Second : View> : View {
 	
 	/// Creates a split view with given contents.
-	init(ratio: Binding<CGFloat>, @ViewBuilder content: () -> TupleView<(First, Second)>) {
+	init(ratio: CGFloat = 0.5, range: ClosedRange<CGFloat> = 0.1...0.9, @ViewBuilder content: () -> TupleView<(First, Second)>) {
 		(first, second) = content().value
-		_ratio = ratio
+		_ratio = .init(initialValue: ratio)
+		self.range = range
 	}
 	
 	/// The first view.
@@ -22,8 +23,11 @@ struct SplitView<First : View, Second : View> : View {
 	private var sizeClass
 	
 	/// The ratio of the first view's size to the total size.
-	@Binding
+	@State
 	private var ratio: CGFloat
+	
+	/// The ratio of the first view's size to the total size.
+	let range: ClosedRange<CGFloat>
 	
 	/// The split view's namespace.
 	@Namespace
@@ -36,7 +40,7 @@ struct SplitView<First : View, Second : View> : View {
 				VStack {
 					first
 						.frame(height: geometry.size.height * ratio)
-					SplitViewControl(ratio: $ratio, axis: .vertical, splitViewSize: geometry.size.height, splitViewCoordinateSpace: namespace)
+					SplitViewControl(ratio: $ratio, range: range, axis: .vertical, splitViewSize: geometry.size.height, splitViewCoordinateSpace: namespace)
 					second
 						.frame(minHeight: 0, maxHeight: .infinity, alignment: .center)
 				}
@@ -44,7 +48,7 @@ struct SplitView<First : View, Second : View> : View {
 				HStack {
 					first
 						.frame(width: geometry.size.width * ratio)
-					SplitViewControl(ratio: $ratio, axis: .horizontal, splitViewSize: geometry.size.width, splitViewCoordinateSpace: namespace)
+					SplitViewControl(ratio: $ratio, range: range, axis: .horizontal, splitViewSize: geometry.size.width, splitViewCoordinateSpace: namespace)
 					second
 						.frame(minWidth: 0, maxWidth: .infinity, alignment: .center)
 				}
@@ -58,8 +62,9 @@ struct SplitView<First : View, Second : View> : View {
 private struct SplitViewControl : View {
 	
 	/// Creates a split view control.
-	init(ratio: Binding<CGFloat>, axis: Axis, splitViewSize: CGFloat, splitViewCoordinateSpace: Namespace.ID) {
+	init(ratio: Binding<CGFloat>, range: ClosedRange<CGFloat>, axis: Axis, splitViewSize: CGFloat, splitViewCoordinateSpace: Namespace.ID) {
 		self._ratio = ratio
+		self.range = range
 		self.axis = axis
 		self.splitViewSize = splitViewSize
 		self.splitViewCoordinateSpace = splitViewCoordinateSpace
@@ -136,30 +141,20 @@ private struct SplitViewControl : View {
 			case .horizontal:	translation = value.translation.width
 		}
 		
-		ratio = (originalRatio + translation / splitViewSize).capped(to: ratioRange)
+		ratio = (originalRatio + translation / splitViewSize).capped(to: range)
 		
 	}
 	
 	/// The permissible range of the ratio.
-	let ratioRange: ClosedRange<CGFloat> = 0.1...0.9
+	let range: ClosedRange<CGFloat>
 	
 }
 
 struct SplitViewPreviews : PreviewProvider {
-	
     static var previews: some View {
-		Demo()
-			.previewLayout(.device)
-    }
-	
-	private struct Demo : View {
-		@State var ratio: CGFloat = 0.5
-		var body: some View {
-			SplitView(ratio: $ratio) {
-				Text("a")
-				Text("b")
-			}
+		SplitView(ratio: 0.5) {
+			Text("a")
+			Text("b")
 		}
-	}
-	
+    }
 }
