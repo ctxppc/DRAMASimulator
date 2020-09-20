@@ -98,7 +98,7 @@ struct DocumentView : View {
 		}.overlay(
 			StatusBar(
 				machine:		$document.machine,
-				scriptErrors:	document.script.program.errors
+				scriptErrors:	document.script.product.errors
 			), alignment: .top
 		)
 	}

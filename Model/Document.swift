@@ -53,7 +53,7 @@ struct Document : FileDocument {
 	
 	/// The initial machine, or `nil` if the script cannot be compiled.
 	private var initialMachine: Machine? {
-		guard case .program(let program) = script.program else { return nil }
+		guard case .program(let program) = script.product else { return nil }
 		var machine = Machine()
 		machine.memory.load(program.words, startingFrom: .zero)
 		return machine

@@ -86,7 +86,7 @@ final class ScriptEditingController : UIViewController {
 			
 		}
 		
-		if case .sourceErrors(let errors) = script.program {
+		if case .sourceErrors(let errors) = script.product {
 			for error in errors {
 				addAttribute(.underlineStyle, value: ([.single, .patternDot, .byWord] as NSUnderlineStyle).rawValue, range: error.sourceRange)
 				addAttribute(.underlineColor, value: UIColor.red, range: error.sourceRange)
@@ -116,7 +116,7 @@ final class ScriptEditingController : UIViewController {
 extension ScriptEditingController : UITextViewDelegate {
 	
 	func textViewDidChange(_ textView: UITextView) {
-		script.sourceText = textView.text
+		script = .init(from: textView.text)
 		delegate?.sourceTextDidChange(on: self)
 	}
 	

@@ -8,11 +8,11 @@ struct Script {
 	/// Parses a script from given text.
 	init(from sourceText: String = "") {
 		
-		storedSourceText = sourceText
+		self.sourceText = sourceText
 		lexicalUnits = Script.units(in: sourceText)
 		statements = lexicalUnits.compactMap { $0 as? Statement }
 		
-		statementIndicesBySymbol = lexicalUnits.reduce(into: (indicesBySymbol: [Symbol : Int](), indexOfNextStatement: 0)) { (state, unit) in
+		statementIndicesBySymbol = lexicalUnits.reduce(into: (indicesBySymbol: [Symbol : Int](), indexOfNextStatement: 0)) { state, unit in
 			if unit is Statement {
 				state.indexOfNextStatement += 1
 			} else if let label = unit as? LabelLexicalUnit {
@@ -26,27 +26,21 @@ struct Script {
 		
 		if sourceErrors.isEmpty {
 			do {
-				program = .program(try Program(statements: statements, statementIndicesBySymbol: statementIndicesBySymbol))
+				product = .program(try Program(statements: statements, statementIndicesBySymbol: statementIndicesBySymbol))
 			} catch let error as Program.StatementTranslationError {
 				let rewrappedError = StatementTranslationError(underlyingError: error.underlyingError, sourceRange: statements[error.statementIndex].fullSourceRange)
-				program = .sourceErrors([rewrappedError])
+				product = .sourceErrors([rewrappedError])
 			} catch {
-				program = .programError(error)
+				product = .programError(error)
 			}
 		} else {
-			program = .sourceErrors(sourceErrors)
+			product = .sourceErrors(sourceErrors)
 		}
 		
 	}
 	
 	/// The script's source text.
-	var sourceText: String {
-		get { return storedSourceText }
-		set { self = .init(from: newValue) }
-	}
-	
-	/// The backing storage for `text`.
-	private let storedSourceText: String
+	let sourceText: String
 	
 	/// The script's lexical units.
 	let lexicalUnits: [LexicalUnit]
@@ -58,9 +52,9 @@ struct Script {
 	let statementIndicesBySymbol: [Symbol : Int]
 	typealias Symbol = String
 	
-	/// A program, or if there are errors, the errors that prevent a program from being assembled.
-	let program: PartialProgram
-	enum PartialProgram {
+	/// The script's product, which may be a program if compilation is successful.
+	let product: Product
+	enum Product {
 		
 		/// A program could be assembled.
 		case program(Program)
