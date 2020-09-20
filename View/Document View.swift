@@ -23,13 +23,16 @@ struct DocumentView : View {
 	private var sizeClass
 	
 	/// A timer publisher for animating executions.
-	private let clock = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
+	private let normalClock = Timer.publish(every: 0.75, on: .main, in: .common).autoconnect()
+	
+	/// A timer publisher for animating executions quickly.
+	private let fastClock = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
 	
 	/// A value indicating whether and how the timeline is animated.
 	@State
-	private var timelineAnimation: TimelineAnimation = .still
+	private var timelineAnimation: TimelineAnimation = .paused
 	enum TimelineAnimation {
-		case forward, backward, still
+		case rewind, paused, play, fastForward
 	}
 	
 	// See protocol.
@@ -42,56 +45,53 @@ struct DocumentView : View {
 					Button(action: rewind) {
 						Label("Step Backward", systemImage: "backward.frame")
 					}.disabled(!document.timeline.canRewind)
+					bottomBarSpacer
 					Button(action: advance) {
 						Label("Step Forward", systemImage: "forward.frame")
 					}.disabled(!document.timeline.canAdvance)
+					bottomBarSpacer
 				}
 				ToolbarItemGroup(placement: sizeClass == .compact ? .bottomBar : .navigationBarTrailing) {
-					Button(action: { timelineAnimation = .backward }) {
-						Label("Reverse", systemImage: "backward.fill")
-					}.disabled(!document.timeline.canRewind || timelineAnimation == .backward)
-					Button(action: { timelineAnimation = .still }) {
-						Label("Stop", systemImage: "stop.fill")
-					}.disabled(timelineAnimation == .still)
-					Button(action: { timelineAnimation = .forward }) {
-						Label("Play", systemImage: "forward.fill")
-					}.disabled(!document.timeline.canAdvance || timelineAnimation == .forward)
+					Button(action: { timelineAnimation = .rewind }) {
+						Label("Rewind", systemImage: "backward.fill")
+					}.disabled(!document.timeline.canRewind)
+					bottomBarSpacer
+					if timelineAnimation != .paused {
+						Button(action: { timelineAnimation = .paused }) {
+							Label("Pause", systemImage: "pause.fill")
+						}
+					} else {
+						Button(action: { timelineAnimation = .play }) {
+							Label("Play", systemImage: "play.fill")
+						}.disabled(!document.timeline.canAdvance)
+					}
+					bottomBarSpacer
+					Button(action: { timelineAnimation = .fastForward }) {
+						Label("Fast Forward", systemImage: "forward.fill")
+					}.disabled(!document.timeline.canAdvance)
 				}
 			}
 	}
 	
 	@ViewBuilder
-	private var contents: some View {
-		if timelineAnimation == .still {
-			panels
-		} else {
-			panels.onReceive(clock) { _ in
-				switch timelineAnimation {
-					
-					case .still:
-					break
-					
-					case .forward:
-					if document.timeline.canAdvance {
-						advance()
-					} else {
-						timelineAnimation = .still
-					}
-						
-					case .backward:
-					if document.timeline.canRewind {
-						rewind()
-					} else {
-						timelineAnimation = .still
-					}
-					
-				}
-			}
+	private var bottomBarSpacer: some View {
+		if sizeClass == .compact {
+			Spacer()
 		}
 	}
 	
 	@ViewBuilder
-	private var panels: some View {
+	private var contents: some View {
+		switch timelineAnimation {
+			case .rewind:		splitView.onReceive(fastClock) { _ in rewind() }
+			case .paused:		splitView
+			case .play:			splitView.onReceive(normalClock) { _ in advance() }
+			case .fastForward:	splitView.onReceive(fastClock) { _ in advance() }
+		}
+	}
+	
+	@ViewBuilder
+	private var splitView: some View {
 		SplitView(ratio: 0.4, range: 0.25...0.75) {
 			ScriptEditor(script: $document.script, programCounter: $document.machine.programCounter)
 			MachineView(machine: document.machine)
@@ -105,13 +105,21 @@ struct DocumentView : View {
 	
 	private func rewind() {
 		withAnimation {
-			document.timeline.rewind()
+			if document.timeline.canRewind {
+				document.timeline.rewind()
+			} else {
+				timelineAnimation = .paused
+			}
 		}
 	}
 	
 	private func advance() {
 		withAnimation {
-			document.timeline.advance()
+			if document.timeline.canAdvance {
+				document.timeline.advance()
+			} else {
+				timelineAnimation = .paused
+			}
 		}
 	}
 	
