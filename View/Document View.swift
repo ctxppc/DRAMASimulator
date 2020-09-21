@@ -35,6 +35,14 @@ struct DocumentView : View {
 		case rewind, paused, play, fastForward
 	}
 	
+	/// A value indicating whether and how the timeline is animated when resuming automatically, e.g., after providing input.
+	@State
+	private var timelineAnimationWhenResumingAutomatically: TimelineAnimation = .paused
+	
+	/// The user input.
+	@State
+	private var input: Int = 0
+	
 	// See protocol.
 	var body: some View {
 		contents
@@ -44,11 +52,11 @@ struct DocumentView : View {
 				ToolbarItemGroup(placement: sizeClass == .compact ? .bottomBar : .navigationBarLeading) {
 					Button(action: rewind) {
 						Label("Step Backward", systemImage: "backward.frame")
-					}.disabled(!document.timeline.canRewind)
+					}.disabled(!document.timeline.canRewind || timelineAnimation != .paused)
 					bottomBarSpacer
 					Button(action: advance) {
 						Label("Step Forward", systemImage: "forward.frame")
-					}.disabled(!document.timeline.canAdvance)
+					}.disabled(!document.timeline.canAdvance || timelineAnimation != .paused)
 					bottomBarSpacer
 				}
 				ToolbarItemGroup(placement: sizeClass == .compact ? .bottomBar : .navigationBarTrailing) {
@@ -95,12 +103,7 @@ struct DocumentView : View {
 		SplitView(ratio: 0.4, range: 0.25...0.75) {
 			ScriptEditor(script: $document.script, programCounter: $document.machine.programCounter)
 			MachineView(machine: document.machine)
-		}.overlay(
-			StatusBar(
-				machine:		$document.machine,
-				scriptErrors:	document.script.product.errors
-			), alignment: .top
-		)
+		}.overlay(statusBar, alignment: .top)
 	}
 	
 	private func rewind() {
@@ -108,6 +111,7 @@ struct DocumentView : View {
 			if document.timeline.canRewind {
 				document.timeline.rewind()
 			} else {
+				timelineAnimationWhenResumingAutomatically = timelineAnimation
 				timelineAnimation = .paused
 			}
 		}
@@ -118,61 +122,45 @@ struct DocumentView : View {
 			if document.timeline.canAdvance {
 				document.timeline.advance()
 			} else {
+				timelineAnimationWhenResumingAutomatically = timelineAnimation
 				timelineAnimation = .paused
 			}
 		}
 	}
 	
-}
-
-private struct StatusBar : View {
-	
-	/// Creates a status bar.
-	init(machine: Binding<Machine>, scriptErrors: [Error]) {
-		self._machine = machine
-		self.scriptErrors = scriptErrors
-	}
-	
-	/// The machine whose status is being presented.
-	@Binding
-	private var machine: Machine
-	
-	/// Any errors in the script.
-	let scriptErrors: [Error]
-	
-	/// The input.
-	@State
-	private var input: Int = 0
-	
-	// See protocol.
-	var body: some View {
-		if machine.state.isWaitingForInput || machine.state.error != nil || !scriptErrors.isEmpty {
-			VStack(alignment: .leading, spacing: 8) {
-				if machine.state.isWaitingForInput {
-					HStack {
-						Label("Invoer vereist:", systemImage: "text.cursor")
-						TextField("Invoer", value: $input, formatter: Self.inputFormatter, onCommit: submitInput)
-							.keyboardType(.asciiCapableNumberPad)
-							.frame(maxWidth: 200)
-							.padding()
-						Button("Ga door", action: submitInput)
+	private var statusBar: some View {
+		let machine = document.machine
+		let scriptErrors = document.script.product.errors
+		return Group {
+			if machine.state.isWaitingForInput || machine.state.error != nil || !scriptErrors.isEmpty {
+				VStack(alignment: .leading, spacing: 8) {
+					if machine.state.isWaitingForInput {
+						HStack {
+							Label("Invoer vereist:", systemImage: "text.cursor")
+							TextField("Invoer", value: $input, formatter: Self.inputFormatter, onCommit: provideInput)
+								.keyboardType(.asciiCapableNumberPad)
+								.frame(maxWidth: 200)
+								.padding()
+							Button("Ga door", action: provideInput)
+						}
 					}
-				}
-				if let error = machine.state.error {
-					Label((error as? LocalizedError)?.errorDescription ?? error.localizedDescription, systemImage: "xmark.octagon.fill")
-				}
-				ForEach(scriptErrors.indices, id: \.self) { index in
-					Label((scriptErrors[index] as? LocalizedError)?.errorDescription ?? scriptErrors[index].localizedDescription, systemImage: "xmark.octagon.fill")
-				}
-			}.padding()
-			.background(Color(.secondarySystemBackground).opacity(0.75))
-			.clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-			.padding()
+					if let error = machine.state.error {
+						Label((error as? LocalizedError)?.errorDescription ?? error.localizedDescription, systemImage: "xmark.octagon.fill")
+					}
+					ForEach(scriptErrors.indices, id: \.self) { index in
+						Label((scriptErrors[index] as? LocalizedError)?.errorDescription ?? scriptErrors[index].localizedDescription, systemImage: "xmark.octagon.fill")
+					}
+				}.padding()
+				.background(Color(.secondarySystemBackground).opacity(0.75))
+				.clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+				.padding()
+			}
 		}
 	}
 	
-	func submitInput() {
-		machine.provideInput(.init(truncating: input))
+	func provideInput() {
+		document.machine.provideInput(.init(truncating: input))
+		timelineAnimation = timelineAnimationWhenResumingAutomatically
 	}
 	
 	private static let inputFormatter: NumberFormatter = {
