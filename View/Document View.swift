@@ -151,6 +151,7 @@ struct DocumentView : View {
 				.background(Color(.secondarySystemBackground).opacity(0.75))
 				.clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 				.padding()
+				.shadow(radius: 10)
 			}
 		}
 	}

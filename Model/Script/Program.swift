@@ -35,6 +35,7 @@ struct Program {
 		
 		var addressesBySymbol: [Script.Symbol : Int] = [:]
 		for (symbol, statementIndex) in statementIndicesBySymbol {
+			guard statementIndexByWord.indices.contains(statementIndex) else { throw Program.AssemblyError.danglingSymbol(symbol: symbol) }
 			addressesBySymbol[symbol] = statementIndexByWord[statementIndex]
 		}
 		
@@ -80,13 +81,17 @@ struct Program {
 	/// An error related to assembly such as memory management or command lowering.
 	enum AssemblyError : LocalizedError {
 		
+		/// A symbol refers to memory without content.
+		case danglingSymbol(symbol: String)
+		
 		/// The program does not fit in memory.
 		case overflow
 		
 		// See protocol.
 		var errorDescription: String? {
 			switch self {
-				case .overflow:	return "Programma past niet in geheugen"
+				case .overflow:						return "Programma past niet in geheugen"
+				case .danglingSymbol(let symbol):	return "“\(symbol)” verwijst naar niet-gedefiniëerd geheugen"
 			}
 		}
 		
