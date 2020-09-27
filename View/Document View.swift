@@ -41,44 +41,48 @@ struct DocumentView : View {
 	
 	/// The user input.
 	@State
-	private var input: Int = 0
+	private var input = ""
 	
 	// See protocol.
 	var body: some View {
-		contents
-			.navigationTitle(name)
-			.navigationBarTitleDisplayMode(.inline)
-			.toolbar {
-				ToolbarItemGroup(placement: sizeClass == .compact ? .bottomBar : .navigationBarLeading) {
-					Button(action: rewind) {
-						Label("Step Backward", systemImage: "backward.frame")
-					}.disabled(!document.timeline.canRewind || timelineAnimation != .paused)
-					bottomBarSpacer
-					Button(action: advance) {
-						Label("Step Forward", systemImage: "forward.frame")
-					}.disabled(!document.timeline.canAdvance || timelineAnimation != .paused)
-					bottomBarSpacer
-				}
-				ToolbarItemGroup(placement: sizeClass == .compact ? .bottomBar : .navigationBarTrailing) {
-					Button(action: { timelineAnimation = .rewind }) {
-						Label("Rewind", systemImage: "backward.fill")
-					}.disabled(!document.timeline.canRewind)
-					bottomBarSpacer
-					if timelineAnimation != .paused {
-						Button(action: { timelineAnimation = .paused }) {
-							Label("Pause", systemImage: "pause.fill")
-						}
-					} else {
-						Button(action: { timelineAnimation = .play }) {
-							Label("Play", systemImage: "play.fill")
-						}.disabled(!document.timeline.canAdvance)
+		SplitView(ratio: 0.4, range: 0.25...0.75) {
+			ScriptEditor(script: $document.script, programCounter: $document.machine.programCounter)
+			MachineView(machine: document.machine)
+		}.overlay(statusBar, alignment: .top)
+		.background(timer)
+		.navigationTitle(name)
+		.navigationBarTitleDisplayMode(.inline)
+		.toolbar {
+			ToolbarItemGroup(placement: sizeClass == .compact ? .bottomBar : .navigationBarLeading) {
+				Button(action: rewind) {
+					Label("Step Backward", systemImage: "backward.frame")
+				}.disabled(!document.timeline.canRewind || timelineAnimation != .paused)
+				bottomBarSpacer
+				Button(action: advance) {
+					Label("Step Forward", systemImage: "forward.frame")
+				}.disabled(!document.timeline.canAdvance || timelineAnimation != .paused)
+				bottomBarSpacer
+			}
+			ToolbarItemGroup(placement: sizeClass == .compact ? .bottomBar : .navigationBarTrailing) {
+				Button(action: { timelineAnimation = .rewind }) {
+					Label("Rewind", systemImage: "backward.fill")
+				}.disabled(!document.timeline.canRewind)
+				bottomBarSpacer
+				if timelineAnimation != .paused {
+					Button(action: { timelineAnimation = .paused }) {
+						Label("Pause", systemImage: "pause.fill")
 					}
-					bottomBarSpacer
-					Button(action: { timelineAnimation = .fastForward }) {
-						Label("Fast Forward", systemImage: "forward.fill")
+				} else {
+					Button(action: { timelineAnimation = .play }) {
+						Label("Play", systemImage: "play.fill")
 					}.disabled(!document.timeline.canAdvance)
 				}
+				bottomBarSpacer
+				Button(action: { timelineAnimation = .fastForward }) {
+					Label("Fast Forward", systemImage: "forward.fill")
+				}.disabled(!document.timeline.canAdvance)
 			}
+		}
 	}
 	
 	@ViewBuilder
@@ -89,21 +93,13 @@ struct DocumentView : View {
 	}
 	
 	@ViewBuilder
-	private var contents: some View {
+	private var timer: some View {
 		switch timelineAnimation {
-			case .rewind:		splitView.onReceive(fastClock) { _ in rewind() }
-			case .paused:		splitView
-			case .play:			splitView.onReceive(normalClock) { _ in advance() }
-			case .fastForward:	splitView.onReceive(fastClock) { _ in advance() }
+			case .rewind:		Color.clear.onReceive(fastClock) { _ in rewind() }
+			case .paused:		Color.clear
+			case .play:			Color.clear.onReceive(normalClock) { _ in advance() }
+			case .fastForward:	Color.clear.onReceive(fastClock) { _ in advance() }
 		}
-	}
-	
-	@ViewBuilder
-	private var splitView: some View {
-		SplitView(ratio: 0.4, range: 0.25...0.75) {
-			ScriptEditor(script: $document.script, programCounter: $document.machine.programCounter)
-			MachineView(machine: document.machine)
-		}.overlay(statusBar, alignment: .top)
 	}
 	
 	private func rewind() {
@@ -137,11 +133,12 @@ struct DocumentView : View {
 					if machine.state.isWaitingForInput {
 						HStack {
 							Label("Invoer vereist:", systemImage: "text.cursor")
-							TextField("Invoer", value: $input, formatter: Self.inputFormatter, onCommit: provideInput)
+							TextField("Invoer", text: $input, onCommit: provideInput)
 								.keyboardType(.asciiCapableNumberPad)
 								.frame(maxWidth: 200)
 								.padding()
 							Button("Ga door", action: provideInput)
+								.disabled(Int(input) == nil)
 						}
 					}
 					if let error = machine.state.error {
@@ -159,20 +156,9 @@ struct DocumentView : View {
 	}
 	
 	func provideInput() {
-		document.machine.provideInput(.init(truncating: input))
+		document.machine.provideInput(.init(truncating: Int(input) ?? 0))
 		timelineAnimation = timelineAnimationWhenResumingAutomatically
 	}
-	
-	private static let inputFormatter: NumberFormatter = {
-		let f = NumberFormatter()
-		f.numberStyle = .none
-		f.usesGroupingSeparator = true
-		f.allowsFloats = false
-		f.minimum = MachineWord.signedRange.lowerBound as NSNumber
-		f.maximum = MachineWord.signedRange.upperBound as NSNumber
-		f.isLenient = true
-		return f
-	}()
 	
 }
 
