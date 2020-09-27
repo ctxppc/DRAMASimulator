@@ -25,8 +25,9 @@ final class ScriptEditingController : UIViewController {
 		guard let textView = textView else { return }
 		
 		let formattedText = NSMutableAttributedString(string: script.sourceText, attributes: [
-			NSAttributedString.Key.font:	UIFont.monospacedSystemFont(ofSize: 18, weight: .regular),
-			.foregroundColor:				UIColor.label
+			.font:				UIFont(descriptor: UIFontDescriptor.preferredFontDescriptor(withTextStyle: .body).withDesign(.monospaced) !! "Expected font descriptor", size: 0),
+			.foregroundColor:	UIColor.label,
+			.paragraphStyle:	paragraphStyle
 		])
 		applyFormatting(on: formattedText)
 		
@@ -41,6 +42,13 @@ final class ScriptEditingController : UIViewController {
 		updateProgramCounterPresentation()
 		
 	}
+	
+	private let paragraphStyle: NSParagraphStyle = {
+		let s = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
+		s.tabStops = []
+		s.defaultTabInterval = 36
+		return s.copy() as! NSParagraphStyle
+	}()
 	
 	private func applyFormatting(on formattedText: NSMutableAttributedString) {
 		
@@ -135,13 +143,37 @@ final class ScriptEditingController : UIViewController {
 	@IBOutlet var textView: UITextView!
 	
 	override func viewDidLoad() {
+		
 		super.viewDidLoad()
+		updatePresentedScript()
+		
+		let toolbar = UIToolbar()
+		toolbar.items = [
+			UIBarButtonItem(image: UIImage(systemName: "arrow.right.to.line.alt")!, style: .plain, target: self, action: #selector(indent))
+		]
+		toolbar.sizeToFit()
+		textView.inputAccessoryView = toolbar
+		
+	}
+	
+	@objc dynamic func indent() {
+		textView.insertText("\t")
+	}
+	
+	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+		super.traitCollectionDidChange(previousTraitCollection)
 		updatePresentedScript()
 	}
 	
 }
 
 extension ScriptEditingController : UITextViewDelegate {
+	
+	func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText: String) -> Bool {
+		guard replacementText == "\n", range.length == 0, let sRange = SourceRange(range, in: script.sourceText) else { return true }
+		textView.insertText("\n\(script.sourceText.indentation(at: sRange.lowerBound))")
+		return false
+	}
 	
 	func textViewDidChange(_ textView: UITextView) {
 		script = .init(from: textView.text)
@@ -153,6 +185,23 @@ extension ScriptEditingController : UITextViewDelegate {
 	}
 	
 }
+
+fileprivate extension String {
+	
+	/// Determines the range of the indentation used on the line containing the character at given position.
+	func rangeOfIndentation(at index: String.Index) -> SourceRange {
+		let match = indentationPattern.matches(in: self, options: [], range: NSRange(..<index, in: self)).last !! "Expected a match"
+		return match.range(at: 1, in: self) !! "Expected group in match"
+	}
+	
+	/// Determines the indentation used on the line containing the character at given position.
+	func indentation(at index: String.Index) -> Substring {
+		self[rangeOfIndentation(at: index)]
+	}
+	
+}
+
+let indentationPattern = try! NSRegularExpression(pattern: #"^([ \t]*)"#, options: .anchorsMatchLines)
 
 protocol ScriptEditingControllerDelegate : class {
 	
