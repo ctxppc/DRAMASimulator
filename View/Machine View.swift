@@ -20,14 +20,20 @@ struct MachineView : View {
 	@ScaledMetric
 	private var minimumColumnWidth: CGFloat = 180
 	
+	/// A Boolean value indicating whether memory contents are presented as if they're signed integers.
+	@State
+	private var signedValues = false
+	
 	// See protocol.
 	var body: some View {
 		ScrollView {
 			LazyVGrid(columns: [GridItem(.adaptive(minimum: minimumColumnWidth))]) {
 				
-				Section(header: header("In- en uitvoer")) {
-					ForEach(machine.ioMessages.indices, id: \.self) { index in
-						cell(for: machine.ioMessages[index], index: index)
+				if !machine.ioMessages.isEmpty {
+					Section(header: header("In- en uitvoer")) {
+						ForEach(machine.ioMessages.indices, id: \.self) { index in
+							cell(for: machine.ioMessages[index], index: index)
+						}
 					}
 				}
 				
@@ -35,22 +41,25 @@ struct MachineView : View {
 					
 					ForEach(Register.all, id: \.self) { register in
 						WordCell(
-							label:		.register(register),
-							contents:	machine[register: register],
-							executing:	false
+							label:			.register(register),
+							contents:		machine[register: register],
+							executing:		false,
+							signedValue:	signedValues
 						)
 					}
 					
 					WordCell(
-						label:		.programCounter,
-						contents:	.init(machine.programCounter),
-						executing:	false
+						label:			.programCounter,
+						contents:		.init(machine.programCounter),
+						executing:		false,
+						signedValue:	signedValues
 					)
 					
 					WordCell(
-						label:		.conditionState,
-						contents:	.init(wrapping: machine.conditionState.rawValue),
-						executing:	false
+						label:			.conditionState,
+						contents:		.init(wrapping: machine.conditionState.rawValue),
+						executing:		false,
+						signedValue:	signedValues
 					)
 					
 				}
@@ -60,6 +69,8 @@ struct MachineView : View {
 				}
 				
 			}
+		}.onTapGesture {
+			signedValues.toggle()
 		}
 	}
 	
@@ -76,8 +87,8 @@ struct MachineView : View {
 	@ViewBuilder
 	private func cell(for message: Machine.IOMessage, index: Int) -> some View {
 		switch message {
-			case .input(let contents):	WordCell(label: .input(index: index), contents: contents, executing: false)
-			case .output(let contents):	WordCell(label: .output(index: index), contents: contents, executing: false)
+			case .input(let contents):	WordCell(label: .input(index: index), contents: contents, executing: false, signedValue: signedValues)
+			case .output(let contents):	WordCell(label: .output(index: index), contents: contents, executing: false, signedValue: signedValues)
 		}
 	}
 	
@@ -137,9 +148,10 @@ struct MachineView : View {
 	@ViewBuilder
 	private func memoryWordCell(at address: AddressWord) -> some View {
 		WordCell(
-			label:		.address(address),
-			contents:	machine.memory[address],
-			executing:	machine.programCounter == address
+			label:			.address(address),
+			contents:		machine.memory[address],
+			executing:		machine.programCounter == address,
+			signedValue:	signedValues
 		)
 	}
 	
@@ -164,14 +176,16 @@ private struct WordCell : View {
 	/// A Boolean value indicating whether the program counter is pointing at the location.
 	let executing: Bool
 	
+	/// Whether the contents are presented as a signed value.
+	let signedValue: Bool
+	
 	var body: some View {
 		HStack {
 			locationLabel
 				.foregroundColor(.secondary)
 				.font(.system(.caption, design: .monospaced))
-			Text(contents.rawValue as NSNumber, formatter: Self.wordFormatter)
-				.font(.system(.body, design: .monospaced))
-				.foregroundColor(contents == .zero ? .secondary : .primary)
+			Text(value as NSNumber, formatter: valueFormatter).font(.system(.body, design: .monospaced))
+				.foregroundColor(valueColour)
 		}.padding(.horizontal)
 		.background((executing ? Self.executingColour : .clear).transition(.opacity))
 		.clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
@@ -198,14 +212,45 @@ private struct WordCell : View {
 		return formatter
 	}()
 	
-	/// The formatter used to format machine words.
-	private static let wordFormatter: NumberFormatter = {
+	/// The word value being presented.
+	private var value: Int {
+		signedValue ? contents.signedValue : contents.unsignedValue
+	}
+	
+	/// The formatter for the value.
+	private var valueFormatter: NumberFormatter {
+		signedValue ? Self.signedValueFormatter : Self.unsignedValueFormatter
+	}
+	
+	/// The formatter used to format unsigned values.
+	private static let unsignedValueFormatter: NumberFormatter = {
 		let formatter = NumberFormatter()
 		formatter.formattingContext = .standalone
 		formatter.minimumIntegerDigits = 10
 		formatter.maximumIntegerDigits = 10
 		return formatter
 	}()
+	
+	/// The formatter used to format unsigned values.
+	private static let signedValueFormatter: NumberFormatter = {
+		let formatter = NumberFormatter()
+		formatter.formattingContext = .standalone
+		formatter.minimumIntegerDigits = 10
+		formatter.maximumIntegerDigits = 10
+		formatter.positivePrefix = "+"
+		return formatter
+	}()
+	
+	/// The colour of the presented value.
+	private var valueColour: Color {
+		if contents == .zero {
+			return .secondary
+		} else if case .conditionState = label {
+			return ConditionState(rawValue: contents.unsignedValue) == .positive ? .blue : .red
+		} else {
+			return .primary
+		}
+	}
 	
 	/// The colour used to mark cells being executed subsequently.
 	private static let executingColour = Color("Executing")

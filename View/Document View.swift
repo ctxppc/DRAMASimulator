@@ -157,7 +157,7 @@ struct DocumentView : View {
 	}
 	
 	func provideInput() {
-		document.machine.provideInput(.init(truncating: Int(input) ?? 0))
+		document.machine.provideInput(.init(wrapping: Int(input) ?? 0))
 		timelineAnimation = timelineAnimationWhenResumingAutomatically
 	}
 	
@@ -179,7 +179,8 @@ struct DocumentViewPreviews : PreviewProvider {
 	
 	private struct Demo : View {
 		
-		@State var document = Document(script: templateScript)
+		@State
+		var document = Document(script: templateScript)
 		
 		var body: some View {
 			NavigationView {
