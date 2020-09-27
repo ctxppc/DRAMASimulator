@@ -31,13 +31,14 @@ struct DocumentView : View {
 	/// A value indicating whether and how the timeline is animated.
 	@State
 	private var timelineAnimation: TimelineAnimation = .paused
-	enum TimelineAnimation {
-		case rewind, paused, play, fastForward
-	}
 	
 	/// A value indicating whether and how the timeline is animated when resuming automatically, e.g., after providing input.
 	@State
 	private var timelineAnimationWhenResumingAutomatically: TimelineAnimation = .paused
+	
+	enum TimelineAnimation {
+		case rewind, paused, play, fastForward
+	}
 	
 	/// The user input.
 	@State
@@ -107,7 +108,6 @@ struct DocumentView : View {
 			if document.timeline.canRewind {
 				document.timeline.rewind()
 			} else {
-				timelineAnimationWhenResumingAutomatically = timelineAnimation
 				timelineAnimation = .paused
 			}
 		}
@@ -117,7 +117,7 @@ struct DocumentView : View {
 		withAnimation {
 			if document.timeline.canAdvance {
 				document.timeline.advance()
-			} else {
+			} else if timelineAnimation != .paused {
 				timelineAnimationWhenResumingAutomatically = timelineAnimation
 				timelineAnimation = .paused
 			}
@@ -135,10 +135,19 @@ struct DocumentView : View {
 							Label("Invoer vereist:", systemImage: "text.cursor")
 							TextField("Invoer", text: $input, onCommit: provideInput)
 								.keyboardType(.asciiCapableNumberPad)
-								.frame(maxWidth: 200)
+								.multilineTextAlignment(.trailing)
+								.frame(maxWidth: 100)
 								.padding()
 							Button("Ga door", action: provideInput)
 								.disabled(Int(input) == nil)
+								.padding()
+							if timelineAnimationWhenResumingAutomatically != .paused {
+								Button("Pauzeer") {
+									timelineAnimation = .paused
+									timelineAnimationWhenResumingAutomatically = .paused
+									rewind()
+								}.padding()
+							}
 						}
 					}
 					if let error = machine.state.error {

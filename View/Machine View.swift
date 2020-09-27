@@ -184,7 +184,8 @@ private struct WordCell : View {
 			locationLabel
 				.foregroundColor(.secondary)
 				.font(.system(.caption, design: .monospaced))
-			Text(value as NSNumber, formatter: valueFormatter).font(.system(.body, design: .monospaced))
+			Text(value as NSNumber, formatter: valueFormatter)
+				.font(.system(.body, design: .monospaced))
 				.foregroundColor(valueColour)
 		}.padding(.horizontal)
 		.background((executing ? Self.executingColour : .clear).transition(.opacity))
