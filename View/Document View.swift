@@ -26,7 +26,7 @@ struct DocumentView : View {
 	private let normalClock = Timer.publish(every: 0.75, on: .main, in: .common).autoconnect()
 	
 	/// A timer publisher for animating executions quickly.
-	private let fastClock = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
+	private let fastClock = Timer.publish(every: 0.15, on: .main, in: .common).autoconnect()
 	
 	/// A value indicating whether and how the timeline is animated.
 	@State
@@ -55,11 +55,11 @@ struct DocumentView : View {
 		.navigationBarTitleDisplayMode(.inline)
 		.toolbar {
 			ToolbarItemGroup(placement: sizeClass == .compact ? .bottomBar : .navigationBarLeading) {
-				Button(action: rewind) {
+				Button(action: { rewind() }) {
 					Label("Step Backward", systemImage: "backward.frame")
 				}.disabled(!document.timeline.canRewind || timelineAnimation != .paused)
 				bottomBarSpacer
-				Button(action: advance) {
+				Button(action: { advance() }) {
 					Label("Step Forward", systemImage: "forward.frame")
 				}.disabled(!document.timeline.canAdvance || timelineAnimation != .paused)
 				bottomBarSpacer
@@ -96,30 +96,36 @@ struct DocumentView : View {
 	@ViewBuilder
 	private var timer: some View {
 		switch timelineAnimation {
-			case .rewind:		Color.clear.onReceive(fastClock) { _ in rewind() }
+			case .rewind:		Color.clear.onReceive(fastClock) { _ in rewind(steps: 10) }
 			case .paused:		Color.clear
 			case .play:			Color.clear.onReceive(normalClock) { _ in advance() }
-			case .fastForward:	Color.clear.onReceive(fastClock) { _ in advance() }
+			case .fastForward:	Color.clear.onReceive(fastClock) { _ in advance(steps: 10) }
 		}
 	}
 	
-	private func rewind() {
+	private func rewind(steps: Int = 1) {
 		withAnimation {
-			if document.timeline.canRewind {
-				document.timeline.rewind()
-			} else {
-				timelineAnimation = .paused
+			for _ in 1...steps {
+				if document.timeline.canRewind {
+					document.timeline.rewind()
+				} else {
+					timelineAnimation = .paused
+					break
+				}
 			}
 		}
 	}
 	
-	private func advance() {
+	private func advance(steps: Int = 1) {
 		withAnimation {
-			if document.timeline.canAdvance {
-				document.timeline.advance()
-			} else if timelineAnimation != .paused {
-				timelineAnimationWhenResumingAutomatically = timelineAnimation
-				timelineAnimation = .paused
+			for _ in 1...steps {
+				if document.timeline.canAdvance {
+					document.timeline.advance()
+				} else if timelineAnimation != .paused {
+					timelineAnimationWhenResumingAutomatically = timelineAnimation
+					timelineAnimation = .paused
+					break
+				}
 			}
 		}
 	}

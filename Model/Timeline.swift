@@ -51,6 +51,6 @@ struct Timeline {
 	/// When the number of machines in the timeline lies in this range, purging may have occurred. The number of machines does not exceed the range's upper bound.
 	///
 	/// The range should be sufficiently wide to avoid frequent reallocations.
-	private let purgeRange = 100...150
+	private let purgeRange = 7500...10000
 	
 }
