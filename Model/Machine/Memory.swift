@@ -6,10 +6,77 @@ import DepthKit
 struct Memory : Equatable, RandomAccessCollection, MutableCollection {
 	
 	// See protocol.
-	var startIndex: AddressWord { .zero }
+	enum Index : Hashable, Comparable, Strideable {
+		
+		/// The value refers to a memory cell.
+		case address(AddressWord)
+		
+		/// The value refers to position after the last memory cell.
+		case end
+		
+		/// The address referenced by the index, or `nil` if `self` is `.end`.
+		var address: AddressWord? {
+			switch self {
+				case .address(let address):	return address
+				case .end:					return nil
+			}
+		}
+		
+		// See protocol.
+		func advanced(by distance: Int) -> Index {
+			var copy = self
+			copy.rawValue += distance
+			return copy
+		}
+		
+		// See protocol.
+		func distance(to other: Index) -> Int {
+			self.rawValue.distance(to: other.rawValue)
+		}
+		
+		private var rawValue: Int {
+			
+			get {
+				switch self {
+					case .address(let address):	return address.rawValue
+					case .end:					return AddressWord.unsignedRange.upperBound
+				}
+			}
+			
+			set {
+				if let address = AddressWord(rawValue: newValue) {
+					self = .address(address)
+				} else if newValue == AddressWord.unsignedRange.upperBound {
+					self = .end
+				} else {
+					preconditionFailure("Index out of bounds")
+				}
+			}
+			
+		}
+		
+	}
 	
 	// See protocol.
-	var endIndex: AddressWord { AddressWord.all.upperBound }
+	var startIndex: Index { .address(.zero) }
+	
+	// See protocol.
+	var endIndex: Index { .end }
+	
+	// See protocol.
+	subscript (index: Index) -> MachineWord {
+		
+		get {
+			guard case .address(let address) = index else { preconditionFailure("Index out of bounds") }
+			return self[address]
+		}
+		
+		set {
+			guard case .address(let address) = index else { preconditionFailure("Index out of bounds") }
+			self[address] = newValue
+		}
+		
+	}
 	
 	/// Accesses the word at given address.
 	subscript (address: AddressWord) -> MachineWord {
@@ -40,38 +107,6 @@ struct Memory : Equatable, RandomAccessCollection, MutableCollection {
 		for (word, address) in zip(words, addresses) {
 			self[address] = word
 		}
-	}
-	
-	/// Returns the largest address from the lower address space containing a non-zero word.
-	func highestLowAddress() -> AddressWord {
-		
-		let middleBin = bins.count / 2
-		let lowerBins = bins.startIndex..<middleBin
-		
-		for externalAddress in lowerBins.reversed() {
-			if let internalAddress = bins[externalAddress].indexOfLastNonzeroWord() {
-				return address(externalAddress: externalAddress, internalAddress: internalAddress)
-			}
-		}
-		
-		return indices.first!
-		
-	}
-	
-	/// Returns the smallest address from the higher address space containing a non-zero word.
-	func lowestHighAddress() -> AddressWord {
-		
-		let middleBin = bins.count / 2
-		let upperBins = middleBin..<bins.endIndex
-		
-		for externalAddress in upperBins {
-			if let internalAddress = bins[externalAddress].indexOfLastNonzeroWord() {
-				return address(externalAddress: externalAddress, internalAddress: internalAddress)
-			}
-		}
-		
-		return indices.last!
-		
 	}
 	
 	/// The number of bits in an internal address.
@@ -140,6 +175,35 @@ struct Memory : Equatable, RandomAccessCollection, MutableCollection {
 				case .data(let buffer):	return buffer.lastIndex(where: { $0 != .zero })
 			}
 		}
+		
+	}
+	
+	/// The range of indices of memory cells that form a contiguous zero-word space.
+	var emptySpace: Range<Index> {
+		
+		let middleBin = bins.count / 2
+		let lowerBins = bins.startIndex..<middleBin
+		let upperBins = middleBin..<bins.endIndex
+		
+		let lowerBound: Index = {
+			for externalAddress in lowerBins.reversed() {
+				if let internalAddress = bins[externalAddress].indexOfLastNonzeroWord() {
+					return .address(address(externalAddress: externalAddress, internalAddress: internalAddress))
+				}
+			}
+			return startIndex
+		}()
+		
+		let upperBound: Index = {
+			for externalAddress in upperBins {
+				if let internalAddress = bins[externalAddress].indexOfLastNonzeroWord() {
+					return .address(address(externalAddress: externalAddress, internalAddress: internalAddress))
+				}
+			}
+			return endIndex
+		}()
+		
+		return lowerBound..<upperBound
 		
 	}
 	

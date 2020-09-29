@@ -1,5 +1,6 @@
 // DRAMASimulator © 2018–2020 Constantino Tsarouhas
 
+import DepthKit
 import SwiftUI
 
 /// A view presenting a machine.
@@ -65,7 +66,7 @@ struct MachineView : View {
 				}
 				
 				Section(header: header("Geheugen")) {
-					memoryWordCells(omitting: machine.memory.highestLowAddress()..<machine.memory.lowestHighAddress())
+					memoryWordCells(omitting: machine.memory.emptySpace)
 				}
 				
 			}
@@ -94,13 +95,13 @@ struct MachineView : View {
 	
 	/// Returns words cells omitting given address space.
 	@ViewBuilder
-	private func memoryWordCells(omitting omittedAddressSpace: Range<AddressWord>) -> some View {
+	private func memoryWordCells(omitting omittedAddressSpace: Range<Memory.Index>) -> some View {
 		if omittedAddressSpace.count > 2 * numberOfAdditionalZeroWordsPresented {
-			memoryWordCells(at: ..<omittedAddressSpace.lowerBound)
-			memoryWordCells(at: omittedAddressSpace.upperBound...)
+			memoryWordCells(at: ..<omittedAddressSpace.lowerBound, leadsOut: true)
+			memoryWordCells(at: omittedAddressSpace.upperBound..., leadsIn: true)
 		} else {
-			ForEach(AddressWord.all, id: \.self) { address in
-				memoryWordCell(at: address)
+			ForEach(machine.memory.indices, id: \.self) { index in
+				cell(for: index)
 			}
 		}
 	}
@@ -109,50 +110,57 @@ struct MachineView : View {
 	private var numberOfAdditionalZeroWordsPresented: Int { sizeClass == .compact ? 3 : 10 }
 	
 	/// Returns word cells for given memory locations, plus any overflow word cells.
-	private func memoryWordCells(at range: PartialRangeUpTo<AddressWord>) -> some View {
+	private func memoryWordCells<R : RangeExpression>(at range: R, leadsIn: Bool = false, leadsOut: Bool = false) -> some View where R.Bound == Memory.Index {
+		
 		let m = machine.memory
-		let overflowRange = range.upperBound..<(m.index(range.upperBound, offsetBy: numberOfAdditionalZeroWordsPresented, limitedBy: m.endIndex) ?? m.endIndex)
+		let mainRange = range.relative(to: m)
+		
+		let leadInRange: Range<Memory.Index> = {
+			let lowerBound = leadsIn
+				? m.index(mainRange.lowerBound, offsetBy: -numberOfAdditionalZeroWordsPresented, limitedBy: m.startIndex) ?? m.startIndex
+				: mainRange.lowerBound
+			return lowerBound..<mainRange.lowerBound
+		}()
+		
+		let leadOutRange: Range<Memory.Index> = {
+			let upperBound = leadsOut
+				? m.index(mainRange.upperBound, offsetBy: numberOfAdditionalZeroWordsPresented, limitedBy: m.endIndex) ?? m.endIndex
+				: mainRange.upperBound
+			return mainRange.upperBound..<upperBound
+		}()
+		
 		return Group {
-			ForEach(range.relative(to: m), id: \.self) { address in
-				memoryWordCell(at: address)
+			ForEach(leadInRange, id: \.self) { index in
+				cell(for: index)
+					.opacity(normalisedDistance(of: index, to: leadInRange.lowerBound, range: leadInRange.count))
 			}
-			ForEach(overflowRange, id: \.self) { address in
-				memoryWordCell(at: address)
-					.opacity(opacity(for: address, overflowRange: overflowRange, ascending: false))
+			ForEach(mainRange, id: \.self) { index in
+				cell(for: index)
+			}
+			ForEach(leadOutRange, id: \.self) { index in
+				cell(for: index)
+					.opacity(normalisedDistance(of: index, to: leadOutRange.upperBound, range: leadOutRange.count))
 			}
 		}
-	}
-	
-	/// Returns word cells for given memory locations, plus any overflow word cells.
-	private func memoryWordCells(at range: PartialRangeFrom<AddressWord>) -> some View {
-		let m = machine.memory
-		let overflowRange = (m.index(range.lowerBound, offsetBy: -numberOfAdditionalZeroWordsPresented, limitedBy: m.startIndex) ?? m.startIndex)..<range.lowerBound
-		return Group {
-			ForEach(overflowRange, id: \.self) { address in
-				memoryWordCell(at: address)
-					.opacity(opacity(for: address, overflowRange: overflowRange, ascending: true))
-			}
-			ForEach(range.relative(to: m), id: \.self) { address in
-				memoryWordCell(at: address)
-			}
-		}
-	}
-	
-	/// Returns the opacity for the cell at given address.
-	private func opacity(for address: AddressWord, overflowRange: Range<AddressWord>, ascending: Bool) -> Double {
-		let ascendingValue = Double(address.rawValue - overflowRange.lowerBound.rawValue) / Double(overflowRange.upperBound.rawValue - overflowRange.lowerBound.rawValue)
-		return ascending ? ascendingValue : 1 - ascendingValue
+		
 	}
 	
 	/// Returns a word cell for given memory location.
-	@ViewBuilder
-	private func memoryWordCell(at address: AddressWord) -> some View {
-		WordCell(
+	private func cell(for index: Memory.Index) -> some View {
+		let address = index.address !! "Index out of bounds"
+		return WordCell(
 			label:			.address(address),
 			contents:		machine.memory[address],
 			executing:		machine.programCounter == address,
 			signedValue:	signedValues
 		)
+	}
+	
+	/// Returns the distance of two values, normalised to a given range.
+	///
+	/// - Returns: The distance between `firstValue` and `otherValue`, normalised to `range`.
+	private func normalisedDistance<Value : Strideable>(of firstValue: Value, to otherValue: Value, range: Int) -> Double where Value.Stride == Int {
+		Double(abs(firstValue.distance(to: otherValue))) / Double(range)
 	}
 	
 }
