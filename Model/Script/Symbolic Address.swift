@@ -24,6 +24,7 @@ struct SymbolicAddress {
 			}
 			
 			negated = nextTermNegated
+			termString = ""
 			
 		}
 		
