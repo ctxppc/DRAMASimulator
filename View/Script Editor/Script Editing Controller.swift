@@ -81,11 +81,11 @@ final class ScriptEditingController : UIViewController {
 				mark(unit.baseAddressSourceRange, in: .operand)
 				
 				case let unit as LabelLexicalUnit:
-				addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: unit.fullSourceRange)
-				mark(unit.fullSourceRange, in: .label)
+				addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: unit.sourceRange)
+				mark(unit.sourceRange, in: .label)
 				
 				case let unit as CommentLexicalUnit:
-				mark(unit.fullSourceRange, in: .comment)
+				mark(unit.sourceRange, in: .comment)
 				
 				default:
 				break	// no need to handle every possible type of unit
@@ -109,7 +109,7 @@ final class ScriptEditingController : UIViewController {
 		
 		let newRange: NSRange? = {
 			guard program.statements.indices.contains(programCounter.rawValue) else { return nil }
-			let sourceRange = program.statements[program.statementIndexByWord[programCounter.rawValue]].fullSourceRange
+			let sourceRange = program.statements[program.statementIndexByWord[programCounter.rawValue]].sourceRange
 			return NSRange(sourceRange, in: script.sourceText)
 		}()
 		guard highlightedExecutingRange != newRange else { return }

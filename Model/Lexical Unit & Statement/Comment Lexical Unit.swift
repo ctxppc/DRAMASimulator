@@ -9,6 +9,6 @@ struct CommentLexicalUnit : LexicalUnit {
 	static let regularExpression = NSRegularExpression(anchored: false, .group("[^|]*"), .group("\\|.*"))
 	
 	// See protocol.
-	let fullSourceRange: SourceRange
+	let sourceRange: SourceRange
 	
 }

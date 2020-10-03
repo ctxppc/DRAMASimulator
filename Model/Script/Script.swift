@@ -20,15 +20,13 @@ struct Script {
 			}
 		}.indicesBySymbol
 		
-		let sourceErrors = lexicalUnits.compactMap {
-			($0 as? PartialLexicalUnit)?.error as? SourceError
-		}
+		let sourceErrors = lexicalUnits.compactMap { $0 as? PartialLexicalUnit }
 		
 		if sourceErrors.isEmpty {
 			do {
 				product = .program(try Program(statements: statements, statementIndicesBySymbol: statementIndicesBySymbol))
 			} catch let error as Program.StatementTranslationError {
-				let rewrappedError = StatementTranslationError(underlyingError: error.underlyingError, sourceRange: statements[error.statementIndex].fullSourceRange)
+				let rewrappedError = StatementTranslationError(underlyingError: error.underlyingError, sourceRange: statements[error.statementIndex].sourceRange)
 				product = .sourceErrors([rewrappedError])
 			} catch {
 				product = .programError(error)
@@ -114,7 +112,7 @@ struct Script {
 			}
 			
 			if let (symbolRange, labelRange) = symbolLabelRange {
-				units.append(LabelLexicalUnit(fullSourceRange: labelRange, symbolRange: symbolRange))
+				units.append(LabelLexicalUnit(sourceRange: labelRange, symbolRange: symbolRange))
 			}
 			
 			let lexicalUnitTypes: [Statement.Type] = [
@@ -140,13 +138,13 @@ struct Script {
 						throw ParsingError.illegalFormat(range: statementRange)
 					}
 				} catch {
-					units.append(PartialLexicalUnit(fullSourceRange: statementRange, error: error))
+					units.append(PartialLexicalUnit(sourceRange: statementRange, error: error))
 				}
 				
 			}
 			
 			if let range = commentRange {
-				units.append(CommentLexicalUnit(fullSourceRange: range))
+				units.append(CommentLexicalUnit(sourceRange: range))
 			}
 			
 		}

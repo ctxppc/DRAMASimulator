@@ -9,7 +9,7 @@ struct LabelLexicalUnit : LexicalUnit {
 	static let regularExpression = NSRegularExpression(anchored: false, .group(.group(.symbolPattern), .optSpace, ":"), .group(".*"))
 	
 	// See protocol.
-	let fullSourceRange: SourceRange
+	let sourceRange: SourceRange
 	
 	/// The range in the source where the symbol is written, excluding the label terminator `:`.
 	let symbolRange: SourceRange

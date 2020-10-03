@@ -12,7 +12,7 @@ struct RegisterCommandStatement : CommandStatement {
 	
 	// See protocol.
 	init(match: NSTextCheckingResult, in source: String) throws {
-		fullSourceRange = match.range(in: source)
+		sourceRange = match.range(in: source)
 		instructionSourceRange = match.range(at: 1, in: source)!
 		instruction = try Instruction(in: source, at: instructionSourceRange)
 		primaryRegisterSourceRange = RegisterSourceRange(match: match, firstGroup: 2, source: source)!
@@ -31,7 +31,7 @@ struct RegisterCommandStatement : CommandStatement {
 	let secondaryRegister: Register?
 	
 	// See protocol.
-	let fullSourceRange: SourceRange
+	let sourceRange: SourceRange
 	
 	// See protocol.
 	let instructionSourceRange: SourceRange

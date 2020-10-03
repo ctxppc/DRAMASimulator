@@ -3,12 +3,16 @@
 import Foundation
 
 /// A lexical unit that could not be parsed.
-struct PartialLexicalUnit : LexicalUnit {
+struct PartialLexicalUnit : LexicalUnit, SourceError {
 	
 	// See protocol.
-	let fullSourceRange: SourceRange
+	let sourceRange: SourceRange
 	
 	/// The error.
 	let error: Error
 	
+}
+
+extension PartialLexicalUnit : LocalizedError {
+	var errorDescription: String? { (error as? LocalizedError)?.errorDescription }
 }

@@ -18,7 +18,7 @@ struct AddressCommandStatement : CommandStatement {
 	// See protocol.
 	init(match: NSTextCheckingResult, in source: String) throws {
 		
-		fullSourceRange = match.range(in: source)
+		sourceRange = match.range(in: source)
 		instructionSourceRange = match.range(at: 1, in: source)!
 		instruction = try Instruction(in: source, at: instructionSourceRange)
 		addressingModeSourceRange = match.range(at: 2, in: source)
@@ -67,7 +67,7 @@ struct AddressCommandStatement : CommandStatement {
 	let index: AddressSpecification.Index?
 	
 	// See protocol.
-	let fullSourceRange: SourceRange
+	let sourceRange: SourceRange
 	
 	// See protocol.
 	let instructionSourceRange: SourceRange

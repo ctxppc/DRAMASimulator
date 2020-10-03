@@ -17,7 +17,7 @@ struct ArrayStatement : Statement {
 	
 	// See protocol.
 	init(match: NSTextCheckingResult, in source: String) throws {
-		fullSourceRange = match.range(in: source)
+		sourceRange = match.range(in: source)
 		if let range = match.range(at: 1, in: source) {
 			initialiser = .zeroArray(length: Int(source[range])!, sourceRange: range)
 		} else {
@@ -30,7 +30,7 @@ struct ArrayStatement : Statement {
 	}
 	
 	// See protocol.
-	let fullSourceRange: SourceRange
+	let sourceRange: SourceRange
 	
 	/// The array's initialiser.
 	let initialiser: Initialiser

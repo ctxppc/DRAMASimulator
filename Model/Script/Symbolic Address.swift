@@ -16,8 +16,9 @@ struct SymbolicAddress {
 		func addTerm(nextTermNegated: Bool) throws {
 			
 			let trimmedTerm = termString.trimmingCharacters(in: .whitespaces)
-			guard !trimmedTerm.isEmpty else { throw Error.emptyTerm }
-			if let literal = Int(trimmedTerm) {
+			if trimmedTerm.isEmpty {
+				terms.append(.literal(0, negated: false))
+			} else if let literal = Int(trimmedTerm) {
 				terms.append(.literal(literal, negated: negated))
 			} else {
 				terms.append(.symbol(trimmedTerm, negated: negated))
@@ -78,16 +79,12 @@ struct SymbolicAddress {
 	
 	enum Error : LocalizedError {
 		
-		/// A term is empty.
-		case emptyTerm
-		
 		/// An undefined symbol is specified in a symbolic address.
 		case undefinedSymbol(Script.Symbol)
 		
 		// See protocol.
 		var errorDescription: String? {
 			switch self {
-				case .emptyTerm:					return "Adresoperand met lege term"
 				case .undefinedSymbol(let symbol):	return "“\(symbol)” is niet gedefinieerd"
 			}
 		}
