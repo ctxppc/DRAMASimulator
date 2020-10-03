@@ -8,10 +8,12 @@ struct Application : App {
 	// See protocol.
 	var body: some Scene {
 		DocumentGroup(newDocument: Document()) { configuration in
-			DocumentView(
-				name:		configuration.fileURL?.deletingPathExtension().lastPathComponent ?? "Nieuwe machine",
-				document:	configuration.$document
-			)
+			NavigationView {
+				DocumentView(
+					name:		configuration.fileURL?.deletingPathExtension().lastPathComponent ?? "Nieuwe machine",
+					document:	configuration.$document
+				)
+			}
 		}
 	}
 	
