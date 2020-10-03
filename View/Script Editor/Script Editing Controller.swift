@@ -108,9 +108,8 @@ final class ScriptEditingController : UIViewController {
 		guard let textView = textView, case .program(let program) = script.product else { return }
 		
 		let newRange: NSRange? = {
-			guard program.statements.indices.contains(programCounter.rawValue) else { return nil }
-			let sourceRange = program.statements[program.statementIndexByWord[programCounter.rawValue]].sourceRange
-			return NSRange(sourceRange, in: script.sourceText)
+			guard let statement = program.statement(at: programCounter) else { return nil }
+			return NSRange(statement.sourceRange, in: script.sourceText)
 		}()
 		guard highlightedExecutingRange != newRange else { return }
 		
