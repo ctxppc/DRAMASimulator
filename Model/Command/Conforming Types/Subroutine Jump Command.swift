@@ -9,7 +9,7 @@ struct SubroutineJumpCommand : AddressCommand {
 	static let directAccessOnly = true
 	
 	// See protocol.
-	init(instruction: Instruction, addressingMode: AddressingMode?, address: AddressSpecification) throws {
+	init(instruction: Instruction, addressingMode: AddressingMode?, address: ValueOperand) throws {
 		self.destination = address
 		self.addressingMode = addressingMode ?? .direct
 	}
@@ -18,13 +18,13 @@ struct SubroutineJumpCommand : AddressCommand {
 	let instruction = Instruction.subroutineJump
 	
 	/// The jump destination.
-	let destination: AddressSpecification
+	let destination: ValueOperand
 	
 	/// The addressing mode for the destination.
 	let addressingMode: AddressingMode
 	
 	// See protocol.
-	var addressOperand: AddressSpecification? {
+	var addressOperand: ValueOperand? {
 		return destination
 	}
 	
@@ -37,8 +37,8 @@ struct SubroutineJumpCommand : AddressCommand {
 		switch addressingMode {
 			case .value:	fallthrough
 			case .address:	fallthrough
-			case .direct:	machine.programCounter = machine.evaluate(destination)
-			case .indirect:	machine.programCounter = .init(truncating: machine.memory[machine.evaluate(destination)])
+			case .direct:	machine.programCounter = machine.evaluateAddress(destination)
+			case .indirect:	machine.programCounter = .init(truncating: machine.memory[machine.evaluateAddress(destination)])
 		}
 		
 	}

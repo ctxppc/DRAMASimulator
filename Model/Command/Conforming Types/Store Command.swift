@@ -9,7 +9,7 @@ struct StoreCommand : RegisterAddressCommand {
 	static let directAccessOnly = true
 	
 	// See protocol.
-	init(instruction: Instruction, addressingMode mode: AddressingMode? = nil, register: Register, address: AddressSpecification) {
+	init(instruction: Instruction, addressingMode mode: AddressingMode? = nil, register: Register, address: ValueOperand) {
 		source = register
 		destination = address
 		addressingMode = mode ?? .direct
@@ -25,7 +25,7 @@ struct StoreCommand : RegisterAddressCommand {
 	let source: Register
 	
 	/// The memory address being stored into.
-	let destination: AddressSpecification
+	let destination: ValueOperand
 	
 	// See protocol.
 	func execute(on machine: inout Machine) {
@@ -34,8 +34,8 @@ struct StoreCommand : RegisterAddressCommand {
 		switch addressingMode {
 			case .value:	fallthrough
 			case .address:	fallthrough
-			case .direct:	destinationAddress = machine.evaluate(destination)
-			case .indirect:	destinationAddress = .init(truncating: machine.memory[machine.evaluate(destination)])
+			case .direct:	destinationAddress = machine.evaluateAddress(destination)
+			case .indirect:	destinationAddress = .init(truncating: machine.memory[machine.evaluateAddress(destination)])
 		}
 		
 		machine.memory[destinationAddress] = machine[register: source, updatingConditionState: true]
@@ -48,7 +48,7 @@ struct StoreCommand : RegisterAddressCommand {
 	}
 	
 	// See protocol.
-	var addressOperand: AddressSpecification? {
+	var addressOperand: ValueOperand? {
 		return destination
 	}
 	

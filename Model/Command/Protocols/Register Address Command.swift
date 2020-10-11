@@ -6,7 +6,7 @@ protocol RegisterAddressCommand : Command {
 	/// Initialises a command with given instruction, addressing mode (if any), register, and address.
 	///
 	/// - Requires: `supportedInstructions.contains(instruction)`.
-	init(instruction: Instruction, addressingMode: AddressingMode?, register: Register, address: AddressSpecification) throws
+	init(instruction: Instruction, addressingMode: AddressingMode?, register: Register, address: ValueOperand) throws
 	
 	/// The register operand, or `nil` if no such operand has been set on this command.
 	var registerOperand: Register? { get }
@@ -15,6 +15,6 @@ protocol RegisterAddressCommand : Command {
 	var addressingMode: AddressingMode { get }
 	
 	/// The address operand, or `nil` if no such operand has been set on this command.
-	var addressOperand: AddressSpecification? { get }
+	var addressOperand: ValueOperand? { get }
 	
 }

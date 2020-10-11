@@ -54,13 +54,13 @@ struct Machine {
 	/// The machine's memory.
 	var memory = Memory()
 	
-	/// Evaluates an address specified by given address specification and performs any specified indexation.
+	/// Evaluates given operand.
 	///
-	/// - Parameter specification: A value specifying a base address and any indexation on it.
+	/// - Parameter specification: A value specifying a base value and any indexation on it.
 	///
-	/// - Returns: The effective address specified by `specification`.
-	mutating func evaluate(_ specification: AddressSpecification) -> AddressWord {
-		if let index = specification.index {
+	/// - Returns: The value specified by `operand`.
+	mutating func evaluate(_ operand: ValueOperand) -> MachineWord {
+		if let index = operand.index {
 			
 			switch index.modification {
 				case .preincrement?:	self[register: index.indexRegister].increment()
@@ -68,7 +68,7 @@ struct Machine {
 				default:				break
 			}
 			
-			let result = specification.address(atIndex: self[register: index.indexRegister])
+			let result = operand.value(adding: self[register: index.indexRegister])
 			
 			switch index.modification {
 				case .postincrement?:	self[register: index.indexRegister].increment()
@@ -79,8 +79,19 @@ struct Machine {
 			return result
 			
 		} else {
-			return specification.base
+			return operand.value(adding: .zero)
 		}
+	}
+	
+	/// Evaluates given operand as an address.
+	///
+	/// This method first evaluates the operand with full precision as a machine word, then truncates the resulting value to get a valid address word.
+	///
+	/// - Parameter specification: A value specifying a base value and any indexation on it.
+	///
+	/// - Returns: The value specified by `operand`.
+	mutating func evaluateAddress(_ operand: ValueOperand) -> AddressWord {
+		.init(truncating: evaluate(operand))
 	}
 	
 	/// The address in memory of the next command to be executed.

@@ -82,18 +82,18 @@ extension CommandWord {
 			self.indexingMode = address.mode
 			self.register = condition.code
 			self.indexRegister = address.index?.indexRegister.rawValue ?? 0
-			self.address = address.base.rawValue
+			self.address = address.base
 		} else if let command = command as? RegisterAddressCommand, let register = command.registerOperand, let address = command.addressOperand {
 			self.addressingMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
 			self.indexingMode = address.mode
 			self.register = register.rawValue
 			self.indexRegister = address.index?.indexRegister.rawValue ?? 0
-			self.address = address.base.rawValue
+			self.address = address.base
 		} else if let command = command as? AddressCommand, let address = command.addressOperand {
 			self.addressingMode = command.addressingMode.code(directAccessOnly: type(of: command).directAccessOnly)
 			self.indexingMode = address.mode
 			self.indexRegister = address.index?.indexRegister.rawValue ?? 0
-			self.address = address.base.rawValue
+			self.address = address.base
 		} else if let command = command as? BinaryRegisterCommand, let primaryRegister = command.registerOperand, let secondaryRegister = command.secondaryRegisterOperand {
 			self.addressingMode = AddressingMode.value.code(directAccessOnly: type(of: command).directAccessOnly)
 			self.indexingMode = 2
@@ -118,7 +118,7 @@ extension CommandWord {
 			return mode
 		}
 		
-		let address = AddressSpecification(base: AddressWord(rawValue: self.address)!, indexRegister: Register(rawValue: indexRegister)!, mode: indexingMode)
+		let address = ValueOperand(base: self.address, indexRegister: Register(rawValue: indexRegister)!, mode: indexingMode)
 		
 		switch commandType {
 			

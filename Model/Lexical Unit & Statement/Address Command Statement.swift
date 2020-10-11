@@ -23,8 +23,8 @@ struct AddressCommandStatement : CommandStatement {
 		instruction = try Instruction(in: source, at: instructionSourceRange)
 		addressingModeSourceRange = match.range(at: 2, in: source)
 		addressingMode = try addressingModeSourceRange.flatMap { try AddressingMode(in: source, at: $0) }
-		baseAddressSourceRange = match.range(at: 6, in: source)!
-		baseAddress = try .init(from: source[baseAddressSourceRange])
+		baseValueSourceRange = match.range(at: 6, in: source)!
+		baseValue = try .init(from: source[baseValueSourceRange])
 		indexSourceRange = IndexSourceRange(match: match, firstGroup: 7, source: source)
 		
 		if let range = RegisterSourceRange(match: match, firstGroup: 3, source: source) {
@@ -38,7 +38,7 @@ struct AddressCommandStatement : CommandStatement {
 		}
 		
 		if let range = indexSourceRange {
-			let modification: AddressSpecification.Index.Modification?
+			let modification: ValueOperand.Index.Modification?
 			switch (range.preindexationOperationRange.flatMap({ source[$0] }), range.postindexationOperationRange.flatMap({ source[$0] })) {
 				case (nil, nil):	modification = nil
 				case ("+", nil):	modification = .preincrement
@@ -60,11 +60,11 @@ struct AddressCommandStatement : CommandStatement {
 	/// The addressing mode, or `nil` if not specified.
 	let addressingMode: AddressingMode?
 	
-	/// The address.
-	let baseAddress: SymbolicAddress
+	/// The base value or address (excluding indexation).
+	let baseValue: SymbolicAddress
 	
 	/// The index, or `nil` if not specified.
-	let index: AddressSpecification.Index?
+	let index: ValueOperand.Index?
 	
 	// See protocol.
 	let sourceRange: SourceRange
@@ -95,8 +95,8 @@ struct AddressCommandStatement : CommandStatement {
 		
 	}
 	
-	/// The range in the source where the base address is written.
-	let baseAddressSourceRange: SourceRange
+	/// The range in the source where the base value is written.
+	let baseValueSourceRange: SourceRange
 	
 	/// The range in the source where the index is written, or `nil` if no index is written.
 	let indexSourceRange: IndexSourceRange?
@@ -122,7 +122,7 @@ struct AddressCommandStatement : CommandStatement {
 	
 	// See protocol.
 	func command(addressesBySymbol: [String : Int]) throws -> Command {
-		let addressSpecification = AddressSpecification(base: .init(wrapping: try baseAddress.effectiveAddress(addressesBySymbol: addressesBySymbol)), index: index)
+		let addressSpecification = ValueOperand(base: try baseValue.effectiveAddress(addressesBySymbol: addressesBySymbol), index: index)
 		switch argument {
 			
 			case .register(let register, sourceRange: _)?:

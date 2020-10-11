@@ -1,14 +1,14 @@
 // DRAMASimulator © 2018–2020 Constantino Tsarouhas
 
-/// An address specified in assembly code.
-struct AddressSpecification {
+/// A value or address operand specified in assembly code.
+///
+/// Value operands may evaluate to values exceeding the address space so they're truncated as needed if they're used in memory accesses.
+struct ValueOperand {
 	
-	/// The base address.
-	///
-	/// The base address is written as a signed value in assembly (since it supports negative offsets for indexation operations) but they're evaluated as unsigned values on the machine.
-	var base: AddressWord
+	/// The base value, as a signed value, i.e., as written in assembly.
+	var base: Int
 	
-	/// The index to apply on the constant, or `nil` if no indexing is to be applied.
+	/// The index to apply on the base, or `nil` if no indexing is to be applied.
 	var index: Index?
 	struct Index {
 		
@@ -26,18 +26,20 @@ struct AddressSpecification {
 		
 	}
 	
-	/// Evaluates the effective address given the value of the index register.
+	/// Evaluates the value, adding given index value.
 	///
-	/// The method is only meaningful for address specifications with indexation.
-	func address(atIndex index: MachineWord) -> AddressWord {
-		return AddressWord(truncating: base.rawValue + index.rawValue)
+	/// - Parameter index: The index.
+	func value(adding index: MachineWord) -> MachineWord {
+		var value = index
+		value.modifySignedValueWithWrapping { $0 += base }
+		return value
 	}
 	
 }
 
-extension AddressSpecification {
+extension ValueOperand {
 	
-	init(base: AddressWord, indexRegister: Register, mode: Int) {
+	init(base: Int, indexRegister: Register, mode: Int) {
 		self.base = base
 		self.index = Index(indexRegister: indexRegister, mode: mode)
 	}
@@ -48,7 +50,7 @@ extension AddressSpecification {
 	
 }
 
-extension AddressSpecification.Index {
+extension ValueOperand.Index {
 	
 	init?(indexRegister: Register, mode: Int) {
 		if let modification = Modification(rawValue: mode) {

@@ -20,7 +20,7 @@
 		4F346B802199DBEA00D6D8AD /* Launch.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F346B7E2199DBEA00D6D8AD /* Launch.storyboard */; };
 		4F35A3CE21A0D6EA00A4610D /* Command Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35A3CD21A0D6EA00A4610D /* Command Word.swift */; };
 		4F3E7910219A2221008E3E9B /* Addressing Mode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E790F219A2221008E3E9B /* Addressing Mode.swift */; };
-		4F3E7914219A2324008E3E9B /* Address Specification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E7913219A2324008E3E9B /* Address Specification.swift */; };
+		4F3E7914219A2324008E3E9B /* Value Operand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E7913219A2324008E3E9B /* Value Operand.swift */; };
 		4F3E7916219A25B7008E3E9B /* Condition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E7915219A25B7008E3E9B /* Condition.swift */; };
 		4F44C7F2219A4426003798AF /* Machine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F44C7F1219A4426003798AF /* Machine.swift */; };
 		4F44C7F4219A4BBE003798AF /* Machine Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F44C7F3219A4BBE003798AF /* Machine Word.swift */; };
@@ -97,7 +97,7 @@
 		4F35A3CD21A0D6EA00A4610D /* Command Word.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Command Word.swift"; sourceTree = "<group>"; };
 		4F3E790B219A1FBE008E3E9B /* Instruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Instruction.swift; sourceTree = "<group>"; };
 		4F3E790F219A2221008E3E9B /* Addressing Mode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Addressing Mode.swift"; sourceTree = "<group>"; };
-		4F3E7913219A2324008E3E9B /* Address Specification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Address Specification.swift"; sourceTree = "<group>"; };
+		4F3E7913219A2324008E3E9B /* Value Operand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Value Operand.swift"; sourceTree = "<group>"; };
 		4F3E7915219A25B7008E3E9B /* Condition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Condition.swift; sourceTree = "<group>"; };
 		4F44C7F1219A4426003798AF /* Machine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Machine.swift; sourceTree = "<group>"; };
 		4F44C7F3219A4BBE003798AF /* Machine Word.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Machine Word.swift"; sourceTree = "<group>"; };
@@ -253,7 +253,7 @@
 				4F35A3C921A0D39A00A4610D /* Word */,
 				4F3E790B219A1FBE008E3E9B /* Instruction.swift */,
 				4F3E790F219A2221008E3E9B /* Addressing Mode.swift */,
-				4F3E7913219A2324008E3E9B /* Address Specification.swift */,
+				4F3E7913219A2324008E3E9B /* Value Operand.swift */,
 				4F3E7915219A25B7008E3E9B /* Condition.swift */,
 				4FA7EBA321A06C4C00C52F98 /* Condition State.swift */,
 			);
@@ -444,7 +444,7 @@
 				4F44C7F4219A4BBE003798AF /* Machine Word.swift in Sources */,
 				4F6BAE5321B6CDBA00A952BB /* Address Command Statement.swift in Sources */,
 				4F6BAE6121B6CEDD00A952BB /* Command Statement.swift in Sources */,
-				4F3E7914219A2324008E3E9B /* Address Specification.swift in Sources */,
+				4F3E7914219A2324008E3E9B /* Value Operand.swift in Sources */,
 				4F8D1B402512715F002E2BE9 /* Document View.swift in Sources */,
 				4F346B782199DBE700D6D8AD /* Document.swift in Sources */,
 				4F6BAE5121B6CDAD00A952BB /* Nullary Command Statement.swift in Sources */,

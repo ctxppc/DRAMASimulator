@@ -9,7 +9,7 @@ struct JumpCommand : AddressCommand {
 	static let directAccessOnly = true
 	
 	// See protocol.
-	init(instruction: Instruction, addressingMode: AddressingMode?, address: AddressSpecification) {
+	init(instruction: Instruction, addressingMode: AddressingMode?, address: ValueOperand) {
 		self.destination = address
 		self.addressingMode = addressingMode ?? .direct
 	}
@@ -18,7 +18,7 @@ struct JumpCommand : AddressCommand {
 	let instruction = Instruction.jump
 	
 	/// The jump destination.
-	let destination: AddressSpecification
+	let destination: ValueOperand
 	
 	/// The addressing mode for the destination.
 	let addressingMode: AddressingMode
@@ -28,13 +28,16 @@ struct JumpCommand : AddressCommand {
 		switch addressingMode {
 			case .value:	fallthrough
 			case .address:	fallthrough
-			case .direct:	machine.programCounter = machine.evaluate(destination)
-			case .indirect:	machine.programCounter = .init(truncating: machine.memory[machine.evaluate(destination)])
+			case .direct:	machine.programCounter = machine.evaluateAddress(destination)
+			case .indirect:	machine.programCounter = .init(truncating: machine.memory[machine.evaluateAddress(destination)])
 		}
+		
+		
+		
 	}
 	
 	// See protocol.
-	var addressOperand: AddressSpecification? {
+	var addressOperand: ValueOperand? {
 		return destination
 	}
 	

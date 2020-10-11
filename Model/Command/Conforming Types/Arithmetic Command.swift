@@ -13,7 +13,7 @@ struct ArithmeticCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	}
 	
 	// See protocol.
-	init(instruction: Instruction, addressingMode: AddressingMode?, register: Register, address: AddressSpecification) {
+	init(instruction: Instruction, addressingMode: AddressingMode?, register: Register, address: ValueOperand) {
 		self.instruction = instruction
 		firstOperand = register
 		secondOperand = .memory(address: address, mode: addressingMode ?? .direct)
@@ -29,7 +29,7 @@ struct ArithmeticCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	let secondOperand: Source
 	enum Source {
 		case register(Register)
-		case memory(address: AddressSpecification, mode: AddressingMode)
+		case memory(address: ValueOperand, mode: AddressingMode)
 	}
 	
 	/// The operation that the command performs on signed integers, given a mutable first operand and an immutable second operand, without any overflow wrapping.
@@ -70,19 +70,17 @@ struct ArithmeticCommand : BinaryRegisterCommand, RegisterAddressCommand {
 			case .register(let register):
 			secondOperandValue = machine[register: register].signedValue
 			
-			case .memory(address: let valueSpec, mode: .value):
-			secondOperandValue = machine.evaluate(valueSpec).signedValue
+			case .memory(address: let valueOperand, mode: .value):
+			secondOperandValue = machine.evaluate(valueOperand).signedValue
 			
-			case .memory(address: let addressSpec, mode: .address):
-			secondOperandValue = machine.evaluate(addressSpec).unsignedValue
+			case .memory(address: let addressOperand, mode: .address):
+			secondOperandValue = machine.evaluate(addressOperand).unsignedValue
 			
-			case .memory(address: let addressSpec, mode: .direct):
-			secondOperandValue = machine.memory[machine.evaluate(addressSpec)].signedValue
+			case .memory(address: let addressOperand, mode: .direct):
+			secondOperandValue = machine.memory[machine.evaluateAddress(addressOperand)].signedValue
 			
-			case .memory(address: let addressSpec, mode: .indirect):
-			let addressOfReference = machine.evaluate(addressSpec)
-			let referencedAddress = AddressWord(truncating: machine.memory[addressOfReference])
-			secondOperandValue = machine.memory[referencedAddress].signedValue
+			case .memory(address: let addressOperand, mode: .indirect):
+			secondOperandValue = machine.memory[.init(truncating: machine.memory[machine.evaluateAddress(addressOperand)])].signedValue
 			
 		}
 		
@@ -112,7 +110,7 @@ struct ArithmeticCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	}
 	
 	// See protocol.
-	var addressOperand: AddressSpecification? {
+	var addressOperand: ValueOperand? {
 		switch secondOperand {
 			case .register:									return nil
 			case .memory(address: let address, mode: _):	return address

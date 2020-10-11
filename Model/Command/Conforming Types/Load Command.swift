@@ -12,7 +12,7 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	}
 	
 	// See protocol.
-	init(instruction: Instruction, addressingMode: AddressingMode? = nil, register: Register, address: AddressSpecification) {
+	init(instruction: Instruction, addressingMode: AddressingMode? = nil, register: Register, address: ValueOperand) {
 		source = .memory(address: address, mode: addressingMode ?? .direct)
 		destination = register
 	}
@@ -24,7 +24,7 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	let source: Source
 	enum Source {
 		case register(Register)
-		case memory(address: AddressSpecification, mode: AddressingMode)
+		case memory(address: ValueOperand, mode: AddressingMode)
 	}
 	
 	/// The register being loaded into.
@@ -39,19 +39,17 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 			case .register(let register):
 			value = machine[register: register]
 			
-			case .memory(address: let valueSpec, mode: .value):
-			value = MachineWord(wrapping: machine.evaluate(valueSpec).signedValue)
+			case .memory(address: let operand, mode: .value):
+			value = machine.evaluate(operand)					// no truncation, even if the index register pushes it beyond the address space
 			
-			case .memory(address: let addressSpec, mode: .address):
-			value = MachineWord(machine.evaluate(addressSpec))
+			case .memory(address: let operand, mode: .address):
+			value = .init(machine.evaluateAddress(operand))		// round-trip to AddressWord because truncation is required here
 			
 			case .memory(address: let addressSpec, mode: .direct):
-			value = machine.memory[machine.evaluate(addressSpec)]
+			value = machine.memory[machine.evaluateAddress(addressSpec)]
 			
 			case .memory(address: let addressSpec, mode: .indirect):
-			let addressOfReference = machine.evaluate(addressSpec)
-			let referencedAddress = AddressWord(truncating: machine.memory[addressOfReference])
-			value = machine.memory[referencedAddress]
+			value = machine.memory[.init(truncating: machine.memory[machine.evaluateAddress(addressSpec)])]
 			
 		}
 		
@@ -81,7 +79,7 @@ struct LoadCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	}
 	
 	// See protocol.
-	var addressOperand: AddressSpecification? {
+	var addressOperand: ValueOperand? {
 		switch source {
 			case .register:									return nil
 			case .memory(address: let address, mode: _):	return address

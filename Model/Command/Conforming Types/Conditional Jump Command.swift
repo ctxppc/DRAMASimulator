@@ -8,7 +8,7 @@ struct ConditionalJumpCommand : ConditionAddressCommand {
 	// See protocol.
 	static let directAccessOnly = true
 	
-	init(instruction: Instruction, addressingMode: AddressingMode?, condition: Condition, address: AddressSpecification) throws {
+	init(instruction: Instruction, addressingMode: AddressingMode?, condition: Condition, address: ValueOperand) throws {
 		self.condition = condition
 		self.destination = address
 		self.addressingMode = addressingMode ?? .direct
@@ -21,7 +21,7 @@ struct ConditionalJumpCommand : ConditionAddressCommand {
 	let condition: Condition
 	
 	/// The jump destination.
-	let destination: AddressSpecification
+	let destination: ValueOperand
 	
 	/// The addressing mode for the destination.
 	let addressingMode: AddressingMode
@@ -32,8 +32,8 @@ struct ConditionalJumpCommand : ConditionAddressCommand {
 		switch addressingMode {
 			case .value:	fallthrough
 			case .address:	fallthrough
-			case .direct:	machine.programCounter = machine.evaluate(destination)
-			case .indirect:	machine.programCounter = .init(truncating: machine.memory[machine.evaluate(destination)])
+			case .direct:	machine.programCounter = machine.evaluateAddress(destination)
+			case .indirect:	machine.programCounter = .init(truncating: machine.memory[machine.evaluateAddress(destination)])
 		}
 	}
 	
@@ -43,7 +43,7 @@ struct ConditionalJumpCommand : ConditionAddressCommand {
 	}
 	
 	// See protocol.
-	var addressOperand: AddressSpecification? {
+	var addressOperand: ValueOperand? {
 		return destination
 	}
 	

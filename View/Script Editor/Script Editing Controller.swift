@@ -78,7 +78,7 @@ final class ScriptEditingController : UIViewController {
 				
 				case let unit as AddressCommandStatement:
 				mark(unit.argument?.sourceRange, in: .operand)
-				mark(unit.baseAddressSourceRange, in: .operand)
+				mark(unit.baseValueSourceRange, in: .operand)
 				
 				case let unit as LabelLexicalUnit:
 				addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: unit.sourceRange)

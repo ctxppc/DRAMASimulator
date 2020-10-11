@@ -12,7 +12,7 @@ struct CompareCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	}
 	
 	// See protocol.
-	init(instruction: Instruction, addressingMode: AddressingMode?, register: Register, address: AddressSpecification) {
+	init(instruction: Instruction, addressingMode: AddressingMode?, register: Register, address: ValueOperand) {
 		firstOperand = register
 		secondOperand = .memory(address: address, mode: addressingMode ?? .direct)
 	}
@@ -27,7 +27,7 @@ struct CompareCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	let secondOperand: Source
 	enum Source {
 		case register(Register)
-		case memory(address: AddressSpecification, mode: AddressingMode)
+		case memory(address: ValueOperand, mode: AddressingMode)
 	}
 	
 	// See protocol.
@@ -46,12 +46,10 @@ struct CompareCommand : BinaryRegisterCommand, RegisterAddressCommand {
 			secondOperandValue = machine.evaluate(addressSpec).unsignedValue
 			
 			case .memory(address: let addressSpec, mode: .direct):
-			secondOperandValue = machine.memory[machine.evaluate(addressSpec)].signedValue
+			secondOperandValue = machine.memory[machine.evaluateAddress(addressSpec)].signedValue
 			
 			case .memory(address: let addressSpec, mode: .indirect):
-			let addressOfReference = machine.evaluate(addressSpec)
-			let referencedAddress = AddressWord(truncating: machine.memory[addressOfReference])
-			secondOperandValue = machine.memory[referencedAddress].signedValue
+			secondOperandValue = machine.memory[.init(truncating: machine.memory[machine.evaluateAddress(addressSpec)])].signedValue
 			
 		}
 		
@@ -79,7 +77,7 @@ struct CompareCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	}
 	
 	// See protocol.
-	var addressOperand: AddressSpecification? {
+	var addressOperand: ValueOperand? {
 		switch secondOperand {
 			case .register:									return nil
 			case .memory(address: let address, mode: _):	return address
