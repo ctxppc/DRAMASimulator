@@ -31,11 +31,6 @@ struct DocumentView : View {
 	/// A value indicating whether and how the timeline is animated.
 	@State
 	private var timelineAnimation: TimelineAnimation = .paused
-	
-	/// A value indicating whether and how the timeline is animated when resuming automatically, e.g., after providing input.
-	@State
-	private var timelineAnimationWhenResumingAutomatically: TimelineAnimation = .paused
-	
 	enum TimelineAnimation {
 		case rewind, paused, play, fastForward
 	}
@@ -122,7 +117,6 @@ struct DocumentView : View {
 				if document.timeline.canAdvance {
 					document.timeline.advance()
 				} else if timelineAnimation != .paused {
-					timelineAnimationWhenResumingAutomatically = timelineAnimation
 					timelineAnimation = .paused
 					break
 				}
@@ -147,13 +141,6 @@ struct DocumentView : View {
 							Button("Ga door", action: provideInput)
 								.disabled(Int(input) == nil)
 								.padding()
-							if timelineAnimationWhenResumingAutomatically != .paused {
-								Button("Pauzeer") {
-									timelineAnimation = .paused
-									timelineAnimationWhenResumingAutomatically = .paused
-									rewind()
-								}.padding()
-							}
 						}
 					}
 					if let error = machine.state.error {
@@ -173,7 +160,6 @@ struct DocumentView : View {
 	
 	func provideInput() {
 		document.machine.provideInput(.init(wrapping: Int(input) ?? 0))
-		timelineAnimation = timelineAnimationWhenResumingAutomatically
 	}
 	
 }
