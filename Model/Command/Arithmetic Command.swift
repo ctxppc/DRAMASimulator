@@ -71,7 +71,7 @@ struct ArithmeticCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	}
 	
 	var registerOperand: Register? {
-		return firstOperand
+		firstOperand
 	}
 	
 	var secondaryRegisterOperand: Register? {
