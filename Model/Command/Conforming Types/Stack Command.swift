@@ -25,8 +25,8 @@ struct StackCommand : UnaryRegisterCommand {
 	// See protocol.
 	var nativeRepresentation: Command {
 		switch instruction {
-			case .push:	return StoreCommand(instruction: .store, register: register, address: .init(base: .zero, index: .init(indexRegister: .r9, modification: .preincrement)))
-			case .pop:	return LoadCommand(instruction: .load, register: register, address: .init(base: .zero, index: .init(indexRegister: .r9, modification: .postdecrement)))
+			case .push:	return StoreCommand(instruction: .store, register: register, address: .init(base: .zero, index: .init(indexRegister: .r9, modification: .predecrement)))
+			case .pop:	return LoadCommand(instruction: .load, register: register, address: .init(base: .zero, index: .init(indexRegister: .r9, modification: .postincrement)))
 			default:	preconditionFailure("Unsupported instruction for stack command")
 		}
 	}
