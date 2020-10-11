@@ -8,29 +8,30 @@ struct ArithmeticCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	// See protocol.
 	init(instruction: Instruction, primaryRegister: Register, secondaryRegister: Register) {
 		self.instruction = instruction
-		firstOperand = primaryRegister
-		secondOperand = .register(secondaryRegister)
+		self.firstOperand = primaryRegister
+		self.secondOperand = .init(base: 0, index: .init(indexRegister: secondaryRegister, modification: nil))
+		self.addressingMode = .value
 	}
 	
 	// See protocol.
 	init(instruction: Instruction, addressingMode: AddressingMode?, register: Register, address: ValueOperand) {
 		self.instruction = instruction
-		firstOperand = register
-		secondOperand = .memory(address: address, mode: addressingMode ?? .direct)
+		self.firstOperand = register
+		self.secondOperand = address
+		self.addressingMode = addressingMode ?? .direct
 	}
 	
 	// See protocol.
 	let instruction: Instruction
 	
+	// See protocol.
+	let addressingMode: AddressingMode
+	
 	/// The register whose value is the first operand and becomes the result.
 	let firstOperand: Register
 	
 	/// The register or memory address whose value is the second operand.
-	let secondOperand: Source
-	enum Source {
-		case register(Register)
-		case memory(address: ValueOperand, mode: AddressingMode)
-	}
+	let secondOperand: ValueOperand
 	
 	/// The operation that the command performs on signed integers, given a mutable first operand and an immutable second operand, without any overflow wrapping.
 	///
@@ -63,38 +64,9 @@ struct ArithmeticCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	
 	// See protocol.
 	func execute(on machine: inout Machine) {
-		
-		let secondOperandValue: Int
-		switch secondOperand {
-			
-			case .register(let register):
-			secondOperandValue = machine[register: register].signedValue
-			
-			case .memory(address: let valueOperand, mode: .value):
-			secondOperandValue = machine.evaluate(valueOperand).signedValue
-			
-			case .memory(address: let addressOperand, mode: .address):
-			secondOperandValue = machine.evaluate(addressOperand).unsignedValue
-			
-			case .memory(address: let addressOperand, mode: .direct):
-			secondOperandValue = machine.memory[machine.evaluateAddress(addressOperand)].signedValue
-			
-			case .memory(address: let addressOperand, mode: .indirect):
-			secondOperandValue = machine.memory[.init(truncating: machine.memory[machine.evaluateAddress(addressOperand)])].signedValue
-			
-		}
-		
+		let secondOperandValue = machine.evaluate(secondOperand, mode: addressingMode).signedValue
 		machine[register: firstOperand, updatingConditionState: true].modifySignedValueWithWrapping { firstOperandValue in
 			primitiveOperation(&firstOperandValue, secondOperandValue)
-		}
-		
-	}
-	
-	// See protocol.
-	var addressingMode: AddressingMode {
-		switch secondOperand {
-			case .register:								return .value
-			case .memory(address: _, mode: let mode):	return mode
 		}
 	}
 	
@@ -103,18 +75,12 @@ struct ArithmeticCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	}
 	
 	var secondaryRegisterOperand: Register? {
-		switch secondOperand {
-			case .register(let register):	return register
-			case .memory:					return nil
-		}
+		secondOperand.index?.indexRegister
 	}
 	
 	// See protocol.
 	var addressOperand: ValueOperand? {
-		switch secondOperand {
-			case .register:									return nil
-			case .memory(address: let address, mode: _):	return address
-		}
+		secondOperand
 	}
 	
 }

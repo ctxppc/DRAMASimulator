@@ -56,7 +56,7 @@ struct Machine {
 	
 	/// Evaluates given operand.
 	///
-	/// - Parameter specification: A value specifying a base value and any indexation on it.
+	/// - Parameter operand: A value specifying a base value and any indexation on it.
 	///
 	/// - Returns: The value specified by `operand`.
 	mutating func evaluate(_ operand: ValueOperand) -> MachineWord {
@@ -80,6 +80,21 @@ struct Machine {
 			
 		} else {
 			return operand.value(adding: .zero)
+		}
+	}
+	
+	/// Evaluates given operand in given addressing mode.
+	///
+	/// - Parameter operand: A value specifying a base value and any indexation on it.
+	/// - Parameter mode: The addressing mode.
+	///
+	/// - Returns: The value specified by `operand` and `mode`.
+	mutating func evaluate(_ operand: ValueOperand, mode: AddressingMode) -> MachineWord {
+		switch mode {
+			case .value:	return evaluate(operand)
+			case .address:	return .init(evaluateAddress(operand))
+			case .direct:	return memory[evaluateAddress(operand)]
+			case .indirect:	return memory[.init(truncating: memory[evaluateAddress(operand)])]
 		}
 	}
 	

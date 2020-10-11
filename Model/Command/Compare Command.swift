@@ -7,81 +7,49 @@ struct CompareCommand : BinaryRegisterCommand, RegisterAddressCommand {
 	
 	// See protocol.
 	init(instruction: Instruction, primaryRegister: Register, secondaryRegister: Register) {
-		firstOperand = primaryRegister
-		secondOperand = .register(secondaryRegister)
+		self.addressingMode = .value
+		self.firstOperand = primaryRegister
+		self.secondOperand = .init(base: 0, index: .init(indexRegister: secondaryRegister, modification: nil))
 	}
 	
 	// See protocol.
 	init(instruction: Instruction, addressingMode: AddressingMode?, register: Register, address: ValueOperand) {
-		firstOperand = register
-		secondOperand = .memory(address: address, mode: addressingMode ?? .direct)
+		self.addressingMode = addressingMode ?? .direct
+		self.firstOperand = register
+		self.secondOperand = address
 	}
 	
 	// See protocol.
 	let instruction = Instruction.compare
 	
+	// See protocol.
+	let addressingMode: AddressingMode
+	
 	/// The register whose value is the first operand and becomes the result.
 	let firstOperand: Register
 	
 	/// The register or memory address whose value is the second operand.
-	let secondOperand: Source
-	enum Source {
-		case register(Register)
-		case memory(address: ValueOperand, mode: AddressingMode)
-	}
+	let secondOperand: ValueOperand
 	
 	// See protocol.
 	func execute(on machine: inout Machine) {
-		
-		let secondOperandValue: Int
-		switch secondOperand {
-			
-			case .register(let register):
-			secondOperandValue = machine[register: register].signedValue
-			
-			case .memory(address: let valueSpec, mode: .value):
-			secondOperandValue = machine.evaluate(valueSpec).signedValue
-			
-			case .memory(address: let addressSpec, mode: .address):
-			secondOperandValue = machine.evaluate(addressSpec).unsignedValue
-			
-			case .memory(address: let addressSpec, mode: .direct):
-			secondOperandValue = machine.memory[machine.evaluateAddress(addressSpec)].signedValue
-			
-			case .memory(address: let addressSpec, mode: .indirect):
-			secondOperandValue = machine.memory[.init(truncating: machine.memory[machine.evaluateAddress(addressSpec)])].signedValue
-			
-		}
-		
-		machine.conditionState = ConditionState(comparing: machine[register: firstOperand].signedValue, to: secondOperandValue)
-		
+		let secondOperandValue = machine.evaluate(secondOperand, mode: addressingMode)
+		machine.conditionState = ConditionState(comparing: machine[register: firstOperand].signedValue, to: secondOperandValue.signedValue)
 	}
 	
 	// See protocol.
-	var addressingMode: AddressingMode {
-		switch secondOperand {
-			case .register:								return .value
-			case .memory(address: _, mode: let mode):	return mode
-		}
-	}
-	
 	var registerOperand: Register? {
-		return firstOperand
+		firstOperand
 	}
 	
+	// See protocol.
 	var secondaryRegisterOperand: Register? {
-		switch secondOperand {
-			case .register(let register):	return register
-			case .memory:					return nil
-		}
+		secondOperand.index?.indexRegister
 	}
 	
 	// See protocol.
 	var addressOperand: ValueOperand? {
-		switch secondOperand {
-			case .register:									return nil
-			case .memory(address: let address, mode: _):	return address
-		}
+		secondOperand
 	}
 	
 }
