@@ -260,25 +260,6 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		4F4FA73B21A5AB1E00C1D2C7 /* Conforming Types */ = {
-			isa = PBXGroup;
-			children = (
-				4F820F33219B1614004EE2C9 /* Load Command.swift */,
-				4FFEB7E2219C75140049D0A5 /* Store Command.swift */,
-				4FFEB7E4219C75DB0049D0A5 /* Arithmetic Command.swift */,
-				4FA7EBA121A06B8400C52F98 /* Compare Command.swift */,
-				4FA7EB9921A0682100C52F98 /* Jump Command.swift */,
-				4FA7EB9B21A0691800C52F98 /* Conditional Jump Command.swift */,
-				4FA7EBA921A0A55800C52F98 /* Read Command.swift */,
-				4F4FA73E21A5AD6800C1D2C7 /* Print Command.swift */,
-				4F4FA73C21A5AB5C00C1D2C7 /* Stack Command.swift */,
-				4F63EC6421B3057800F00E9B /* Subroutine Jump Command.swift */,
-				4F63EC6621B3058000F00E9B /* Subroutine Return Command.swift */,
-				4FA7EB9F21A06B0D00C52F98 /* Halt Command.swift */,
-			);
-			path = "Conforming Types";
-			sourceTree = "<group>";
-		};
 		4F6BAE4F21B6CD9200A952BB /* Lexical Unit & Statement */ = {
 			isa = PBXGroup;
 			children = (
@@ -315,7 +296,18 @@
 			isa = PBXGroup;
 			children = (
 				4F6BAE6421B6F4C300A952BB /* Protocols */,
-				4F4FA73B21A5AB1E00C1D2C7 /* Conforming Types */,
+				4F820F33219B1614004EE2C9 /* Load Command.swift */,
+				4FFEB7E2219C75140049D0A5 /* Store Command.swift */,
+				4FFEB7E4219C75DB0049D0A5 /* Arithmetic Command.swift */,
+				4FA7EBA121A06B8400C52F98 /* Compare Command.swift */,
+				4FA7EB9921A0682100C52F98 /* Jump Command.swift */,
+				4FA7EB9B21A0691800C52F98 /* Conditional Jump Command.swift */,
+				4FA7EBA921A0A55800C52F98 /* Read Command.swift */,
+				4F4FA73E21A5AD6800C1D2C7 /* Print Command.swift */,
+				4F4FA73C21A5AB5C00C1D2C7 /* Stack Command.swift */,
+				4F63EC6421B3057800F00E9B /* Subroutine Jump Command.swift */,
+				4F63EC6621B3058000F00E9B /* Subroutine Return Command.swift */,
+				4FA7EB9F21A06B0D00C52F98 /* Halt Command.swift */,
 			);
 			path = Command;
 			sourceTree = "<group>";
