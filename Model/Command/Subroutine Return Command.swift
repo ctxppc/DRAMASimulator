@@ -13,7 +13,7 @@ struct SubroutineReturnCommand : NullaryCommand {
 	
 	// See protocol.
 	func execute(on machine: inout Machine) {
-		machine.programCounter = AddressWord(truncating: machine[register: .r9])
+		machine.programCounter = .init(truncating: machine.memory[.init(truncating: machine[register: .r9])])
 		machine[register: .r9].increment()
 	}
 	
