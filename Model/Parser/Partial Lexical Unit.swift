@@ -3,7 +3,7 @@
 import Foundation
 
 /// A lexical unit that could not be parsed.
-struct PartialLexicalUnit : LexicalUnit, SourceError {
+struct PartialLexicalUnit : _LexicalUnit, SourceError {
 	
 	// See protocol.
 	let sourceRange: SourceRange

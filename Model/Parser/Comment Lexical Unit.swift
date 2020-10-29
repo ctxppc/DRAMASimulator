@@ -3,7 +3,7 @@
 import Foundation
 
 /// A lexical unit containing a comment.
-struct CommentLexicalUnit : LexicalUnit {
+struct CommentLexicalUnit : _LexicalUnit {
 	
 	/// A regular expression matching a comment and the remainder.
 	static let regularExpression = NSRegularExpression(anchored: false, .group("[^|]*"), .group("\\|.*"))

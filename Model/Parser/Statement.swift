@@ -5,7 +5,7 @@ import Foundation
 /// A human-readable encoded command or directive.
 ///
 /// Statements are mapped to zero or more words and loaded sequentially to memory.
-protocol Statement : LexicalUnit {
+protocol Statement : _LexicalUnit {
 	
 	/// A regular expression matching a lexical unit of this type.
 	static var regularExpression: NSRegularExpression { get }

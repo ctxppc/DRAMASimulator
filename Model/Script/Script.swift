@@ -41,7 +41,7 @@ struct Script {
 	let sourceText: String
 	
 	/// The script's lexical units.
-	let lexicalUnits: [LexicalUnit]
+	let lexicalUnits: [_LexicalUnit]
 	
 	/// The script's statements.
 	let statements: [Statement]
@@ -75,9 +75,9 @@ struct Script {
 	}
 	
 	/// Determines all lexical units in given source.
-	private static func units(in source: String) -> [LexicalUnit] {
+	private static func units(in source: String) -> [_LexicalUnit] {
 		
-		var units: [LexicalUnit] = []
+		var units: [_LexicalUnit] = []
 		
 		source.enumerateSubstrings(in: source.startIndex..<source.endIndex, options: [.byLines, .substringNotRequired]) { _, sRange, _, stop in
 			
