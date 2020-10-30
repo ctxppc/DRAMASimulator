@@ -2,20 +2,16 @@
 
 import Foundation
 
-/// A lexical unit for a symbol, e.g., `endIf`.
-struct SymbolLexicalUnit : LexicalUnit {
+/// A lexical unit representing the end of a program, i.e., `EINDPR`.
+struct ProgramTerminatorLexicalUnit : LexicalUnit {
 	
 	// See protocol.
-	static let pattern = try! NSRegularExpression(pattern: #"\w+"#)
+	static let pattern = try! NSRegularExpression(pattern: #"EINDPR.*"#, options: .dotMatchesLineSeparators)
 	
 	// See protocol.
 	init(captures: [Substring], sourceRange: SourceRange) {
-		self.symbol = .init(captures[0])
 		self.sourceRange = sourceRange
 	}
-	
-	/// The register.
-	let symbol: String
 	
 	// See protocol.
 	let sourceRange: SourceRange

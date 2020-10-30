@@ -24,7 +24,7 @@ struct Program {
 	/// - Parameter statementIndicesBySymbol: A mapping from symbols to indices in the `statements` array.
 	///
 	/// - Throws: An error if an undefined symbol is referenced.
-	init(statements: [Statement], statementIndicesBySymbol: [String : Int]) throws {
+	init(statements: [_Statement], statementIndicesBySymbol: [String : Int]) throws {
 		
 		var statementIndicesByAddress: [Int] = []
 		var rawAddressesByStatement: [Int] = []
@@ -61,14 +61,14 @@ struct Program {
 	let words: [MachineWord]
 	
 	/// The program's statements.
-	let statements: [Statement]
+	let statements: [_Statement]
 	
 	/// Returns the statement that provided the word at given address.
 	///
 	/// - Parameter address: The memory address being queried.
 	///
 	/// - Returns: The statement that provided the word at `address`, or `nil` if the program doesn't affect the location at `address`.
-	func statement(at address: AddressWord) -> Statement? {
+	func statement(at address: AddressWord) -> _Statement? {
 		statementIndicesByAddress.indices.contains(address.rawValue) ? statements[statementIndicesByAddress[address.rawValue]] : nil
 	}
 	

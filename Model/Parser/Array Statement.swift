@@ -5,7 +5,7 @@ import Foundation
 /// A statement initialising an array of words in memory.
 ///
 /// Groups: array length (opt.), comma-separated literals (opt.)
-struct ArrayStatement : Statement {
+struct ArrayStatement : _Statement {
 	
 	// See protocol.
 	static let regularExpression = NSRegularExpression(

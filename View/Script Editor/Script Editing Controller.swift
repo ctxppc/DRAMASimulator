@@ -80,7 +80,7 @@ final class ScriptEditingController : UIViewController {
 				mark(unit.argument?.sourceRange, in: .operand)
 				mark(unit.baseValueSourceRange, in: .operand)
 				
-				case let unit as LabelLexicalUnit:
+				case let unit as _LabelLexicalUnit:
 				addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: unit.sourceRange)
 				mark(unit.sourceRange, in: .label)
 				

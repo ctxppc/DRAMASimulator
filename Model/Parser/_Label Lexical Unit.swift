@@ -3,7 +3,7 @@
 import Foundation
 
 /// A lexical unit having the form of a label.
-struct LabelLexicalUnit : _LexicalUnit {
+struct _LabelLexicalUnit : _LexicalUnit {
 	
 	/// A regular expression matching a label and the remainder.
 	static let regularExpression = NSRegularExpression(anchored: false, .group(.group(.symbolPattern), .optSpace, ":"), .group(".*"))

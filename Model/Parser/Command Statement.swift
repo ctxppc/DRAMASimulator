@@ -3,7 +3,7 @@
 import Foundation
 
 /// A statement that contains a command.
-protocol CommandStatement : Statement {
+protocol CommandStatement : _Statement {
 	
 	/// The instruction represented by this command.
 	var instruction: Instruction { get }
@@ -28,6 +28,11 @@ extension CommandStatement {
 	
 	func words(addressesBySymbol: [String : Int]) throws -> AnyCollection<MachineWord> {
 		.init(CollectionOfOne(CommandWord(try command(addressesBySymbol: addressesBySymbol)).base))
+	}
+	
+	@available(*, deprecated)
+	var instructionSourceRange: SourceRange {
+		sourceRange
 	}
 	
 }

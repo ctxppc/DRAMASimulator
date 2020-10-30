@@ -10,12 +10,12 @@ struct Script {
 		
 		self.sourceText = sourceText
 		lexicalUnits = Script.units(in: sourceText)
-		statements = lexicalUnits.compactMap { $0 as? Statement }
+		statements = lexicalUnits.compactMap { $0 as? _Statement }
 		
 		statementIndicesBySymbol = lexicalUnits.reduce(into: (indicesBySymbol: [Symbol : Int](), indexOfNextStatement: 0)) { state, unit in
-			if unit is Statement {
+			if unit is _Statement {
 				state.indexOfNextStatement += 1
-			} else if let label = unit as? LabelLexicalUnit {
+			} else if let label = unit as? _LabelLexicalUnit {
 				state.indicesBySymbol[.init(sourceText[label.symbolRange])] = state.indexOfNextStatement
 			}
 		}.indicesBySymbol
@@ -44,7 +44,7 @@ struct Script {
 	let lexicalUnits: [_LexicalUnit]
 	
 	/// The script's statements.
-	let statements: [Statement]
+	let statements: [_Statement]
 	
 	/// A dictionary mapping symbols to indices in the `statements` array.
 	let statementIndicesBySymbol: [Symbol : Int]
@@ -103,7 +103,7 @@ struct Script {
 			
 			let symbolLabelRange: (SourceRange, SourceRange)?
 			let statementRange: SourceRange
-			if let match = LabelLexicalUnit.regularExpression.firstMatch(in: source, range: .init(noncommentRange, in: source)) {
+			if let match = _LabelLexicalUnit.regularExpression.firstMatch(in: source, range: .init(noncommentRange, in: source)) {
 				symbolLabelRange = (range(in: match, at: 2), range(in: match, at: 1))
 				statementRange = range(in: match, at: 3)
 			} else {
@@ -112,10 +112,10 @@ struct Script {
 			}
 			
 			if let (symbolRange, labelRange) = symbolLabelRange {
-				units.append(LabelLexicalUnit(sourceRange: labelRange, symbolRange: symbolRange))
+				units.append(_LabelLexicalUnit(sourceRange: labelRange, symbolRange: symbolRange))
 			}
 			
-			let lexicalUnitTypes: [Statement.Type] = [
+			let lexicalUnitTypes: [_Statement.Type] = [
 				NullaryCommandStatement.self,
 				RegisterCommandStatement.self,
 				AddressCommandStatement.self,
@@ -126,7 +126,7 @@ struct Script {
 				let upperBound = source.rangeOfCharacter(from: nonwhitespaceSet, options: .backwards, range: statementRange)?.lowerBound {
 				
 				let trimmedStatementRange = lowerBound...upperBound
-				let typeMatchPair = lexicalUnitTypes.lazy.compactMap { type -> (Statement.Type, NSTextCheckingResult)? in
+				let typeMatchPair = lexicalUnitTypes.lazy.compactMap { type -> (_Statement.Type, NSTextCheckingResult)? in
 					guard let match = type.regularExpression.firstMatch(in: source, range: NSRange(trimmedStatementRange, in: source)) else { return nil }
 					return (type, match)
 				}.first

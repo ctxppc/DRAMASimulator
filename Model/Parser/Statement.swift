@@ -1,24 +1,24 @@
-// DRAMASimulator © 2018–2020 Constantino Tsarouhas
+// DRAMASimulator © 2020 Constantino Tsarouhas
 
 import Foundation
 
-/// A human-readable encoded command or directive.
-///
-/// Statements are mapped to zero or more words and loaded sequentially to memory.
-protocol Statement : _LexicalUnit {
+/// A construct that can be converted into words.
+protocol Statement {
 	
-	/// A regular expression matching a lexical unit of this type.
-	static var regularExpression: NSRegularExpression { get }
+	/// Creates a statement from the lexical units extracted by given lexer.
+	///
+	/// Modifications to `lexer` should be discarded if this initialiser throws an error.
+	///
+	/// - Parameter lexer: The lexer with which to extract lexical units.
+	///
+	/// - Throws: An error if the statement couldn't be parsed.
+	init?(from lexer: inout Lexer) throws
 	
-	/// Initialises a lexical unit with given match.
+	/// The lexical units that form the statement, in source order.
 	///
-	/// - Requires: `match` is produced by `Self.regularExpression`.
-	///
-	/// - Parameter match: The match.
-	/// - Parameter source: The source text on which `match` was generated.
-	///
-	/// - Throws: An error if the matched groups cannot be interpreted.
-	init(match: NSTextCheckingResult, in source: String) throws
+	/// - Invariant: `lexicalUnits` is nonempty.
+	/// - Invariant: Every unit in `lexicalUnits` has increasing and nonoverlapping source range.
+	var lexicalUnits: [LexicalUnit] { get }
 	
 	/// The number of machine words used by the statement.
 	var wordCount: Int { get }
@@ -33,5 +33,15 @@ protocol Statement : _LexicalUnit {
 	///
 	/// - Returns: A collection of words that can be loaded into a machine.
 	func words(addressesBySymbol: [String : Int]) throws -> AnyCollection<MachineWord>
+	
+}
+
+extension Statement {
+	
+	/// The source range forming the statement.
+	var sourceRange: SourceRange {
+		guard let first = lexicalUnits.first, let last = lexicalUnits.last else { preconditionFailure("Statement with no lexical units") }
+		return first.sourceRange.lowerBound..<last.sourceRange.upperBound
+	}
 	
 }

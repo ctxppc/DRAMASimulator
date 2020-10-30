@@ -2,16 +2,20 @@
 
 import Foundation
 
-/// A lexical unit for a symbol that specifies that the preceding symbol specifies a label, i.e., a colon.
-struct LabelTerminatorLexicalUnit : LexicalUnit {
+/// A lexical unit for a label, e.g., `endIf:`.
+struct LabelLexicalUnit : LexicalUnit {
 	
 	// See protocol.
-	static let pattern = try! NSRegularExpression(pattern: #":"#)
+	static let pattern = try! NSRegularExpression(pattern: #"(\w+):"#)
 	
 	// See protocol.
 	init(captures: [Substring], sourceRange: SourceRange) {
+		self.symbol = .init(captures[1])
 		self.sourceRange = sourceRange
 	}
+	
+	/// The register.
+	let symbol: String
 	
 	// See protocol.
 	let sourceRange: SourceRange

@@ -2,7 +2,7 @@
 
 import Foundation
 
-/// A lexical unit for an instruction, e.g., `HIA`.
+/// A lexical unit for an instruction or directive, e.g., `HIA` or `RESGR`.
 struct InstructionLexicalUnit : LexicalUnit {
 	
 	// See protocol.

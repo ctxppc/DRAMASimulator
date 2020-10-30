@@ -4,13 +4,15 @@ import DepthKit
 import Foundation
 
 /// A value that produces lexical units from a source text.
+///
+/// The lexer ignores horizontal whitespace such as spaces or tabs but does not ignore line terminators such as newlines.
 struct Lexer {
 	
 	/// Creates a lexer for converting given string to lexical units.
 	init(for sourceText: String) {
 		self.sourceText = sourceText
 		self.indexOfNextCharacter = sourceText.startIndex
-		consumeWhitespace()
+		consumeHorizontalWhitespace()
 	}
 	
 	/// The source text.
@@ -39,15 +41,15 @@ struct Lexer {
 		guard let unit = Unit(captures: captures, sourceRange: unitRange) else { return nil }
 		
 		indexOfNextCharacter = unitRange.upperBound
-		consumeWhitespace()
+		consumeHorizontalWhitespace()
 		
 		return unit
 		
 	}
 	
-	/// Ignores any leading whitespace characters from the unprocessed source text.
-	private mutating func consumeWhitespace() {
-		indexOfNextCharacter = sourceText[indexOfNextCharacter...].firstIndex(where: { !$0.isWhitespace }) ?? sourceText.endIndex
+	/// Ignores any leading horizontal whitespace characters from the unprocessed source text.
+	private mutating func consumeHorizontalWhitespace() {
+		indexOfNextCharacter = sourceText[indexOfNextCharacter...].firstIndex(where: { $0.isNewline || !$0.isWhitespace }) ?? sourceText.endIndex
 	}
 	
 }

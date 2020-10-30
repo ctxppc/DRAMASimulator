@@ -2,11 +2,11 @@
 
 import Foundation
 
-/// A lexical unit representing a line terminator.
-struct LineTerminatorLexicalUnit : LexicalUnit {
+/// A lexical unit representing the end of a statement.
+struct StatementTerminatorLexicalUnit : LexicalUnit {
 	
 	// See protocol.
-	static let pattern = try! NSRegularExpression(pattern: #"\n"#)
+	static let pattern = try! NSRegularExpression(pattern: #"\n|,|;"#)
 	
 	// See protocol.
 	init(captures: [Substring], sourceRange: SourceRange) {
