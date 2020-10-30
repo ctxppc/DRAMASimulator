@@ -2,11 +2,11 @@
 
 import Foundation
 
-/// A lexical unit for a symbol that specifies that the preceding symbol specifies a label, i.e., a colon.
-struct LabelTerminatorLexicalUnit : LexicalUnit {
+/// A lexical unit representing a line terminator.
+struct LineTerminatorLexicalUnit : LexicalUnit {
 	
 	// See protocol.
-	static let pattern = try! NSRegularExpression(pattern: #":"#)
+	static let pattern = try! NSRegularExpression(pattern: #"\n"#)
 	
 	// See protocol.
 	init(captures: [Substring], sourceRange: SourceRange) {

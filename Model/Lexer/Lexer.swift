@@ -3,7 +3,7 @@
 import DepthKit
 import Foundation
 
-/// A value that converts a source text into a sequence of lexical units.
+/// A value that produces lexical units from a source text.
 struct Lexer {
 	
 	/// Creates a lexer for converting given string to lexical units.
@@ -24,8 +24,8 @@ struct Lexer {
 		sourceText.indices.contains(indexOfNextCharacter)
 	}
 	
-	/// Attempts to extract a lexical unit.
-	mutating func extractUnit<Unit : LexicalUnit>(ofType type: Unit.Type = Unit.self) throws -> Unit? {
+	/// Extracts a lexical unit of some given type from the unprocessed source.
+	mutating func extractUnit<Unit : LexicalUnit>(ofType type: Unit.Type = Unit.self) -> Unit? {
 		
 		guard hasUnprocessedText else { return nil }
 		

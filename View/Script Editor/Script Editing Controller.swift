@@ -84,7 +84,7 @@ final class ScriptEditingController : UIViewController {
 				addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: unit.sourceRange)
 				mark(unit.sourceRange, in: .label)
 				
-				case let unit as CommentLexicalUnit:
+				case let unit as _CommentLexicalUnit:
 				mark(unit.sourceRange, in: .comment)
 				
 				default:

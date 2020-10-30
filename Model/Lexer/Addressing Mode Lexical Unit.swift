@@ -19,6 +19,6 @@ struct AddressingModeLexicalUnit : LexicalUnit {
 	let addressingMode: AddressingMode
 	
 	// See protocol.
-	var sourceRange: SourceRange
+	let sourceRange: SourceRange
 	
 }

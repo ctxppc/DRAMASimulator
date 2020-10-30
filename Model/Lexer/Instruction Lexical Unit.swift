@@ -19,6 +19,6 @@ struct InstructionLexicalUnit : LexicalUnit {
 	let instruction: Instruction
 	
 	// See protocol.
-	var sourceRange: SourceRange
+	let sourceRange: SourceRange
 	
 }

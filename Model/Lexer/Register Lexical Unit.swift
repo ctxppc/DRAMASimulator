@@ -19,6 +19,6 @@ struct RegisterLexicalUnit : LexicalUnit {
 	let register: Register
 	
 	// See protocol.
-	var sourceRange: SourceRange
+	let sourceRange: SourceRange
 	
 }

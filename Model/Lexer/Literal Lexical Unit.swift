@@ -19,6 +19,6 @@ struct LiteralLexicalUnit : LexicalUnit {
 	let value: Int
 	
 	// See protocol.
-	var sourceRange: SourceRange
+	let sourceRange: SourceRange
 	
 }

@@ -93,7 +93,7 @@ struct Script {
 			
 			let noncommentRange: SourceRange
 			let commentRange: SourceRange?
-			if let match = CommentLexicalUnit.regularExpression.firstMatch(in: source, range: fRange) {
+			if let match = _CommentLexicalUnit.regularExpression.firstMatch(in: source, range: fRange) {
 				noncommentRange = range(in: match, at: 1)
 				commentRange = range(in: match, at: 2)
 			} else {
@@ -144,7 +144,7 @@ struct Script {
 			}
 			
 			if let range = commentRange {
-				units.append(CommentLexicalUnit(sourceRange: range))
+				units.append(_CommentLexicalUnit(sourceRange: range))
 			}
 			
 		}

@@ -18,6 +18,6 @@ struct SymbolLexicalUnit : LexicalUnit {
 	let symbol: String
 	
 	// See protocol.
-	var sourceRange: SourceRange
+	let sourceRange: SourceRange
 	
 }

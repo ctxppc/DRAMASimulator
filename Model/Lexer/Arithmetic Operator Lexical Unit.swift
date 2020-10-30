@@ -19,6 +19,6 @@ struct ArithmeticOperatorLexicalUnit : LexicalUnit {
 	let arithmeticOperator: ArithmeticOperator
 	
 	// See protocol.
-	var sourceRange: SourceRange
+	let sourceRange: SourceRange
 	
 }

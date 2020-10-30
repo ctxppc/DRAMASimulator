@@ -18,6 +18,6 @@ struct IndexRegisterScopeLexicalUnit : LexicalUnit {
 	let opensScope: Bool
 	
 	// See protocol.
-	var sourceRange: SourceRange
+	let sourceRange: SourceRange
 	
 }
