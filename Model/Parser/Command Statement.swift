@@ -8,10 +8,10 @@ struct CommandStatement : Statement {
 	// See protocol.
 	init(from parser: inout Parser) throws {
 		
-		guard let instructionUnit = parser.consume(IdentifierLexicalUnit.self) else { throw CommandStatementError.missingInstruction }
+		guard let instructionUnit = parser.consume(IdentifierLexicalUnit.self) else { throw Error.missingInstruction }
 		let mnemonic = instructionUnit.identifier
 		guard let instruction = Instruction(rawValue: mnemonic) ?? Instruction(rawValue: mnemonic.uppercased())
-				?? Instruction(rawValue: mnemonic.lowercased()) else { throw CommandStatementError.unknownInstruction(mnemonic: mnemonic) }
+				?? Instruction(rawValue: mnemonic.lowercased()) else { throw Error.unknownInstruction(mnemonic: mnemonic) }
 		self.instruction = instruction
 		
 		self.addressingMode = parser.consume(AddressingModeLexicalUnit.self)?.addressingMode
@@ -100,7 +100,7 @@ struct CommandStatement : Statement {
 			
 		}
 		
-		throw CommandStatementError.incorrectArgumentFormat(instruction: instruction)
+		throw Error.incorrectArgumentFormat(instruction: instruction)
 		
 	}
 	
@@ -109,47 +109,47 @@ struct CommandStatement : Statement {
 		TODO.unimplemented
 	}
 	
-}
-
-/// An error parsing or lowering a command statement.
-enum CommandStatementError : LocalizedError {
-	
-	/// The command is missing an instruction.
-	case missingInstruction
-	
-	/// The command's mnemonic c.
-	case unknownInstruction(mnemonic: String)
-	
-	/// The command has an incorrect format, e.g., register operands for an address–condition command type.
-	case incorrectArgumentFormat(instruction: Instruction)
-	
-	/// The command has a disallowed operator for forming the address operand.
-	case disallowedAddressOperator
-	
-	/// The command has a disallowed operator on the index register.
-	case disallowedIndexRegisterOperator
-	
-	/// The command has a missing operator for forming the address operand.
-	case missingAddressOperator
-	
-	/// The command has an invalid address format.
-	case invalidAddressFormat
-	
-	/// The command references a symbol that isn't defined in the program.
-	case undefinedSymbol(String)
-	
-	// See protocol.
-	var errorDescription: String? {
-		switch self {
-			case .missingInstruction:							return "Geen bevel"
-			case .unknownInstruction(mnemonic: let m):			return "“\(m)”-bevel niet gekend of ondersteund"
-			case .incorrectArgumentFormat(instruction: let i):	return "\(i.rawValue)-bevel met onjuiste soort argumenten"
-			case .disallowedAddressOperator:					return "Bevel met adres met andere operator dan + of -"
-			case .disallowedIndexRegisterOperator:				return "Bevel met ongeldige operators in indexregister"
-			case .missingAddressOperator:						return "Bevel met adres met ontbrekende operator"
-			case .invalidAddressFormat:							return "Bevel met ongeldig adres"
-			case .undefinedSymbol(let symbol):					return "“\(symbol)” is niet gedefiniëerd"
+	/// An error parsing or lowering a command statement.
+	enum Error : LocalizedError {
+		
+		/// The command is missing an instruction.
+		case missingInstruction
+		
+		/// The command's mnemonic c.
+		case unknownInstruction(mnemonic: String)
+		
+		/// The command has an incorrect format, e.g., register operands for an address–condition command type.
+		case incorrectArgumentFormat(instruction: Instruction)
+		
+		/// The command has a disallowed operator for forming the address operand.
+		case disallowedAddressOperator
+		
+		/// The command has a disallowed operator on the index register.
+		case disallowedIndexRegisterOperator
+		
+		/// The command has a missing operator for forming the address operand.
+		case missingAddressOperator
+		
+		/// The command has an invalid address format.
+		case invalidAddressFormat
+		
+		/// The command references a symbol that isn't defined in the program.
+		case undefinedSymbol(String)
+		
+		// See protocol.
+		var errorDescription: String? {
+			switch self {
+				case .missingInstruction:							return "Geen bevel"
+				case .unknownInstruction(mnemonic: let m):			return "“\(m)”-bevel niet gekend of ondersteund"
+				case .incorrectArgumentFormat(instruction: let i):	return "\(i.rawValue)-bevel met onjuiste soort argumenten"
+				case .disallowedAddressOperator:					return "Bevel met adres met andere operator dan + of -"
+				case .disallowedIndexRegisterOperator:				return "Bevel met ongeldige operators in indexregister"
+				case .missingAddressOperator:						return "Bevel met adres met ontbrekende operator"
+				case .invalidAddressFormat:							return "Bevel met ongeldig adres"
+				case .undefinedSymbol(let symbol):					return "“\(symbol)” is niet gedefiniëerd"
+			}
 		}
+		
 	}
 	
 }

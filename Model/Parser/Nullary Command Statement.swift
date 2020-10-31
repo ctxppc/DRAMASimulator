@@ -28,7 +28,7 @@ struct NullaryCommandStatement : _CommandStatement {
 	
 	// See protocol.
 	func command(addressesBySymbol: [String : Int]) throws -> Command {
-		guard let type = instruction.commandType as? NullaryCommand.Type else { throw CommandStatementError.incorrectArgumentFormat(instruction: instruction) }
+		guard let type = instruction.commandType as? NullaryCommand.Type else { throw CommandStatement.Error.incorrectArgumentFormat(instruction: instruction) }
 		return try type.init(instruction: instruction)
 	}
 	

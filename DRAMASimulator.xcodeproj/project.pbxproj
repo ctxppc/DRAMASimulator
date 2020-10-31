@@ -58,6 +58,8 @@
 		4F87EF8C254DB22C00B3D9A7 /* Construct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EF8B254DB22C00B3D9A7 /* Construct.swift */; };
 		4F87EF93254DE32900B3D9A7 /* Command Statement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EF92254DE32900B3D9A7 /* Command Statement.swift */; };
 		4F87EF96254DE3F600B3D9A7 /* Command Statement Argument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EF95254DE3F600B3D9A7 /* Command Statement Argument.swift */; };
+		4F87EFA2254E001B00B3D9A7 /* Value Statement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EFA1254E001B00B3D9A7 /* Value Statement.swift */; };
+		4F87EFA5254E020E00B3D9A7 /* Allocation Statement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EFA4254E020E00B3D9A7 /* Allocation Statement.swift */; };
 		4F8D1B2C251260A8002E2BE9 /* DepthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4F8D1B2B251260A8002E2BE9 /* DepthKit */; };
 		4F8D1B2F251260B3002E2BE9 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B2E251260B3002E2BE9 /* Application.swift */; };
 		4F8D1B3925126700002E2BE9 /* Script Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B3825126700002E2BE9 /* Script Editor.swift */; };
@@ -157,6 +159,8 @@
 		4F87EF8B254DB22C00B3D9A7 /* Construct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Construct.swift; sourceTree = "<group>"; };
 		4F87EF92254DE32900B3D9A7 /* Command Statement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Command Statement.swift"; sourceTree = "<group>"; };
 		4F87EF95254DE3F600B3D9A7 /* Command Statement Argument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Command Statement Argument.swift"; sourceTree = "<group>"; };
+		4F87EFA1254E001B00B3D9A7 /* Value Statement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Value Statement.swift"; sourceTree = "<group>"; };
+		4F87EFA4254E020E00B3D9A7 /* Allocation Statement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Allocation Statement.swift"; sourceTree = "<group>"; };
 		4F8D1B2E251260B3002E2BE9 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		4F8D1B3825126700002E2BE9 /* Script Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script Editor.swift"; sourceTree = "<group>"; };
 		4F8D1B3F2512715F002E2BE9 /* Document View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Document View.swift"; sourceTree = "<group>"; };
@@ -311,6 +315,8 @@
 				4F053099254C9A7000DDDCB7 /* Statement.swift */,
 				4F87EF92254DE32900B3D9A7 /* Command Statement.swift */,
 				4F87EF95254DE3F600B3D9A7 /* Command Statement Argument.swift */,
+				4F87EFA1254E001B00B3D9A7 /* Value Statement.swift */,
+				4F87EFA4254E020E00B3D9A7 /* Allocation Statement.swift */,
 				4F6BAE6021B6CEDD00A952BB /* _Command Statement.swift */,
 				4FEEF00521B03FFC00F6CDC2 /* _Lexical Unit.swift */,
 				4F6BAE6221B6D69500A952BB /* _Statement.swift */,
@@ -548,10 +554,12 @@
 				4FA523EB21B4299800BE1FF2 /* Invocation Directive.swift in Sources */,
 				4FA7EB9C21A0691800C52F98 /* Conditional Jump Command.swift in Sources */,
 				4FFEB7D4219C6C480049D0A5 /* Nullary Command.swift in Sources */,
+				4F87EFA5254E020E00B3D9A7 /* Allocation Statement.swift in Sources */,
 				4FD3AC13254C781E00F17679 /* Comment Lexical Unit.swift in Sources */,
 				4F3E7910219A2221008E3E9B /* Addressing Mode.swift in Sources */,
 				4F391DE2254A406100945B7E /* Register Lexical Unit.swift in Sources */,
 				4FFEB7DC219C6EF90049D0A5 /* Register Address Command.swift in Sources */,
+				4F87EFA2254E001B00B3D9A7 /* Value Statement.swift in Sources */,
 				4F3E7916219A25B7008E3E9B /* Condition.swift in Sources */,
 				4F820F35219B1CD6004EE2C9 /* Instruction.swift in Sources */,
 				4F166EDA21B983D7001A8749 /* Source Range.swift in Sources */,

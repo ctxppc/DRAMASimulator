@@ -73,7 +73,7 @@ extension CommandStatement.Argument.Address {
 				return partialSum + value
 					
 				case .symbol(name: let name, positive: let positive):
-				guard let value = addressesBySymbol[name] else { throw CommandStatementError.undefinedSymbol(name) }
+				guard let value = addressesBySymbol[name] else { throw CommandStatement.Error.undefinedSymbol(name) }
 				return positive ? partialSum + value : partialSum - value
 					
 			}
@@ -103,7 +103,7 @@ extension CommandStatement.Argument.Address : Construct {
 			switch operatorUnit.arithmeticOperator {
 				case .sum:			positive = true
 				case .difference:	positive = false
-				default:			throw CommandStatementError.disallowedAddressOperator
+				default:			throw CommandStatement.Error.disallowedAddressOperator
 			}
 			
 			let term = try parser.parse(Term.self)
@@ -122,10 +122,10 @@ extension CommandStatement.Argument.Address : Construct {
 		let indexRegister: IndexRegister
 		if let openUnit = parser.consume(IndexRegisterScopeLexicalUnit.self) {
 			
-			guard case .open = openUnit else { throw CommandStatementError.invalidAddressFormat }
+			guard case .open = openUnit else { throw CommandStatement.Error.invalidAddressFormat }
 			
 			let preoperatorUnit = parser.consume(ArithmeticOperatorLexicalUnit.self)
-			guard let registerUnit = parser.consume(RegisterLexicalUnit.self) else { throw CommandStatementError.invalidAddressFormat }
+			guard let registerUnit = parser.consume(RegisterLexicalUnit.self) else { throw CommandStatement.Error.invalidAddressFormat }
 			let postoperatorUnit = parser.consume(ArithmeticOperatorLexicalUnit.self)
 			
 			switch (preoperatorUnit?.arithmeticOperator, postoperatorUnit?.arithmeticOperator) {
@@ -134,10 +134,10 @@ extension CommandStatement.Argument.Address : Construct {
 				case (nil, .sum?):			indexRegister = .postincrementing(registerUnit.register)
 				case (.difference?, nil):	indexRegister = .predecrementing(registerUnit.register)
 				case (nil, .difference?):	indexRegister = .postdecrementing(registerUnit.register)
-				default:					throw CommandStatementError.disallowedIndexRegisterOperator
+				default:					throw CommandStatement.Error.disallowedIndexRegisterOperator
 			}
 			
-			guard case .close = parser.consume(IndexRegisterScopeLexicalUnit.self) else { throw CommandStatementError.invalidAddressFormat }
+			guard case .close = parser.consume(IndexRegisterScopeLexicalUnit.self) else { throw CommandStatement.Error.invalidAddressFormat }
 			
 		} else {
 			indexRegister = .none
@@ -155,7 +155,7 @@ extension CommandStatement.Argument.Address.Term : Construct {
 		} else if let literalUnit = parser.consume(LiteralLexicalUnit.self) {
 			self = .literal(literalUnit.value)
 		} else {
-			throw CommandStatementError.invalidAddressFormat
+			throw CommandStatement.Error.invalidAddressFormat
 		}
 	}
 }

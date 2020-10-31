@@ -45,10 +45,10 @@ struct RegisterCommandStatement : _CommandStatement {
 	// See protocol.
 	func command(addressesBySymbol: [String : Int]) throws -> Command {
 		if let secondaryRegister = secondaryRegister {
-			guard let type = instruction.commandType as? BinaryRegisterCommand.Type else { throw CommandStatementError.incorrectArgumentFormat(instruction: instruction) }
+			guard let type = instruction.commandType as? BinaryRegisterCommand.Type else { throw CommandStatement.Error.incorrectArgumentFormat(instruction: instruction) }
 			return try type.init(instruction: instruction, primaryRegister: primaryRegister, secondaryRegister: secondaryRegister)
 		} else {
-			guard let type = instruction.commandType as? UnaryRegisterCommand.Type else { throw CommandStatementError.incorrectArgumentFormat(instruction: instruction) }
+			guard let type = instruction.commandType as? UnaryRegisterCommand.Type else { throw CommandStatement.Error.incorrectArgumentFormat(instruction: instruction) }
 			return try type.init(instruction: instruction, register: primaryRegister)
 		}
 	}

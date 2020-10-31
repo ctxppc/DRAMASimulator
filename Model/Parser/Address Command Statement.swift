@@ -126,15 +126,15 @@ struct AddressCommandStatement : _CommandStatement {
 		switch argument {
 			
 			case .register(let register, sourceRange: _)?:
-			guard let type = instruction.commandType as? RegisterAddressCommand.Type else { throw CommandStatementError.incorrectArgumentFormat(instruction: instruction) }
+			guard let type = instruction.commandType as? RegisterAddressCommand.Type else { throw CommandStatement.Error.incorrectArgumentFormat(instruction: instruction) }
 			return try type.init(instruction: instruction, addressingMode: addressingMode, register: register, address: addressSpecification)
 			
 			case .condition(let condition, sourceRange: _)?:
-			guard let type = instruction.commandType as? ConditionAddressCommand.Type else { throw CommandStatementError.incorrectArgumentFormat(instruction: instruction) }
+			guard let type = instruction.commandType as? ConditionAddressCommand.Type else { throw CommandStatement.Error.incorrectArgumentFormat(instruction: instruction) }
 			return try type.init(instruction: instruction, addressingMode: addressingMode, condition: condition, address: addressSpecification)
 			
 			case nil:
-			guard let type = instruction.commandType as? AddressCommand.Type else { throw CommandStatementError.incorrectArgumentFormat(instruction: instruction) }
+			guard let type = instruction.commandType as? AddressCommand.Type else { throw CommandStatement.Error.incorrectArgumentFormat(instruction: instruction) }
 			return try type.init(instruction: instruction, addressingMode: addressingMode, address: addressSpecification)
 			
 		}
