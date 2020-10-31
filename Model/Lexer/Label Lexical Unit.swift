@@ -2,20 +2,16 @@
 
 import Foundation
 
-/// A lexical unit for a label, e.g., `endIf:`.
-struct LabelLexicalUnit : LexicalUnit {
+/// A marker lexical unit for a label, i.e.., `:`.
+struct LabelMarkerLexicalUnit : LexicalUnit {
 	
 	// See protocol.
-	static let pattern = try! NSRegularExpression(pattern: #"(\w+):"#)
+	static let pattern = try! NSRegularExpression(pattern: #":"#)
 	
 	// See protocol.
 	init(captures: [Substring], sourceRange: SourceRange) {
-		self.symbol = .init(captures[1])
 		self.sourceRange = sourceRange
 	}
-	
-	/// The register.
-	let symbol: String
 	
 	// See protocol.
 	let sourceRange: SourceRange

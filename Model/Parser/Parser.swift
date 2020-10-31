@@ -2,9 +2,7 @@
 
 import Foundation
 
-/// A value that produces statements from a sequence of lexical units.
-///
-/// A parser requests lexical units from a lexer and .
+/// A value that extracts a production of some type from lexical units.
 struct Parser {
 	
 	/// Creates a parser from given source text.

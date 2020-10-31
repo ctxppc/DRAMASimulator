@@ -2,11 +2,11 @@
 
 import Foundation
 
-/// A lexical unit for an instruction or directive, e.g., `HIA` or `RESGR`.
-struct InstructionLexicalUnit : LexicalUnit {
+/// A lexical unit for an identifier, e.g., `HIA`, `RESGR`, or `endIf`.
+struct IdentifierLexicalUnit : LexicalUnit {
 	
 	// See protocol.
-	static let pattern = try! NSRegularExpression(pattern: #"\w+"#, options: .caseInsensitive)
+	static let pattern = try! NSRegularExpression(pattern: #"\w[\w\d]*"#, options: .caseInsensitive)
 	
 	// See protocol.
 	init?(captures: [Substring], sourceRange: SourceRange) {

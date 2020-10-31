@@ -66,7 +66,7 @@ final class ScriptEditingController : UIViewController {
 		
 		for unit in script.lexicalUnits {
 			
-			if let unit = unit as? CommandStatement {
+			if let unit = unit as? _CommandStatement {
 				mark(unit.instructionSourceRange, in: .mnemonic)
 			}
 			

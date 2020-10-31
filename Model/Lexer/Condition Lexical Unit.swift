@@ -2,7 +2,7 @@
 
 import Foundation
 
-/// A lexical unit for a condition.
+/// A lexical unit for a condition, e.g., `KLG`.
 struct ConditionLexicalUnit : LexicalUnit {
 	
 	// See protocol.

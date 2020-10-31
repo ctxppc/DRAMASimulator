@@ -2,7 +2,7 @@
 
 import Foundation
 
-/// A lexical unit for an addressing, e.g., `.w`.
+/// A lexical unit for an addressing mode, e.g., `.w`.
 struct AddressingModeLexicalUnit : LexicalUnit {
 	
 	// See protocol.

@@ -5,7 +5,7 @@ import Foundation
 /// A statement that contains a unary or binary register command.
 ///
 /// Groups: mnemonic, primary register, reg. #, secondary register (opt.), reg. # (opt.)
-struct RegisterCommandStatement : CommandStatement {
+struct RegisterCommandStatement : _CommandStatement {
 	
 	// See protocol.
 	static let regularExpression = NSRegularExpression(.mnemonicPattern, .reqSpace, .registerPattern, .opt(.elementSeparator, .registerPattern))

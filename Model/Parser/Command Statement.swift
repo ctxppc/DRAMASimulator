@@ -3,7 +3,7 @@
 import Foundation
 
 /// A statement that contains a command.
-protocol CommandStatement : _Statement {
+protocol _CommandStatement : _Statement {
 	
 	/// The instruction represented by this command.
 	var instruction: Instruction { get }
@@ -22,7 +22,7 @@ protocol CommandStatement : _Statement {
 	
 }
 
-extension CommandStatement {
+extension _CommandStatement {
 	
 	var wordCount: Int { 1 }
 	

@@ -5,7 +5,7 @@ import Foundation
 /// A statement that contains an address, register–address, or condition-address command.
 ///
 /// Groups: mnemonic, addressing mode (opt.), register (opt.), reg. # (opt.), condition (opt.), base address, pre-index modifier (opt.), index register (opt.), index register # (opt.), post-index modifier (opt.)
-struct AddressCommandStatement : CommandStatement {
+struct AddressCommandStatement : _CommandStatement {
 	
 	// See protocol.
 	static let regularExpression = NSRegularExpression(

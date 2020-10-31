@@ -5,7 +5,7 @@ import Foundation
 /// A statement that contains a nullary command.
 ///
 /// Groups: mnemonic
-struct NullaryCommandStatement : CommandStatement {
+struct NullaryCommandStatement : _CommandStatement {
 	
 	// See protocol.
 	static let regularExpression = NSRegularExpression(.mnemonicPattern)

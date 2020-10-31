@@ -23,10 +23,9 @@
 		4F35A3CE21A0D6EA00A4610D /* Command Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F35A3CD21A0D6EA00A4610D /* Command Word.swift */; };
 		4F391DDF254A3D3000945B7E /* Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F391DDE254A3D3000945B7E /* Lexical Unit.swift */; };
 		4F391DE2254A406100945B7E /* Register Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F391DE1254A406100945B7E /* Register Lexical Unit.swift */; };
-		4F391DE5254A46F700945B7E /* Instruction Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F391DE4254A46F700945B7E /* Instruction Lexical Unit.swift */; };
+		4F391DE5254A46F700945B7E /* Identifier Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F391DE4254A46F700945B7E /* Identifier Lexical Unit.swift */; };
 		4F391DE8254A4A7000945B7E /* Addressing Mode Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F391DE7254A4A7000945B7E /* Addressing Mode Lexical Unit.swift */; };
 		4F391DEB254A4B2F00945B7E /* Literal Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F391DEA254A4B2F00945B7E /* Literal Lexical Unit.swift */; };
-		4F391DEE254A4BC800945B7E /* Symbol Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F391DED254A4BC800945B7E /* Symbol Lexical Unit.swift */; };
 		4F391DF1254A4C2E00945B7E /* Label Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F391DF0254A4C2E00945B7E /* Label Lexical Unit.swift */; };
 		4F391DF5254A4CAF00945B7E /* Index Register Scope Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F391DF4254A4CAF00945B7E /* Index Register Scope Lexical Unit.swift */; };
 		4F391DF8254A4D7B00945B7E /* Arithmetic Operator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F391DF7254A4D7B00945B7E /* Arithmetic Operator.swift */; };
@@ -56,6 +55,7 @@
 		4F85A2E921A9C42E0061E505 /* Source Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F85A2E821A9C42E0061E505 /* Source Error.swift */; };
 		4F87EF86254DAFA300B3D9A7 /* Argument Separator Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EF85254DAFA300B3D9A7 /* Argument Separator Lexical Unit.swift */; };
 		4F87EF89254DAFFA00B3D9A7 /* Condition Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EF88254DAFFA00B3D9A7 /* Condition Lexical Unit.swift */; };
+		4F87EF8C254DB22C00B3D9A7 /* Construct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EF8B254DB22C00B3D9A7 /* Construct.swift */; };
 		4F8D1B2C251260A8002E2BE9 /* DepthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4F8D1B2B251260A8002E2BE9 /* DepthKit */; };
 		4F8D1B2F251260B3002E2BE9 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B2E251260B3002E2BE9 /* Application.swift */; };
 		4F8D1B3925126700002E2BE9 /* Script Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B3825126700002E2BE9 /* Script Editor.swift */; };
@@ -118,10 +118,9 @@
 		4F35A3CD21A0D6EA00A4610D /* Command Word.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Command Word.swift"; sourceTree = "<group>"; };
 		4F391DDE254A3D3000945B7E /* Lexical Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Lexical Unit.swift"; sourceTree = "<group>"; };
 		4F391DE1254A406100945B7E /* Register Lexical Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Register Lexical Unit.swift"; sourceTree = "<group>"; };
-		4F391DE4254A46F700945B7E /* Instruction Lexical Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Instruction Lexical Unit.swift"; sourceTree = "<group>"; };
+		4F391DE4254A46F700945B7E /* Identifier Lexical Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identifier Lexical Unit.swift"; sourceTree = "<group>"; };
 		4F391DE7254A4A7000945B7E /* Addressing Mode Lexical Unit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Addressing Mode Lexical Unit.swift"; sourceTree = "<group>"; };
 		4F391DEA254A4B2F00945B7E /* Literal Lexical Unit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Literal Lexical Unit.swift"; sourceTree = "<group>"; };
-		4F391DED254A4BC800945B7E /* Symbol Lexical Unit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Symbol Lexical Unit.swift"; sourceTree = "<group>"; };
 		4F391DF0254A4C2E00945B7E /* Label Lexical Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Label Lexical Unit.swift"; sourceTree = "<group>"; };
 		4F391DF4254A4CAF00945B7E /* Index Register Scope Lexical Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Index Register Scope Lexical Unit.swift"; sourceTree = "<group>"; };
 		4F391DF7254A4D7B00945B7E /* Arithmetic Operator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Arithmetic Operator.swift"; sourceTree = "<group>"; };
@@ -153,6 +152,7 @@
 		4F85A2E821A9C42E0061E505 /* Source Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Source Error.swift"; sourceTree = "<group>"; };
 		4F87EF85254DAFA300B3D9A7 /* Argument Separator Lexical Unit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Argument Separator Lexical Unit.swift"; sourceTree = "<group>"; };
 		4F87EF88254DAFFA00B3D9A7 /* Condition Lexical Unit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Condition Lexical Unit.swift"; sourceTree = "<group>"; };
+		4F87EF8B254DB22C00B3D9A7 /* Construct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Construct.swift; sourceTree = "<group>"; };
 		4F8D1B2E251260B3002E2BE9 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		4F8D1B3825126700002E2BE9 /* Script Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script Editor.swift"; sourceTree = "<group>"; };
 		4F8D1B3F2512715F002E2BE9 /* Document View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Document View.swift"; sourceTree = "<group>"; };
@@ -303,6 +303,7 @@
 			isa = PBXGroup;
 			children = (
 				4F989D2A254A3C05009F42E7 /* Parser.swift */,
+				4F87EF8B254DB22C00B3D9A7 /* Construct.swift */,
 				4F053099254C9A7000DDDCB7 /* Statement.swift */,
 				4F6BAE6021B6CEDD00A952BB /* Command Statement.swift */,
 				4FEEF00521B03FFC00F6CDC2 /* _Lexical Unit.swift */,
@@ -368,17 +369,16 @@
 			children = (
 				4F5C7841254A3AB200A9961B /* Lexer.swift */,
 				4F391DDE254A3D3000945B7E /* Lexical Unit.swift */,
+				4F391DE1254A406100945B7E /* Register Lexical Unit.swift */,
+				4F87EF88254DAFFA00B3D9A7 /* Condition Lexical Unit.swift */,
+				4F391DEA254A4B2F00945B7E /* Literal Lexical Unit.swift */,
+				4F391DE4254A46F700945B7E /* Identifier Lexical Unit.swift */,
+				4F391DE7254A4A7000945B7E /* Addressing Mode Lexical Unit.swift */,
 				4F87EF85254DAFA300B3D9A7 /* Argument Separator Lexical Unit.swift */,
 				4FD3AC16254C7C1E00F17679 /* Statement Terminator Lexical Unit.swift */,
 				4F05309D254C9E5800DDDCB7 /* Program Terminator Lexical Unit.swift */,
-				4F391DE4254A46F700945B7E /* Instruction Lexical Unit.swift */,
-				4F391DE1254A406100945B7E /* Register Lexical Unit.swift */,
-				4F87EF88254DAFFA00B3D9A7 /* Condition Lexical Unit.swift */,
-				4F391DE7254A4A7000945B7E /* Addressing Mode Lexical Unit.swift */,
-				4F391DEA254A4B2F00945B7E /* Literal Lexical Unit.swift */,
-				4F391DFA254A4ECC00945B7E /* Arithmetic Operator Lexical Unit.swift */,
-				4F391DED254A4BC800945B7E /* Symbol Lexical Unit.swift */,
 				4F391DF0254A4C2E00945B7E /* Label Lexical Unit.swift */,
+				4F391DFA254A4ECC00945B7E /* Arithmetic Operator Lexical Unit.swift */,
 				4F391DF4254A4CAF00945B7E /* Index Register Scope Lexical Unit.swift */,
 				4FD3AC12254C781E00F17679 /* Comment Lexical Unit.swift */,
 				4FD3AC0F254C75D800F17679 /* Unrecognised Lexical Unit.swift */,
@@ -500,12 +500,12 @@
 				4F6BAE5F21B6CE4000A952BB /* Partial Lexical Unit.swift in Sources */,
 				4F87EF86254DAFA300B3D9A7 /* Argument Separator Lexical Unit.swift in Sources */,
 				4F44C7F4219A4BBE003798AF /* Machine Word.swift in Sources */,
-				4F391DEE254A4BC800945B7E /* Symbol Lexical Unit.swift in Sources */,
 				4F6BAE5321B6CDBA00A952BB /* Address Command Statement.swift in Sources */,
 				4F6BAE6121B6CEDD00A952BB /* Command Statement.swift in Sources */,
 				4F3E7914219A2324008E3E9B /* Value Operand.swift in Sources */,
 				4F8D1B402512715F002E2BE9 /* Document View.swift in Sources */,
 				4F346B782199DBE700D6D8AD /* Document.swift in Sources */,
+				4F87EF8C254DB22C00B3D9A7 /* Construct.swift in Sources */,
 				4F391DE8254A4A7000945B7E /* Addressing Mode Lexical Unit.swift in Sources */,
 				4F6BAE5121B6CDAD00A952BB /* Nullary Command Statement.swift in Sources */,
 				4FFEB7D8219C6EDD0049D0A5 /* Binary Register Command.swift in Sources */,
@@ -575,7 +575,7 @@
 				4FA7EBA821A0895E00C52F98 /* Program.swift in Sources */,
 				4FD3AC17254C7C1E00F17679 /* Statement Terminator Lexical Unit.swift in Sources */,
 				4F44C7F6219A4C40003798AF /* Address Word.swift in Sources */,
-				4F391DE5254A46F700945B7E /* Instruction Lexical Unit.swift in Sources */,
+				4F391DE5254A46F700945B7E /* Identifier Lexical Unit.swift in Sources */,
 				4F391DF1254A4C2E00945B7E /* Label Lexical Unit.swift in Sources */,
 				4F139C0221A3104100F817A6 /* Script Editing Controller.swift in Sources */,
 				4F05309A254C9A7000DDDCB7 /* Statement.swift in Sources */,

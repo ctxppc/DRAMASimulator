@@ -6,7 +6,7 @@ import Foundation
 struct UnrecognisedLexicalUnit : LexicalUnit {
 	
 	// See protocol.
-	static let pattern = try! NSRegularExpression(pattern: #"\W+"#)
+	static let pattern = try! NSRegularExpression(pattern: #".+"#)
 	
 	// See protocol.
 	init(captures: [Substring], sourceRange: SourceRange) {
