@@ -3,21 +3,29 @@
 import Foundation
 
 /// A lexical unit for a symbol that scopes an index register, i.e., `(` or `)`.
-struct IndexRegisterScopeLexicalUnit : LexicalUnit {
+enum IndexRegisterScopeLexicalUnit : LexicalUnit {
 	
 	// See protocol.
 	static let pattern = try! NSRegularExpression(pattern: #"[()]"#)
 	
 	// See protocol.
 	init(captures: [Substring], sourceRange: SourceRange) {
-		self.opensScope = captures[0] == "("
-		self.sourceRange = sourceRange
+		self = captures[0] == "("
+			? .open(sourceRange: sourceRange)
+			: .close(sourceRange: sourceRange)
 	}
 	
-	/// A Boolean value indicating whether the unit opens an index register scope.
-	let opensScope: Bool
+	/// The open scope unit.
+	case open(sourceRange: SourceRange)
+	
+	/// The close scope unit.
+	case close(sourceRange: SourceRange)
 	
 	// See protocol.
-	let sourceRange: SourceRange
+	var sourceRange: SourceRange {
+		switch self {
+			case .open(sourceRange: let range), .close(sourceRange: let range):	return range
+		}
+	}
 	
 }
