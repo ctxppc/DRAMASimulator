@@ -40,6 +40,11 @@ struct Parser {
 		set { consumedLexicalUnitsIndexRange = consumedLexicalUnitsIndexRange.lowerBound..<newValue }
 	}
 	
+	/// A Boolean value indicating whether the parser has unprocessed lexical units.
+	var hasUnprocessedLexicalUnits: Bool {
+		!lexicalUnits[indexOfNextLexicalUnit...].isEmpty
+	}
+	
 	/// Parses a construct of given type.
 	///
 	/// The parser is unaffected if the construct could not be parsed.

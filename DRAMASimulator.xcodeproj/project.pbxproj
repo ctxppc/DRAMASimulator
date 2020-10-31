@@ -60,6 +60,8 @@
 		4F87EF96254DE3F600B3D9A7 /* Command Statement Argument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EF95254DE3F600B3D9A7 /* Command Statement Argument.swift */; };
 		4F87EFA2254E001B00B3D9A7 /* Value Statement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EFA1254E001B00B3D9A7 /* Value Statement.swift */; };
 		4F87EFA5254E020E00B3D9A7 /* Allocation Statement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EFA4254E020E00B3D9A7 /* Allocation Statement.swift */; };
+		4F87EFA8254E033500B3D9A7 /* Translation Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EFA7254E033500B3D9A7 /* Translation Unit.swift */; };
+		4F87EFAB254E045100B3D9A7 /* Label Construct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EFAA254E045100B3D9A7 /* Label Construct.swift */; };
 		4F8D1B2C251260A8002E2BE9 /* DepthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4F8D1B2B251260A8002E2BE9 /* DepthKit */; };
 		4F8D1B2F251260B3002E2BE9 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B2E251260B3002E2BE9 /* Application.swift */; };
 		4F8D1B3925126700002E2BE9 /* Script Editor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F8D1B3825126700002E2BE9 /* Script Editor.swift */; };
@@ -161,6 +163,8 @@
 		4F87EF95254DE3F600B3D9A7 /* Command Statement Argument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Command Statement Argument.swift"; sourceTree = "<group>"; };
 		4F87EFA1254E001B00B3D9A7 /* Value Statement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Value Statement.swift"; sourceTree = "<group>"; };
 		4F87EFA4254E020E00B3D9A7 /* Allocation Statement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Allocation Statement.swift"; sourceTree = "<group>"; };
+		4F87EFA7254E033500B3D9A7 /* Translation Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Translation Unit.swift"; sourceTree = "<group>"; };
+		4F87EFAA254E045100B3D9A7 /* Label Construct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Label Construct.swift"; sourceTree = "<group>"; };
 		4F8D1B2E251260B3002E2BE9 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		4F8D1B3825126700002E2BE9 /* Script Editor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script Editor.swift"; sourceTree = "<group>"; };
 		4F8D1B3F2512715F002E2BE9 /* Document View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Document View.swift"; sourceTree = "<group>"; };
@@ -312,11 +316,13 @@
 			children = (
 				4F989D2A254A3C05009F42E7 /* Parser.swift */,
 				4F87EF8B254DB22C00B3D9A7 /* Construct.swift */,
+				4F87EFA7254E033500B3D9A7 /* Translation Unit.swift */,
 				4F053099254C9A7000DDDCB7 /* Statement.swift */,
 				4F87EF92254DE32900B3D9A7 /* Command Statement.swift */,
 				4F87EF95254DE3F600B3D9A7 /* Command Statement Argument.swift */,
 				4F87EFA1254E001B00B3D9A7 /* Value Statement.swift */,
 				4F87EFA4254E020E00B3D9A7 /* Allocation Statement.swift */,
+				4F87EFAA254E045100B3D9A7 /* Label Construct.swift */,
 				4F6BAE6021B6CEDD00A952BB /* _Command Statement.swift */,
 				4FEEF00521B03FFC00F6CDC2 /* _Lexical Unit.swift */,
 				4F6BAE6221B6D69500A952BB /* _Statement.swift */,
@@ -540,6 +546,7 @@
 				4F87EF89254DAFFA00B3D9A7 /* Condition Lexical Unit.swift in Sources */,
 				4FA523EF21B429B700BE1FF2 /* Jump Directive.swift in Sources */,
 				4F820F30219B06AB004EE2C9 /* Command.swift in Sources */,
+				4F87EFAB254E045100B3D9A7 /* Label Construct.swift in Sources */,
 				4F6BAE5B21B6CE2C00A952BB /* _Label Lexical Unit.swift in Sources */,
 				4FA523E321B4278E00BE1FF2 /* Output Directive.swift in Sources */,
 				4F8D1B3925126700002E2BE9 /* Script Editor.swift in Sources */,
@@ -578,6 +585,7 @@
 				4F85A2E921A9C42E0061E505 /* Source Error.swift in Sources */,
 				4F391DEB254A4B2F00945B7E /* Literal Lexical Unit.swift in Sources */,
 				4FA523DD21B423DD00BE1FF2 /* Directive.swift in Sources */,
+				4F87EFA8254E033500B3D9A7 /* Translation Unit.swift in Sources */,
 				4FFEB7E5219C75DB0049D0A5 /* Arithmetic Command.swift in Sources */,
 				4F30B52F21A218DC00BDEDCC /* Symbolic Address.swift in Sources */,
 				4FA523DF21B4263800BE1FF2 /* Macro.swift in Sources */,

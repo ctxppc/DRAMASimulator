@@ -10,6 +10,10 @@ struct StatementTerminatorLexicalUnit : LexicalUnit {
 	
 	// See protocol.
 	init(captures: [Substring], sourceRange: SourceRange) {
+		self.init(sourceRange: sourceRange)
+	}
+	
+	init(sourceRange: SourceRange) {
 		self.sourceRange = sourceRange
 	}
 	
