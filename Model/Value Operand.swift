@@ -12,6 +12,22 @@ struct ValueOperand {
 	var index: Index?
 	struct Index {
 		
+		init(indexRegister: Register, modification: ValueOperand.Index.Modification? = nil) {
+			self.indexRegister = indexRegister
+			self.modification = modification
+		}
+		
+		init?(from indexRegister: CommandStatement.Argument.Address.IndexRegister) {
+			switch indexRegister {
+				case .none:								return nil
+				case .reading(let register):			self.init(indexRegister: register, modification: nil)
+				case .preincrementing(let register):	self.init(indexRegister: register, modification: .preincrement)
+				case .postincrementing(let register):	self.init(indexRegister: register, modification: .postincrement)
+				case .predecrementing(let register):	self.init(indexRegister: register, modification: .predecrement)
+				case .postdecrementing(let register):	self.init(indexRegister: register, modification: .postdecrement)
+			}
+		}
+		
 		/// The register that contains the index.
 		var indexRegister: Register
 		

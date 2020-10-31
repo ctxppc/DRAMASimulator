@@ -9,14 +9,13 @@ struct IdentifierLexicalUnit : LexicalUnit {
 	static let pattern = try! NSRegularExpression(pattern: #"\w[\w\d]*"#, options: .caseInsensitive)
 	
 	// See protocol.
-	init?(captures: [Substring], sourceRange: SourceRange) {
-		guard let instruction = Instruction(rawValue: .init(captures[1])) else { return nil }
-		self.instruction = instruction
+	init(captures: [Substring], sourceRange: SourceRange) {
+		self.identifier = .init(captures[1])
 		self.sourceRange = sourceRange
 	}
 	
 	/// The instruction.
-	let instruction: Instruction
+	let identifier: String
 	
 	// See protocol.
 	let sourceRange: SourceRange

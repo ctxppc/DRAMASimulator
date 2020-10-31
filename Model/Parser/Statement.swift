@@ -2,17 +2,8 @@
 
 import Foundation
 
-/// A construct that can be converted into words.
-protocol Statement {
-	
-	/// Creates a statement from the lexical units extracted by given lexer.
-	///
-	/// Modifications to `lexer` should be discarded if this initialiser throws an error.
-	///
-	/// - Parameter lexer: The lexer with which to extract lexical units.
-	///
-	/// - Throws: An error if the statement couldn't be parsed.
-	init?(from lexer: inout Lexer) throws
+/// A construct that represents a command or some other value to be stored in memory.
+protocol Statement : Construct {
 	
 	/// The lexical units that form the statement, in source order.
 	///
