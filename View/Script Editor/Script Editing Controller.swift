@@ -55,21 +55,56 @@ final class ScriptEditingController : UIViewController {
 		formattedText.beginEditing()
 		defer { formattedText.endEditing() }
 		
-		func addAttribute<V>(_ attribute: NSAttributedString.Key, value: V, range: SourceRange) {
-			formattedText.addAttribute(attribute, value: value, range: NSRange(range, in: script.sourceText))
+		func applyAttribute<V>(_ attribute: NSAttributedString.Key, value: V, on unit: LexicalUnit) {
+			formattedText.addAttribute(attribute, value: value, range: NSRange(unit.sourceRange, in: script.sourceText))
 		}
 		
-		func mark(_ range: SourceRange?, _ attribute: NSAttributedString.Key = .foregroundColor, in colour: UIColor) {
-			guard let range = range else { return }
-			addAttribute(attribute, value: colour, range: range)
+		func applyAttribute<V, Units : Sequence>(_ attribute: NSAttributedString.Key, value: V, onAll units: Units) where Units.Element == LexicalUnit {
+			for unit in units {
+				applyAttribute(attribute, value: value, on: unit)
+			}
 		}
 		
-		// TODO: Implement highlighting.
+		func mark(unit: LexicalUnit, attribute: NSAttributedString.Key = .foregroundColor, colour: UIColor) {
+			applyAttribute(attribute, value: colour, on: unit)
+		}
 		
-		if case .sourceErrors(let unrecognisedSources) = script.product {
-			for source in unrecognisedSources {
-				addAttribute(.underlineStyle, value: ([.single, .patternDot, .byWord] as NSUnderlineStyle).rawValue, range: source.sourceRange)
-				addAttribute(.underlineColor, value: UIColor.red, range: source.sourceRange)
+		func mark<Units : Sequence>(units: Units, attribute: NSAttributedString.Key = .foregroundColor, colour: UIColor) where Units.Element == LexicalUnit {
+			for unit in units {
+				mark(unit: unit, attribute: attribute, colour: colour)
+			}
+		}
+		
+		for element in script.translationUnit.elements {
+			switch element {
+				
+				case .statement(let statement as CommandStatement):
+				mark(unit: statement.instructionLexicalUnit, colour: .command)
+				mark(units: statement.argumentLexicalUnits, colour: .argument)
+					
+				case .statement(let statement as AllocationStatement):
+				mark(unit: statement.directiveLexicalUnit, colour: .command)
+				mark(unit: statement.sizeLexicalUnit, colour: .argument)
+					
+				case .statement(let statement as ValueStatement):
+				mark(units: statement.lexicalUnits, colour: .argument)
+					
+				case .statement:
+				break
+					
+				case .label(let label):
+				mark(units: label.lexicalUnits, colour: .label)
+				
+				case .comment(let comment):
+				mark(unit: comment, colour: .comment)
+					 
+				case .programTerminator(let terminator):
+				mark(unit: terminator, colour: .comment)
+					
+				case .unrecognisedSource(let source):
+				applyAttribute(.underlineStyle, value: ([.single, .patternDot, .byWord] as NSUnderlineStyle).rawValue, onAll: source.lexicalUnits)
+				mark(units: source.lexicalUnits, attribute: .underlineColor, colour: .red)
+				
 			}
 		}
 		
@@ -186,9 +221,9 @@ protocol ScriptEditingControllerDelegate : class {
 
 fileprivate extension UIColor {
 	static let executing = UIColor(named: "Executing") !! "Colour asset not found"
-	static let mnemonic = #colorLiteral(red: 0, green: 0.3289999962, blue: 0.5749999881, alpha: 1)
+	static let command = #colorLiteral(red: 0, green: 0.3289999962, blue: 0.5749999881, alpha: 1)
 	static let addressingMode = #colorLiteral(red: 0.5809999704, green: 0.1289999932, blue: 0.5749999881, alpha: 1)
-	static let operand = #colorLiteral(red: 0, green: 0.5690000057, blue: 0.5749999881, alpha: 1)
+	static let argument = #colorLiteral(red: 0, green: 0.5690000057, blue: 0.5749999881, alpha: 1)
 	static let label = #colorLiteral(red: 0.5809999704, green: 0.08799999952, blue: 0.3190000057, alpha: 1)
 	static let comment = #colorLiteral(red: 0.476000011, green: 0.476000011, blue: 0.476000011, alpha: 1)
 }

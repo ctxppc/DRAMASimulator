@@ -11,6 +11,8 @@ struct AllocationStatement : Statement {
 		guard let sizeUnit = parser.consume(LiteralLexicalUnit.self) else { throw Error.invalidSize }
 		self.size = sizeUnit.value
 		self.lexicalUnits = .init(parser.consumedLexicalUnits)
+		self.directiveLexicalUnit = directiveUnit
+		self.sizeLexicalUnit = sizeUnit
 	}
 	
 	/// The size to allocate.
@@ -18,6 +20,12 @@ struct AllocationStatement : Statement {
 	
 	// See protocol.
 	let lexicalUnits: [LexicalUnit]
+	
+	/// The lexical unit representing the directive.
+	let directiveLexicalUnit: IdentifierLexicalUnit
+	
+	/// The lexical unit representing the size argument.
+	let sizeLexicalUnit: LiteralLexicalUnit
 	
 	// See protocol.
 	let wordCount = 1

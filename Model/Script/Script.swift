@@ -31,6 +31,9 @@ struct Script {
 				
 				case .unrecognisedSource(let source):
 				unrecognisedSources.append(source)
+					
+				case .comment, .programTerminator:
+				continue
 				
 			}
 		}

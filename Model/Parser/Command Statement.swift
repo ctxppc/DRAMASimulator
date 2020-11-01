@@ -16,10 +16,14 @@ struct CommandStatement : Statement {
 		
 		self.addressingMode = parser.consume(AddressingModeLexicalUnit.self)?.addressingMode
 		
+		var argumentLexicalUnits: [LexicalUnit] = []
 		if let firstArgument = try? parser.parse(Argument.self) {
 			var arguments = [firstArgument]
+			argumentLexicalUnits.append(contentsOf: firstArgument.lexicalUnits)
 			while parser.consume(ArgumentSeparatorLexicalUnit.self) != nil {
-				arguments.append(try parser.parse(Argument.self))
+				let argument = try parser.parse(Argument.self)
+				arguments.append(argument)
+				argumentLexicalUnits.append(contentsOf: argument.lexicalUnits)
 			}
 			self.arguments = arguments
 		} else {
@@ -27,6 +31,8 @@ struct CommandStatement : Statement {
 		}
 		
 		self.lexicalUnits = .init(parser.consumedLexicalUnits)
+		self.instructionLexicalUnit = instructionUnit
+		self.argumentLexicalUnits = argumentLexicalUnits
 		
 	}
 	
@@ -41,6 +47,12 @@ struct CommandStatement : Statement {
 	
 	// See protocol.
 	let lexicalUnits: [LexicalUnit]
+	
+	/// The lexical unit representing the instruction.
+	let instructionLexicalUnit: IdentifierLexicalUnit
+	
+	/// The lexical units representing the arguments.
+	let argumentLexicalUnits: [LexicalUnit]
 	
 	// See protocol.
 	let wordCount = 1
@@ -57,9 +69,9 @@ struct CommandStatement : Statement {
 			}
 			
 			case 1:
-			if case .register(let register) = arguments[0], let type = type as? UnaryRegisterCommand.Type {
+			if case .register(let register, lexicalUnit: _) = arguments[0], let type = type as? UnaryRegisterCommand.Type {
 				return try type.init(instruction: instruction, register: register)
-			} else if case .address(let address) = arguments[0], let type = type as? AddressCommand.Type {
+			} else if case .address(let address, lexicalUnits: _) = arguments[0], let type = type as? AddressCommand.Type {
 				return try type.init(
 					instruction:	instruction,
 					addressingMode:	addressingMode,
@@ -71,9 +83,13 @@ struct CommandStatement : Statement {
 			}
 				
 			case 2:
-			if case .register(let first) = arguments[0], case .register(let second) = arguments[1], let type = type as? BinaryRegisterCommand.Type {
+			if case .register(let first, lexicalUnit: _) = arguments[0],
+			   case .register(let second, lexicalUnit: _) = arguments[1],
+			   let type = type as? BinaryRegisterCommand.Type {
 				return try type.init(instruction: instruction, primaryRegister: first, secondaryRegister: second)
-			} else if case .register(let register) = arguments[0], case .address(let address) = arguments[1], let type = type as? RegisterAddressCommand.Type {
+			} else if case .register(let register, lexicalUnit: _) = arguments[0],
+					  case .address(let address, lexicalUnits: _) = arguments[1],
+					  let type = type as? RegisterAddressCommand.Type {
 				return try type.init(
 					instruction:	instruction,
 					addressingMode:	addressingMode,
@@ -83,7 +99,9 @@ struct CommandStatement : Statement {
 						index:	ValueOperand.Index(from: address.indexRegister)
 					)
 				)
-			} else if case .condition(let condition) = arguments[0], case .address(let address) = arguments[1], let type = type as? ConditionAddressCommand.Type {
+			} else if case .condition(let condition, lexicalUnit: _) = arguments[0],
+					  case .address(let address, lexicalUnits: _) = arguments[1],
+					  let type = type as? ConditionAddressCommand.Type {
 				return try type.init(
 					instruction:	instruction,
 					addressingMode:	addressingMode,

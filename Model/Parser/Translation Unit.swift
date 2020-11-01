@@ -13,9 +13,7 @@ struct TranslationUnit : Construct {
 			
 			guard parser.hasUnprocessedLexicalUnits else { return nil }
 			
-			if parser.consume(CommentLexicalUnit.self) != nil
-				|| parser.consume(StatementTerminatorLexicalUnit.self) != nil
-				|| parser.consume(ProgramTerminatorLexicalUnit.self) != nil {
+			if parser.consume(StatementTerminatorLexicalUnit.self) != nil {
 				return parseNextElement()
 			}
 			
@@ -27,6 +25,10 @@ struct TranslationUnit : Construct {
 				return .statement(allocStatement)
 			} else if let label = try? parser.parse(LabelConstruct.self) {
 				return .label(label)
+			} else if let comment = parser.consume(CommentLexicalUnit.self) {
+				return .comment(comment)
+			} else if let terminator = parser.consume(ProgramTerminatorLexicalUnit.self) {
+				return .programTerminator(terminator)
 			} else {
 				let error = parser.deepestError !! "Expected deepest error"
 				let units = parser.consume(until: {
@@ -55,6 +57,8 @@ struct TranslationUnit : Construct {
 	enum Element {
 		case statement(Statement)
 		case label(LabelConstruct)
+		case comment(CommentLexicalUnit)
+		case programTerminator(ProgramTerminatorLexicalUnit)
 		case unrecognisedSource(UnrecognisedSource)
 	}
 	

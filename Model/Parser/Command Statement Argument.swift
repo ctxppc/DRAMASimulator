@@ -8,13 +8,13 @@ extension CommandStatement {
 	enum Argument {
 		
 		/// A register argument.
-		case register(Register)
+		case register(Register, lexicalUnit: RegisterLexicalUnit)
 		
 		/// An address argument.
-		case address(Address)
+		case address(Address, lexicalUnits: [LexicalUnit])
 		
 		/// A condition argument.
-		case condition(Condition)
+		case condition(Condition, lexicalUnit: IdentifierLexicalUnit)
 		
 		/// An address argument to a command.
 		struct Address {
@@ -52,6 +52,15 @@ extension CommandStatement {
 			
 		}
 		
+		/// The lexical units forming the argument.
+		var lexicalUnits: [LexicalUnit] {
+			switch self {
+				case .register(_, lexicalUnit: let unit):	return [unit]
+				case .address(_, lexicalUnits: let units):	return units
+				case .condition(_, lexicalUnit: let unit):	return [unit]
+			}
+		}
+		
 	}
 	
 }
@@ -85,9 +94,10 @@ extension CommandStatement.Argument.Address {
 extension CommandStatement.Argument : Construct {
 	init(from parser: inout Parser) throws {
 		if let unit = parser.consume(RegisterLexicalUnit.self) {
-			self = .register(unit.register)
+			self = .register(unit.register, lexicalUnit: unit)
 		} else {
-			self = .address(try parser.parse(Address.self))
+			let address = try parser.parse(Address.self)
+			self = .address(address, lexicalUnits: .init(parser.consumedLexicalUnits))
 		}
 	}
 }
