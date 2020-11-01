@@ -5,6 +5,8 @@ import Foundation
 /// A value that parses a construct from lexical units.
 ///
 /// Parsing is done in a top-down fashion, with any subconstructs parsed by subparsers and attempting multiple construct types in contexts where multiple are possible.
+///
+/// A parser stores the deepest error thrown during parsing.
 struct Parser {
 	
 	/// Creates a parser from given source text.
@@ -16,6 +18,7 @@ struct Parser {
 	init(lexicalUnits: LexicalUnits) {
 		self.lexicalUnits = lexicalUnits
 		self.consumedLexicalUnitsIndexRange = lexicalUnits.startIndex..<lexicalUnits.startIndex
+		self.lexicalUnitIndexOfDeepestError = lexicalUnits.startIndex
 	}
 	
 	/// The lexical units available to the parser.
@@ -45,6 +48,12 @@ struct Parser {
 		!lexicalUnits[indexOfNextLexicalUnit...].isEmpty
 	}
 	
+	/// The error thrown at the deepest location, or `nil` if no errors have been thrown.
+	private(set) var deepestError: Error?
+	
+	/// The index of the next consumable lexical unit when `deepestError` was thrown.
+	private var lexicalUnitIndexOfDeepestError: LexicalUnits.Index
+	
 	/// Parses a construct of given type.
 	///
 	/// The parser is unaffected if the construct could not be parsed.
@@ -55,10 +64,18 @@ struct Parser {
 	///
 	/// - Returns: A construct.
 	mutating func parse<C : Construct>(_ type: C.Type) throws -> C {
-		var subparser = makeSubparser()
-		let construct = try C(from: &subparser)
-		closeSubparser(subparser)
-		return construct
+		do {
+			var subparser = makeSubparser()
+			let construct = try C(from: &subparser)
+			closeSubparser(subparser)
+			return construct
+		} catch {
+			if lexicalUnitIndexOfDeepestError < indexOfNextLexicalUnit {
+				lexicalUnitIndexOfDeepestError = indexOfNextLexicalUnit
+				deepestError = error
+			}
+			throw error
+		}
 	}
 	
 	/// Returns a parser for parsing a subconstruct.
@@ -84,6 +101,20 @@ struct Parser {
 		guard let unit = lexicalUnits[indexOfNextLexicalUnit...].first as? Unit else { return nil }
 		lexicalUnits.formIndex(after: &indexOfNextLexicalUnit)
 		return unit
+	}
+	
+	/// Consumes lexical units until a lexical unit is reached for which the given predicate returns `true`.
+	///
+	/// The lexical unit for which `predicate` returns `true` is not consumed.
+	///
+	/// - Parameter predicate: A function that determines whether to consume the given lexical unit and continue.
+	///
+	/// - Returns: The consumed lexical units.
+	mutating func consume(until predicate: (LexicalUnit) -> Bool) -> LexicalUnits.SubSequence {
+		let indexOfFirstExcludedIndex = lexicalUnits.firstIndex(where: predicate) ?? lexicalUnits.endIndex
+		let consumed = lexicalUnits[indexOfNextLexicalUnit..<indexOfFirstExcludedIndex]
+		indexOfNextLexicalUnit = indexOfFirstExcludedIndex
+		return consumed
 	}
 	
 }

@@ -57,7 +57,7 @@ struct SymbolicAddress {
 		case symbol(String, negated: Bool)
 		
 		/// Returns the effective address given a mapping of symbols to addresses.
-		func effectiveAddress(addressesBySymbol: [Script.Symbol : Int]) throws -> Int {
+		func effectiveAddress(addressesBySymbol: [_Script.Symbol : Int]) throws -> Int {
 			switch self {
 				
 				case .literal(let value, negated: let negated):
@@ -73,14 +73,14 @@ struct SymbolicAddress {
 	}
 	
 	/// Returns the effective address given a mapping of symbols to addresses.
-	func effectiveAddress(addressesBySymbol: [Script.Symbol : Int]) throws -> Int {
+	func effectiveAddress(addressesBySymbol: [_Script.Symbol : Int]) throws -> Int {
 		return try terms.map { try $0.effectiveAddress(addressesBySymbol: addressesBySymbol) }.reduce(0, +)
 	}
 	
 	enum Error : LocalizedError {
 		
 		/// An undefined symbol is specified in a symbolic address.
-		case undefinedSymbol(Script.Symbol)
+		case undefinedSymbol(_Script.Symbol)
 		
 		// See protocol.
 		var errorDescription: String? {

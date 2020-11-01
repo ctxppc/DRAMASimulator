@@ -10,7 +10,7 @@ struct Document : FileDocument {
 	static let readableContentTypes = [UTType("me.ctxppc.drama.script") !! "Expected registered UTI"]
 	
 	/// Creates a document with given script and machine.
-	init(script: Script = .init(from: "")) {
+	init(script: _Script = .init(from: "")) {
 		self.script = script
 		timeline = Timeline(machine: initialMachine ?? .init())
 	}
@@ -34,7 +34,7 @@ struct Document : FileDocument {
 	}
 	
 	/// The document's script.
-	var script: Script {
+	var script: _Script {
 		didSet {
 			if let machine = initialMachine {
 				timeline = Timeline(machine: machine)

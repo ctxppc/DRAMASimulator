@@ -1,27 +1,44 @@
 // DRAMASimulator © 2020 Constantino Tsarouhas
 
+import DepthKit
 import Foundation
 
 /// A sequence of statements and labels that represent a program.
 struct TranslationUnit : Construct {
 	
 	// See protocol.
-	init(from parser: inout Parser) throws {
+	init(from parser: inout Parser) {
 		
-		func parseNextElement() throws -> Element? {
+		func parseNextElement() -> Element? {
 			
 			guard parser.hasUnprocessedLexicalUnits else { return nil }
 			
-			do {
-				return .statement(try parser.parse(CommandStatement.self))
-			} catch {
-				TODO.unimplemented
+			if parser.consume(CommentLexicalUnit.self) != nil
+				|| parser.consume(StatementTerminatorLexicalUnit.self) != nil
+				|| parser.consume(ProgramTerminatorLexicalUnit.self) != nil {
+				return parseNextElement()
+			}
+			
+			if let command = try? parser.parse(CommandStatement.self) {
+				return .statement(command)
+			} else if let valueStatement = try? parser.parse(ValueStatement.self) {
+				return .statement(valueStatement)
+			} else if let allocStatement = try? parser.parse(AllocationStatement.self) {
+				return .statement(allocStatement)
+			} else if let label = try? parser.parse(LabelConstruct.self) {
+				return .label(label)
+			} else {
+				let error = parser.deepestError !! "Expected deepest error"
+				let units = parser.consume(until: {
+					$0 is CommentLexicalUnit || $0 is StatementTerminatorLexicalUnit || $0 is ProgramTerminatorLexicalUnit
+				})
+				return .unrecognisedSource(units, error)
 			}
 			
 		}
 		
 		var elements: [Element] = []
-		while let element = try parseNextElement() {
+		while let element = parseNextElement() {
 			elements.append(element)
 		}
 		
@@ -38,7 +55,7 @@ struct TranslationUnit : Construct {
 	enum Element {
 		case statement(Statement)
 		case label(LabelConstruct)
-		case unrecognisedSource(UnrecognisedLexicalUnit)
+		case unrecognisedSource(ArraySlice<LexicalUnit>, Error)
 	}
 	
 	/// The known statement types.

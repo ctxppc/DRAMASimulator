@@ -24,6 +24,18 @@ struct Program {
 	/// - Parameter statementIndicesBySymbol: A mapping from symbols to indices in the `statements` array.
 	///
 	/// - Throws: An error if an undefined symbol is referenced.
+	init(statements: [Statement], statementIndicesBySymbol: [String : Int]) throws {
+		TODO.unimplemented
+	}
+	
+	/// Assembles a program with given statements and mapping from symbols to statement indices.
+	///
+	/// - Requires: Every statement index in `statementIndicesBySymbol` is a valid index in the `statements` array.
+	///
+	/// - Parameter statements: The program's statements.
+	/// - Parameter statementIndicesBySymbol: A mapping from symbols to indices in the `statements` array.
+	///
+	/// - Throws: An error if an undefined symbol is referenced.
 	init(statements: [_Statement], statementIndicesBySymbol: [String : Int]) throws {
 		
 		var statementIndicesByAddress: [Int] = []
@@ -38,7 +50,7 @@ struct Program {
 		
 		guard addressOfStatement < AddressWord.unsignedUpperBound else { throw AssemblyError.overflow }
 		
-		var addressesBySymbol: [Script.Symbol : Int] = [:]
+		var addressesBySymbol: [_Script.Symbol : Int] = [:]
 		for (symbol, statementIndex) in statementIndicesBySymbol {
 			guard rawAddressesByStatement.indices.contains(statementIndex) else { throw Program.AssemblyError.danglingSymbol(symbol: symbol) }
 			addressesBySymbol[symbol] = rawAddressesByStatement[statementIndex]

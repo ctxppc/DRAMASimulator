@@ -7,7 +7,7 @@ import UIKit
 final class ScriptEditingController : UIViewController {
 	
 	/// The presented script.
-	var script: Script = .init() {
+	var script: _Script = .init() {
 		didSet {
 			guard script.sourceText != oldValue.sourceText else { return }
 			updatePresentedScript()
