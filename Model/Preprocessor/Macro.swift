@@ -5,32 +5,6 @@ import Foundation
 /// A function-like template that can be invoked from source text, optionally from within another macro, and that expands in place.
 struct Macro {
 	
-	/// A regular expression matching macros.
-	static let regularExpression = NSRegularExpression(anchored: false, .macroPattern)
-	
-	/// Creates a macro from given regular expression match.
-	///
-	/// Groups: name, comma-separated parameter names (opt.), body without leading and trailing whitespace
-	init(match: NSTextCheckingResult, in source: String) {
-		
-		fullSourceRange = match.range(in: source)
-		
-		nameSourceRange = match.range(at: 1, in: source)!
-		name = source[nameSourceRange]
-		
-		bodySourceRange = match.range(at: 3, in: source)!
-		body = source[bodySourceRange]
-		
-		parametersSourceRange = match.range(at: 2, in: source)
-		parameters = parametersSourceRange.flatMap { range in
-			source[range].components(separatedBy: ",")
-		} ?? []
-		
-		directives = []					// TODO
-		directiveIndicesBySymbol = [:]	// TODO
-		
-	}
-	
 	/// The macro's name.
 	let name: Substring
 	

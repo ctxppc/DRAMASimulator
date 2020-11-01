@@ -193,7 +193,7 @@ struct DocumentViewPreviews : PreviewProvider {
 	
 }
 
-let templateScript = _Script(from:
+let templateScript = Script(from:
 	"""
 	HIA.w R0, 20
 	OPT R0, R1

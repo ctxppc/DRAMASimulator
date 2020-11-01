@@ -5,14 +5,14 @@ import SwiftUI
 struct ScriptEditor : UIViewControllerRepresentable {
 	
 	/// Creates an editor for given script.
-	init(script: Binding<_Script>, programCounter: Binding<AddressWord>) {
+	init(script: Binding<Script>, programCounter: Binding<AddressWord>) {
 		_script = script
 		_programCounter = programCounter
 	}
 	
 	/// The script being edited.
 	@Binding
-	private var script: _Script
+	private var script: Script
 	
 	/// The program counter.
 	@Binding
@@ -40,13 +40,13 @@ struct ScriptEditor : UIViewControllerRepresentable {
 	class Coordinator : NSObject, ScriptEditingControllerDelegate {
 		
 		/// Creates a coordinator for editing given script.
-		init(script: Binding<_Script>) {
+		init(script: Binding<Script>) {
 			self._script = script
 		}
 		
 		/// The script being edited.
 		@Binding
-		private var script: _Script
+		private var script: Script
 		
 		func sourceTextDidChange(on controller: ScriptEditingController) {
 			script = controller.script

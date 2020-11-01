@@ -7,7 +7,7 @@ import UIKit
 final class ScriptEditingController : UIViewController {
 	
 	/// The presented script.
-	var script: _Script = .init() {
+	var script: Script = .init(from: "") {
 		didSet {
 			guard script.sourceText != oldValue.sourceText else { return }
 			updatePresentedScript()
@@ -64,40 +64,12 @@ final class ScriptEditingController : UIViewController {
 			addAttribute(attribute, value: colour, range: range)
 		}
 		
-		for unit in script.lexicalUnits {
-			
-			if let unit = unit as? _CommandStatement {
-				mark(unit.instructionSourceRange, in: .mnemonic)
-			}
-			
-			switch unit {
-				
-				case let unit as RegisterCommandStatement:
-				mark(unit.primaryRegisterSourceRange.fullRange, in: .operand)
-				mark(unit.secondaryRegisterSourceRange?.fullRange, in: .operand)
-				
-				case let unit as AddressCommandStatement:
-				mark(unit.argument?.sourceRange, in: .operand)
-				mark(unit.baseValueSourceRange, in: .operand)
-				
-				case let unit as _LabelLexicalUnit:
-				addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: unit.sourceRange)
-				mark(unit.sourceRange, in: .label)
-				
-				case let unit as _CommentLexicalUnit:
-				mark(unit.sourceRange, in: .comment)
-				
-				default:
-				break	// no need to handle every possible type of unit
-				
-			}
-			
-		}
+		// TODO: Implement highlighting.
 		
-		if case .sourceErrors(let errors) = script.product {
-			for error in errors {
-				addAttribute(.underlineStyle, value: ([.single, .patternDot, .byWord] as NSUnderlineStyle).rawValue, range: error.sourceRange)
-				addAttribute(.underlineColor, value: UIColor.red, range: error.sourceRange)
+		if case .sourceErrors(let unrecognisedSources) = script.product {
+			for source in unrecognisedSources {
+				addAttribute(.underlineStyle, value: ([.single, .patternDot, .byWord] as NSUnderlineStyle).rawValue, range: source.sourceRange)
+				addAttribute(.underlineColor, value: UIColor.red, range: source.sourceRange)
 			}
 		}
 		
@@ -190,7 +162,7 @@ fileprivate extension String {
 	/// Determines the range of the indentation used on the line containing the character at given position.
 	func rangeOfIndentation(at index: String.Index) -> SourceRange {
 		let match = indentationPattern.matches(in: self, options: [], range: NSRange(..<index, in: self)).last !! "Expected a match"
-		return match.range(at: 1, in: self) !! "Expected group in match"
+		return SourceRange(match.range(at: 1), in: self) !! "Expected group in match"
 	}
 	
 	/// Determines the indentation used on the line containing the character at given position.

@@ -25,18 +25,6 @@ struct Program {
 	///
 	/// - Throws: An error if an undefined symbol is referenced.
 	init(statements: [Statement], statementIndicesBySymbol: [String : Int]) throws {
-		TODO.unimplemented
-	}
-	
-	/// Assembles a program with given statements and mapping from symbols to statement indices.
-	///
-	/// - Requires: Every statement index in `statementIndicesBySymbol` is a valid index in the `statements` array.
-	///
-	/// - Parameter statements: The program's statements.
-	/// - Parameter statementIndicesBySymbol: A mapping from symbols to indices in the `statements` array.
-	///
-	/// - Throws: An error if an undefined symbol is referenced.
-	init(statements: [_Statement], statementIndicesBySymbol: [String : Int]) throws {
 		
 		var statementIndicesByAddress: [Int] = []
 		var rawAddressesByStatement: [Int] = []
@@ -50,7 +38,7 @@ struct Program {
 		
 		guard addressOfStatement < AddressWord.unsignedUpperBound else { throw AssemblyError.overflow }
 		
-		var addressesBySymbol: [_Script.Symbol : Int] = [:]
+		var addressesBySymbol: [Script.Symbol : Int] = [:]
 		for (symbol, statementIndex) in statementIndicesBySymbol {
 			guard rawAddressesByStatement.indices.contains(statementIndex) else { throw Program.AssemblyError.danglingSymbol(symbol: symbol) }
 			addressesBySymbol[symbol] = rawAddressesByStatement[statementIndex]
@@ -73,14 +61,14 @@ struct Program {
 	let words: [MachineWord]
 	
 	/// The program's statements.
-	let statements: [_Statement]
+	let statements: [Statement]
 	
 	/// Returns the statement that provided the word at given address.
 	///
 	/// - Parameter address: The memory address being queried.
 	///
 	/// - Returns: The statement that provided the word at `address`, or `nil` if the program doesn't affect the location at `address`.
-	func statement(at address: AddressWord) -> _Statement? {
+	func statement(at address: AddressWord) -> Statement? {
 		statementIndicesByAddress.indices.contains(address.rawValue) ? statements[statementIndicesByAddress[address.rawValue]] : nil
 	}
 	

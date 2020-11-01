@@ -19,7 +19,7 @@ struct Script {
 		
 		var statements: [Statement] = []
 		var statementIndicesBySymbol: [Symbol : Int] = [:]
-		var sourceErrors: [Error] = []
+		var unrecognisedSources: [TranslationUnit.UnrecognisedSource] = []
 		for element in translationUnit.elements {
 			switch element {
 				
@@ -29,8 +29,8 @@ struct Script {
 				case .label(let label):
 				statementIndicesBySymbol[label.symbol] = statements.endIndex
 				
-				case .unrecognisedSource(_, let error):
-				sourceErrors.append(error)
+				case .unrecognisedSource(let source):
+				unrecognisedSources.append(source)
 				
 			}
 		}
@@ -38,14 +38,14 @@ struct Script {
 		self.statements = statements
 		self.statementIndicesBySymbol = statementIndicesBySymbol
 		
-		if sourceErrors.isEmpty {
+		if unrecognisedSources.isEmpty {
 			do {
 				self.product = .program(try Program(statements: statements, statementIndicesBySymbol: statementIndicesBySymbol))
 			} catch {
 				self.product = .programError(error)
 			}
 		} else {
-			self.product = .sourceErrors(sourceErrors)
+			self.product = .sourceErrors(unrecognisedSources)
 		}
 		
 	}
@@ -74,17 +74,17 @@ struct Script {
 		case program(Program)
 		
 		/// A program couldn't be assembled due to errors in the source text.
-		case sourceErrors([Error])
+		case sourceErrors([TranslationUnit.UnrecognisedSource])
 		
 		/// A program couldn't be assembled due to a non-source error.
 		case programError(Error)
 		
-		/// Any errors in the programs.
+		/// Any errors in the script.
 		var errors: [Error] {
 			switch self {
-				case .program:					return []
-				case .sourceErrors(let errors):	return errors
-				case .programError(let error):	return [error]
+				case .program:						return []
+				case .sourceErrors(let sources):	return sources.map(\.error)
+				case .programError(let error):		return [error]
 			}
 		}
 		

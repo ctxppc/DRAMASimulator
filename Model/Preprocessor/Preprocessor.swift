@@ -7,17 +7,7 @@ struct Preprocessor {
 	
 	/// Initialises and runs a preprocessor on given source text.
 	init(from text: String) throws {
-		
-		input = text
-		indexOfFirstUnprocessedCharacter = input.startIndex
-		
-		macros = Macro.regularExpression.matches(in: text, range: NSRange(text.startIndex..<text.endIndex, in: text)).map { .init(match: $0, in: text) }
-		substitutions = macros.map { .init(range: $0.fullSourceRange, newText: "") }
-		
-		macroInvocations = []	// TODO
-		
-		// TODO: Run preprocessor.
-		
+		TODO.unimplemented
 	}
 	
 	/// The source text that is the input to the preprocessor.

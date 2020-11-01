@@ -32,7 +32,7 @@ struct TranslationUnit : Construct {
 				let units = parser.consume(until: {
 					$0 is CommentLexicalUnit || $0 is StatementTerminatorLexicalUnit || $0 is ProgramTerminatorLexicalUnit
 				})
-				return .unrecognisedSource(units, error)
+				return .unrecognisedSource(.init(lexicalUnits: units, error: error))
 			}
 			
 		}
@@ -55,7 +55,20 @@ struct TranslationUnit : Construct {
 	enum Element {
 		case statement(Statement)
 		case label(LabelConstruct)
-		case unrecognisedSource(ArraySlice<LexicalUnit>, Error)
+		case unrecognisedSource(UnrecognisedSource)
+	}
+	
+	struct UnrecognisedSource {
+		
+		let lexicalUnits: ArraySlice<LexicalUnit>
+		let error: Error
+		
+		/// The source range.
+		var sourceRange: SourceRange {
+			guard let first = lexicalUnits.first, let last = lexicalUnits.last else { preconditionFailure("No lexical units") }
+			return first.sourceRange.lowerBound..<last.sourceRange.upperBound
+		}
+		
 	}
 	
 	/// The known statement types.
