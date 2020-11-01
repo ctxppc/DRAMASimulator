@@ -106,7 +106,7 @@ struct CommandStatement : Statement {
 	
 	// See protocol.
 	func words(addressesBySymbol: [String : Int]) throws -> AnyCollection<MachineWord> {
-		TODO.unimplemented
+		.init(CollectionOfOne(try CommandWord(command(addressesBySymbol: addressesBySymbol)).base))
 	}
 	
 	/// An error parsing or lowering a command statement.
