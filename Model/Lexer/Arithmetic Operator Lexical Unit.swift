@@ -6,7 +6,7 @@ import Foundation
 struct ArithmeticOperatorLexicalUnit : LexicalUnit {
 	
 	// See protocol.
-	static let pattern = try! NSRegularExpression(pattern: #"[+-*/]"#)
+	static let pattern = try! NSRegularExpression(pattern: #"[+\-*/]"#)
 	
 	// See protocol.
 	init?(captures: [Substring], sourceRange: SourceRange) {

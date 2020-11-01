@@ -70,7 +70,7 @@ struct Parser {
 			closeSubparser(subparser)
 			return construct
 		} catch {
-			if lexicalUnitIndexOfDeepestError < indexOfNextLexicalUnit {
+			if deepestError == nil || lexicalUnitIndexOfDeepestError < indexOfNextLexicalUnit {
 				lexicalUnitIndexOfDeepestError = indexOfNextLexicalUnit
 				deepestError = error
 			}
@@ -111,7 +111,7 @@ struct Parser {
 	///
 	/// - Returns: The consumed lexical units.
 	mutating func consume(until predicate: (LexicalUnit) -> Bool) -> LexicalUnits.SubSequence {
-		let indexOfFirstExcludedIndex = lexicalUnits.firstIndex(where: predicate) ?? lexicalUnits.endIndex
+		let indexOfFirstExcludedIndex = lexicalUnits[indexOfNextLexicalUnit...].firstIndex(where: predicate) ?? lexicalUnits.endIndex
 		let consumed = lexicalUnits[indexOfNextLexicalUnit..<indexOfFirstExcludedIndex]
 		indexOfNextLexicalUnit = indexOfFirstExcludedIndex
 		return consumed

@@ -10,7 +10,7 @@ struct IdentifierLexicalUnit : LexicalUnit {
 	
 	// See protocol.
 	init(captures: [Substring], sourceRange: SourceRange) {
-		self.identifier = .init(captures[1])
+		self.identifier = .init(captures[0])
 		self.sourceRange = sourceRange
 	}
 	
