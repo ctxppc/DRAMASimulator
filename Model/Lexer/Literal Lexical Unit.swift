@@ -10,7 +10,7 @@ struct LiteralLexicalUnit : LexicalUnit {
 	
 	// See protocol.
 	init?(captures: [Substring], sourceRange: SourceRange) {
-		guard let value = Int(captures[1]) else { return nil }
+		guard let value = Int(captures[0]) else { return nil }
 		self.value = value
 		self.sourceRange = sourceRange
 	}
