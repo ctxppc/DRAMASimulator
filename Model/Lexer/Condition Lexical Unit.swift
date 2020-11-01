@@ -10,7 +10,8 @@ struct ConditionLexicalUnit : LexicalUnit {
 	
 	// See protocol.
 	init?(captures: [Substring], sourceRange: SourceRange) {
-		guard let condition = Condition(rawValue: .init(captures[0])) else { return nil }
+		let rawValue = String(captures[0])
+		guard let condition = Condition(rawValue: rawValue) ?? Condition(rawComparisonValue: rawValue) else { return nil }
 		self.condition = condition
 		self.sourceRange = sourceRange
 	}

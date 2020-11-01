@@ -65,9 +65,10 @@ struct Parser {
 	/// - Returns: A construct.
 	mutating func parse<C : Construct>(_ type: C.Type) throws -> C {
 		do {
-			var subparser = makeSubparser()
+			var subparser = self
+			subparser.consumedLexicalUnitsIndexRange = indexOfNextLexicalUnit..<indexOfNextLexicalUnit
 			let construct = try C(from: &subparser)
-			closeSubparser(subparser)
+			self.indexOfNextLexicalUnit = subparser.indexOfNextLexicalUnit
 			return construct
 		} catch {
 			if deepestError == nil || lexicalUnitIndexOfDeepestError < indexOfNextLexicalUnit {
@@ -76,18 +77,6 @@ struct Parser {
 			}
 			throw error
 		}
-	}
-	
-	/// Returns a parser for parsing a subconstruct.
-	private func makeSubparser() -> Self {
-		var subparser = self
-		subparser.consumedLexicalUnitsIndexRange = indexOfNextLexicalUnit..<indexOfNextLexicalUnit
-		return subparser
-	}
-	
-	/// Closes a given subparser, so that `self` skips over the lexical units consumed in the subparser.
-	private mutating func closeSubparser(_ subparser: Self) {
-		self.indexOfNextLexicalUnit = subparser.indexOfNextLexicalUnit
 	}
 	
 	/// Consumes and returns a lexical unit of given type.

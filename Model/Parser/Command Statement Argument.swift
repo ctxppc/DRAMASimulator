@@ -14,7 +14,7 @@ extension CommandStatement {
 		case address(Address, lexicalUnits: [LexicalUnit])
 		
 		/// A condition argument.
-		case condition(Condition, lexicalUnit: IdentifierLexicalUnit)
+		case condition(Condition, lexicalUnit: ConditionLexicalUnit)
 		
 		/// An address argument to a command.
 		struct Address {
@@ -95,6 +95,8 @@ extension CommandStatement.Argument : Construct {
 	init(from parser: inout Parser) throws {
 		if let unit = parser.consume(RegisterLexicalUnit.self) {
 			self = .register(unit.register, lexicalUnit: unit)
+		} else if let unit = parser.consume(ConditionLexicalUnit.self) {
+			self = .condition(unit.condition, lexicalUnit: unit)
 		} else {
 			let address = try parser.parse(Address.self)
 			self = .address(address, lexicalUnits: .init(parser.consumedLexicalUnits))
