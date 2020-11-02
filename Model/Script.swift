@@ -3,7 +3,7 @@
 import DepthKit
 import Foundation
 
-/// A source text, decomposed into its lexical units, parsed into a translation unit, and possibly compiled to a program.
+/// A source text, decomposed into its lexical units, preprocessed into a translation unit, parsed into a compilation unit, and compiled to a program.
 ///
 /// `Script` defines the recipe of converting a source text to a program through its intermediate steps.
 struct Script {
@@ -15,12 +15,12 @@ struct Script {
 		self.lexicalUnits = Lexer(from: sourceText).lexicalUnits
 		
 		var parser = Parser(lexicalUnits: lexicalUnits)
-		self.translationUnit = (try? parser.parse(TranslationUnit.self)) !! "Translation unit parsing shouldn't fail"
+		self.compilationUnit = (try? parser.parse(CompilationUnit.self)) !! "Compilation unit parsing shouldn't fail completely"
 		
 		var statements: [Statement] = []
 		var statementIndicesBySymbol: [Symbol : Int] = [:]
-		var unrecognisedSources: [TranslationUnit.UnrecognisedSource] = []
-		for element in translationUnit.elements {
+		var unrecognisedSources: [CompilationUnit.UnrecognisedSource] = []
+		for element in compilationUnit.elements {
 			switch element {
 				
 				case .statement(let statement):
@@ -59,8 +59,8 @@ struct Script {
 	/// The script's lexical units.
 	let lexicalUnits: [LexicalUnit]
 	
-	/// The translation unit encoded by the script.
-	let translationUnit: TranslationUnit
+	/// The compilation unit encoded by the script's lexical units.
+	let compilationUnit: CompilationUnit
 	
 	/// The script's statements.
 	let statements: [Statement]
@@ -77,7 +77,7 @@ struct Script {
 		case program(Program)
 		
 		/// A program couldn't be assembled due to errors in the source text.
-		case sourceErrors([TranslationUnit.UnrecognisedSource])
+		case sourceErrors([CompilationUnit.UnrecognisedSource])
 		
 		/// A program couldn't be assembled due to a non-source error.
 		case programError(Error)

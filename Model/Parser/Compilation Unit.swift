@@ -4,7 +4,7 @@ import DepthKit
 import Foundation
 
 /// A sequence of statements and labels that represent a program.
-struct TranslationUnit : Construct {
+struct CompilationUnit : Construct {
 	
 	// See protocol.
 	init(from parser: inout Parser) {

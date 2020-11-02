@@ -75,7 +75,7 @@ final class ScriptEditingController : UIViewController {
 			}
 		}
 		
-		for element in script.translationUnit.elements {
+		for element in script.compilationUnit.elements {
 			switch element {
 				
 				case .statement(let statement as CommandStatement):
