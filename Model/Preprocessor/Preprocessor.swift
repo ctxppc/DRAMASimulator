@@ -2,7 +2,9 @@
 
 import Foundation
 
-/// A value that transforms an unprocessed source into a processed source.
+/// A value that processes source directives.
+///
+/// A preprocessor transforms a sequence of lexical units.
 struct Preprocessor {
 	
 	/// Initialises and runs a preprocessor on given source text.

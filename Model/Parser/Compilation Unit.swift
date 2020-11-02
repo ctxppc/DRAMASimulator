@@ -4,6 +4,8 @@ import DepthKit
 import Foundation
 
 /// A sequence of statements and labels that represent a program.
+///
+/// A compilation is parsed from a fully preprocessed translation unit, then used as input for compiling a program.
 struct CompilationUnit : Construct {
 	
 	// See protocol.
@@ -48,11 +50,12 @@ struct CompilationUnit : Construct {
 		
 	}
 	
+	/// Creates a compilation unit with given elements.
 	init(elements: [Element]) {
 		self.elements = elements
 	}
 	
-	/// The statements in the unit.
+	/// The contents of the unit.
 	let elements: [Element]
 	enum Element {
 		case statement(Statement)
@@ -62,6 +65,7 @@ struct CompilationUnit : Construct {
 		case unrecognisedSource(UnrecognisedSource)
 	}
 	
+	/// An element representing source that couldn't be parsed.
 	struct UnrecognisedSource {
 		
 		let lexicalUnits: ArraySlice<LexicalUnit>

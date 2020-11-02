@@ -13,6 +13,7 @@
 		4F0DA00F251389A600311BD2 /* Split View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0DA00E251389A600311BD2 /* Split View.swift */; };
 		4F139C0221A3104100F817A6 /* Script Editing Controller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F139C0121A3104100F817A6 /* Script Editing Controller.swift */; };
 		4F166EDA21B983D7001A8749 /* Source Range.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F166ED921B983D7001A8749 /* Source Range.swift */; };
+		4F2DBCE7255071D200C9A2E4 /* Translation Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2DBCE6255071D200C9A2E4 /* Translation Unit.swift */; };
 		4F346B782199DBE700D6D8AD /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F346B772199DBE700D6D8AD /* Document.swift */; };
 		4F346B7B2199DBE700D6D8AD /* DRAMASimulator.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F346B792199DBE700D6D8AD /* DRAMASimulator.storyboard */; };
 		4F346B7D2199DBEA00D6D8AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F346B7C2199DBEA00D6D8AD /* Assets.xcassets */; };
@@ -99,6 +100,7 @@
 		4F0DA00E251389A600311BD2 /* Split View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Split View.swift"; sourceTree = "<group>"; };
 		4F139C0121A3104100F817A6 /* Script Editing Controller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script Editing Controller.swift"; sourceTree = "<group>"; };
 		4F166ED921B983D7001A8749 /* Source Range.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Source Range.swift"; sourceTree = "<group>"; };
+		4F2DBCE6255071D200C9A2E4 /* Translation Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Translation Unit.swift"; sourceTree = "<group>"; };
 		4F346B6E2199DBE700D6D8AD /* DRAMA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DRAMA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F346B772199DBE700D6D8AD /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		4F346B7A2199DBE700D6D8AD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/DRAMASimulator.storyboard; sourceTree = "<group>"; };
@@ -268,12 +270,12 @@
 			children = (
 				4F346B772199DBE700D6D8AD /* Document.swift */,
 				4FA5A4E621AB210000799084 /* Timeline.swift */,
-				4FA523DB21B423C900BE1FF2 /* Preprocessor */,
 				4F58696D254EF6B40074B561 /* Script.swift */,
-				4FA7EBA721A0895E00C52F98 /* Program.swift */,
 				4F989D2D254A3C08009F42E7 /* Lexer */,
+				4FA523DB21B423C900BE1FF2 /* Preprocessor */,
 				4F6BAE4F21B6CD9200A952BB /* Parser */,
 				4F820F2E219AFF71004EE2C9 /* Command */,
+				4FA7EBA721A0895E00C52F98 /* Program.swift */,
 				4F0BFEDF25128E1D00ECC4D2 /* Machine */,
 				4FFEB7E0219C73650049D0A5 /* Register.swift */,
 				4F35A3C921A0D39A00A4610D /* Word */,
@@ -373,6 +375,7 @@
 			isa = PBXGroup;
 			children = (
 				4FA523E621B427B000BE1FF2 /* Preprocessor.swift */,
+				4F2DBCE6255071D200C9A2E4 /* Translation Unit.swift */,
 				4FA523DE21B4263800BE1FF2 /* Macro.swift */,
 				4FFD1A5E21BEA27E00D51B49 /* Macro Expansion.swift */,
 				4FA523DC21B423DD00BE1FF2 /* Directive.swift */,
@@ -481,6 +484,7 @@
 				4FA523E921B4298200BE1FF2 /* Assignment Directive.swift in Sources */,
 				4F391DFB254A4ECC00945B7E /* Arithmetic Operator Lexical Unit.swift in Sources */,
 				4FA7EB9A21A0682100C52F98 /* Jump Command.swift in Sources */,
+				4F2DBCE7255071D200C9A2E4 /* Translation Unit.swift in Sources */,
 				4F8D1B2F251260B3002E2BE9 /* Application.swift in Sources */,
 				4F87EF96254DE3F600B3D9A7 /* Command Statement Argument.swift in Sources */,
 				4F63EC6721B3058000F00E9B /* Subroutine Return Command.swift in Sources */,
