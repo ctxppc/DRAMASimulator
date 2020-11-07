@@ -19,7 +19,7 @@ struct Preprocessor {
 	}
 	
 	/// The processed macros.
-	var macros: [Macro] = []
+	var macros: [MacroDefinition] = []
 	
 	/// The current scope.
 	var scope: Scope = .global(values: [:])
@@ -40,10 +40,10 @@ struct Preprocessor {
 				switch self {
 					
 					case .global(values: let values):
-						return values[variable]
+					return values[variable]
 						
 					case .local(values: let values, outerScope: let outerScope):
-						return values[variable] ?? outerScope[variable]
+					return values[variable] ?? outerScope[variable]
 				}
 			}
 			
@@ -51,12 +51,12 @@ struct Preprocessor {
 				switch self {
 					
 					case .global(values: var values):
-						values[variable] = newValue
-						self = .global(values: values)
+					values[variable] = newValue
+					self = .global(values: values)
 						
 					case .local(values: var values, outerScope: let outerScope):
-						values[variable] = newValue
-						self = .local(values: values, outerScope: outerScope)
+					values[variable] = newValue
+					self = .local(values: values, outerScope: outerScope)
 						
 				}
 			}
@@ -73,10 +73,10 @@ struct Preprocessor {
 			switch self {
 				
 				case .global:
-					preconditionFailure("Cannot leave global scope")
+				preconditionFailure("Cannot leave global scope")
 					
 				case .local(values: _, outerScope: let outerScope):
-					self = outerScope
+				self = outerScope
 					
 			}
 		}

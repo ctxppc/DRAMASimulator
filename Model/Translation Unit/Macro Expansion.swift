@@ -6,14 +6,14 @@ import Foundation
 struct MacroExpansion {
 	
 	/// Creates a new expansion of given macro.
-	init(of macro: Macro, arguments: [String], expansionIdentifier: Int) {
+	init(of macro: MacroDefinition, arguments: [String], expansionIdentifier: Int) {
 		self.macro = macro
 		self.expansionIdentifier = expansionIdentifier
 		valuesBySymbol = Dictionary(uniqueKeysWithValues: arguments.enumerated().map { (macro.parameters[$0], $1) })
 	}
 	
 	/// The macro being expanded.
-	let macro: Macro
+	let macro: MacroDefinition
 	
 	/// The number used to generate labels unique to this expansion.
 	let expansionIdentifier: Int
@@ -29,7 +29,7 @@ struct MacroExpansion {
 	
 	/// Performs the expansion in given preprocessor.
 	func expand(in preprocessor: inout Preprocessor) throws {
-		fatalError("Unimplemented")	// TODO
+		TODO.unimplemented
 	}
 	
 }

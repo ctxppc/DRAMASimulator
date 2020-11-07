@@ -1,5 +1,6 @@
 // DRAMASimulator © 2020 Constantino Tsarouhas
 
+import DepthKit
 import Foundation
 
 /// A sequence of lexical units and directives that can be or is processed into a form that can be parsed into a compilation unit.
@@ -19,7 +20,44 @@ struct TranslationUnit : Construct {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
-		TODO.unimplemented
+		
+		var elements: [Element] = []
+		
+		func consumeIrrelevantLexicalUnits() {
+			let lexicalUnits = parser.consume(until: { $0 is IdentifierLexicalUnit || $0 is PreprocessorLabelLexicalUnit || $0 is PreprocessorVariableAccessLexicalUnit })
+			elements.append(contentsOf: lexicalUnits.map { .lexicalUnit($0) })
+		}
+		
+		consumeIrrelevantLexicalUnits()
+		
+		while parser.hasUnprocessedLexicalUnits {
+			
+			// TODO: Parse invocation directive (if identifier is known)
+			
+			if let directive = try? parser.parse(ValueDirective.self) {
+				elements.append(.directive(directive))
+			} else if let directive = try? parser.parse(MacroDefinition.self) {
+				elements.append(.directive(directive))
+			} else if let directive = try? parser.parse(AssignmentDirective.self) {
+				elements.append(.directive(directive))
+			} else if let directive = try? parser.parse(ComparisonDirective.self) {
+				elements.append(.directive(directive))
+			} else if let directive = try? parser.parse(ConditionalJumpDirective.self) {
+				elements.append(.directive(directive))
+			} else if let directive = try? parser.parse(UnconditionalJumpDirective.self) {
+				elements.append(.directive(directive))
+			} else if let directive = try? parser.parse(FailDirective.self) {
+				elements.append(.directive(directive))
+			} else {
+				elements.append(.lexicalUnit(parser.consume(IdentifierLexicalUnit.self) !! "Expected preprocessor lexical units to be processed"))
+			}
+			
+			consumeIrrelevantLexicalUnits()
+			
+		}
+		
+		self.unprocessedElements = elements
+		
 	}
 	
 	/// The translation unit's processed or produced lexical units.

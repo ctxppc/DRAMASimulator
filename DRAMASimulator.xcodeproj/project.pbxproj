@@ -41,6 +41,9 @@
 		4F5C7842254A3AB200A9961B /* Lexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5C7841254A3AB200A9961B /* Lexer.swift */; };
 		4F63EC6521B3057800F00E9B /* Subroutine Jump Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63EC6421B3057800F00E9B /* Subroutine Jump Command.swift */; };
 		4F63EC6721B3058000F00E9B /* Subroutine Return Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F63EC6621B3058000F00E9B /* Subroutine Return Command.swift */; };
+		4F7E75AF25575F6200030809 /* Unconditional Jump Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F7E75AE25575F6200030809 /* Unconditional Jump Directive.swift */; };
+		4F7E75B62557622300030809 /* Preprocessor Value Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F7E75B52557622300030809 /* Preprocessor Value Lexical Unit.swift */; };
+		4F7E75BA2557624F00030809 /* Preprocessor Label Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F7E75B92557624F00030809 /* Preprocessor Label Lexical Unit.swift */; };
 		4F820F30219B06AB004EE2C9 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F820F2F219B06AB004EE2C9 /* Command.swift */; };
 		4F820F35219B1CD6004EE2C9 /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E790B219A1FBE008E3E9B /* Instruction.swift */; };
 		4F87EF86254DAFA300B3D9A7 /* Argument Separator Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F87EF85254DAFA300B3D9A7 /* Argument Separator Lexical Unit.swift */; };
@@ -60,14 +63,14 @@
 		4F960D4A2513D4800097B863 /* TODO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F960D492513D4800097B863 /* TODO.swift */; };
 		4F989D2B254A3C05009F42E7 /* Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F989D2A254A3C05009F42E7 /* Parser.swift */; };
 		4FA523DD21B423DD00BE1FF2 /* Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523DC21B423DD00BE1FF2 /* Directive.swift */; };
-		4FA523DF21B4263800BE1FF2 /* Macro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523DE21B4263800BE1FF2 /* Macro.swift */; };
-		4FA523E321B4278E00BE1FF2 /* Output Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523E221B4278E00BE1FF2 /* Output Directive.swift */; };
+		4FA523DF21B4263800BE1FF2 /* Macro Definition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523DE21B4263800BE1FF2 /* Macro Definition.swift */; };
+		4FA523E321B4278E00BE1FF2 /* Value Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523E221B4278E00BE1FF2 /* Value Directive.swift */; };
 		4FA523E521B4279700BE1FF2 /* Fail Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523E421B4279700BE1FF2 /* Fail Directive.swift */; };
 		4FA523E721B427B000BE1FF2 /* Preprocessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523E621B427B000BE1FF2 /* Preprocessor.swift */; };
 		4FA523E921B4298200BE1FF2 /* Assignment Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523E821B4298200BE1FF2 /* Assignment Directive.swift */; };
 		4FA523EB21B4299800BE1FF2 /* Invocation Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523EA21B4299800BE1FF2 /* Invocation Directive.swift */; };
 		4FA523ED21B429A600BE1FF2 /* Null Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523EC21B429A600BE1FF2 /* Null Directive.swift */; };
-		4FA523EF21B429B700BE1FF2 /* Jump Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523EE21B429B700BE1FF2 /* Jump Directive.swift */; };
+		4FA523EF21B429B700BE1FF2 /* Conditional Jump Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523EE21B429B700BE1FF2 /* Conditional Jump Directive.swift */; };
 		4FA523F121B42CF200BE1FF2 /* Comparison Directive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA523F021B42CF200BE1FF2 /* Comparison Directive.swift */; };
 		4FA5A4E721AB210000799084 /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA5A4E621AB210000799084 /* Timeline.swift */; };
 		4FA7EB9821A0493C00C52F98 /* Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FA7EB9721A0493C00C52F98 /* Word.swift */; };
@@ -133,6 +136,9 @@
 		4F5C7841254A3AB200A9961B /* Lexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Lexer.swift; sourceTree = "<group>"; };
 		4F63EC6421B3057800F00E9B /* Subroutine Jump Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Subroutine Jump Command.swift"; sourceTree = "<group>"; };
 		4F63EC6621B3058000F00E9B /* Subroutine Return Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Subroutine Return Command.swift"; sourceTree = "<group>"; };
+		4F7E75AE25575F6200030809 /* Unconditional Jump Directive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Unconditional Jump Directive.swift"; sourceTree = "<group>"; };
+		4F7E75B52557622300030809 /* Preprocessor Value Lexical Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Preprocessor Value Lexical Unit.swift"; sourceTree = "<group>"; };
+		4F7E75B92557624F00030809 /* Preprocessor Label Lexical Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Preprocessor Label Lexical Unit.swift"; sourceTree = "<group>"; };
 		4F820F2F219B06AB004EE2C9 /* Command.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		4F820F33219B1614004EE2C9 /* Load Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Load Command.swift"; sourceTree = "<group>"; };
 		4F87EF85254DAFA300B3D9A7 /* Argument Separator Lexical Unit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Argument Separator Lexical Unit.swift"; sourceTree = "<group>"; };
@@ -151,14 +157,14 @@
 		4F960D492513D4800097B863 /* TODO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TODO.swift; sourceTree = "<group>"; };
 		4F989D2A254A3C05009F42E7 /* Parser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parser.swift; sourceTree = "<group>"; };
 		4FA523DC21B423DD00BE1FF2 /* Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Directive.swift; sourceTree = "<group>"; };
-		4FA523DE21B4263800BE1FF2 /* Macro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Macro.swift; sourceTree = "<group>"; };
-		4FA523E221B4278E00BE1FF2 /* Output Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Output Directive.swift"; sourceTree = "<group>"; };
+		4FA523DE21B4263800BE1FF2 /* Macro Definition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Macro Definition.swift"; sourceTree = "<group>"; };
+		4FA523E221B4278E00BE1FF2 /* Value Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Value Directive.swift"; sourceTree = "<group>"; };
 		4FA523E421B4279700BE1FF2 /* Fail Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Fail Directive.swift"; sourceTree = "<group>"; };
 		4FA523E621B427B000BE1FF2 /* Preprocessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preprocessor.swift; sourceTree = "<group>"; };
 		4FA523E821B4298200BE1FF2 /* Assignment Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Assignment Directive.swift"; sourceTree = "<group>"; };
 		4FA523EA21B4299800BE1FF2 /* Invocation Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Invocation Directive.swift"; sourceTree = "<group>"; };
 		4FA523EC21B429A600BE1FF2 /* Null Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Null Directive.swift"; sourceTree = "<group>"; };
-		4FA523EE21B429B700BE1FF2 /* Jump Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Jump Directive.swift"; sourceTree = "<group>"; };
+		4FA523EE21B429B700BE1FF2 /* Conditional Jump Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Conditional Jump Directive.swift"; sourceTree = "<group>"; };
 		4FA523F021B42CF200BE1FF2 /* Comparison Directive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Comparison Directive.swift"; sourceTree = "<group>"; };
 		4FA5A4E621AB210000799084 /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		4FA7EB9721A0493C00C52F98 /* Word.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Word.swift; sourceTree = "<group>"; };
@@ -377,6 +383,8 @@
 				4F391DFA254A4ECC00945B7E /* Arithmetic Operator Lexical Unit.swift */,
 				4F391DF4254A4CAF00945B7E /* Index Register Scope Lexical Unit.swift */,
 				4FD3AC12254C781E00F17679 /* Comment Lexical Unit.swift */,
+				4F7E75B52557622300030809 /* Preprocessor Value Lexical Unit.swift */,
+				4F7E75B92557624F00030809 /* Preprocessor Label Lexical Unit.swift */,
 				4FD3AC0F254C75D800F17679 /* Unrecognised Lexical Unit.swift */,
 			);
 			path = "Source Unit";
@@ -388,15 +396,16 @@
 				4F2DBCE6255071D200C9A2E4 /* Translation Unit.swift */,
 				4FA523E621B427B000BE1FF2 /* Preprocessor.swift */,
 				4FA523DC21B423DD00BE1FF2 /* Directive.swift */,
-				4FA523DE21B4263800BE1FF2 /* Macro.swift */,
-				4FFD1A5E21BEA27E00D51B49 /* Macro Expansion.swift */,
-				4FA523E221B4278E00BE1FF2 /* Output Directive.swift */,
+				4FA523E221B4278E00BE1FF2 /* Value Directive.swift */,
+				4FA523DE21B4263800BE1FF2 /* Macro Definition.swift */,
 				4FA523E821B4298200BE1FF2 /* Assignment Directive.swift */,
 				4FA523F021B42CF200BE1FF2 /* Comparison Directive.swift */,
-				4FA523EE21B429B700BE1FF2 /* Jump Directive.swift */,
+				4FA523EE21B429B700BE1FF2 /* Conditional Jump Directive.swift */,
+				4F7E75AE25575F6200030809 /* Unconditional Jump Directive.swift */,
 				4FA523EA21B4299800BE1FF2 /* Invocation Directive.swift */,
 				4FA523E421B4279700BE1FF2 /* Fail Directive.swift */,
 				4FA523EC21B429A600BE1FF2 /* Null Directive.swift */,
+				4FFD1A5E21BEA27E00D51B49 /* Macro Expansion.swift */,
 			);
 			path = "Translation Unit";
 			sourceTree = "<group>";
@@ -493,6 +502,7 @@
 				4FFD1A5F21BEA27E00D51B49 /* Macro Expansion.swift in Sources */,
 				4FA7EBAA21A0A55800C52F98 /* Read Command.swift in Sources */,
 				4FA523E921B4298200BE1FF2 /* Assignment Directive.swift in Sources */,
+				4F7E75B62557622300030809 /* Preprocessor Value Lexical Unit.swift in Sources */,
 				4F391DFB254A4ECC00945B7E /* Arithmetic Operator Lexical Unit.swift in Sources */,
 				4FA7EB9A21A0682100C52F98 /* Jump Command.swift in Sources */,
 				4F2DBCE7255071D200C9A2E4 /* Translation Unit.swift in Sources */,
@@ -501,10 +511,10 @@
 				4F63EC6721B3058000F00E9B /* Subroutine Return Command.swift in Sources */,
 				4F44C7F2219A4426003798AF /* Machine.swift in Sources */,
 				4F87EF89254DAFFA00B3D9A7 /* Condition Lexical Unit.swift in Sources */,
-				4FA523EF21B429B700BE1FF2 /* Jump Directive.swift in Sources */,
+				4FA523EF21B429B700BE1FF2 /* Conditional Jump Directive.swift in Sources */,
 				4F820F30219B06AB004EE2C9 /* Command.swift in Sources */,
 				4F87EFAB254E045100B3D9A7 /* Label Construct.swift in Sources */,
-				4FA523E321B4278E00BE1FF2 /* Output Directive.swift in Sources */,
+				4FA523E321B4278E00BE1FF2 /* Value Directive.swift in Sources */,
 				4F8D1B3925126700002E2BE9 /* Script Editor.swift in Sources */,
 				4FD3AC10254C75D800F17679 /* Unrecognised Lexical Unit.swift in Sources */,
 				4F05309E254C9E5800DDDCB7 /* Program Terminator Lexical Unit.swift in Sources */,
@@ -527,6 +537,7 @@
 				4F3E7916219A25B7008E3E9B /* Condition.swift in Sources */,
 				4F820F35219B1CD6004EE2C9 /* Instruction.swift in Sources */,
 				4F166EDA21B983D7001A8749 /* Source Range.swift in Sources */,
+				4F7E75BA2557624F00030809 /* Preprocessor Label Lexical Unit.swift in Sources */,
 				4F989D2B254A3C05009F42E7 /* Parser.swift in Sources */,
 				4FA7EBA021A06B0D00C52F98 /* Halt Command.swift in Sources */,
 				4F4FA73F21A5AD6800C1D2C7 /* Print Command.swift in Sources */,
@@ -538,11 +549,12 @@
 				4F960D4A2513D4800097B863 /* TODO.swift in Sources */,
 				4F87EF93254DE32900B3D9A7 /* Command Statement.swift in Sources */,
 				4FFEB7D6219C6ED50049D0A5 /* Unary Register Command.swift in Sources */,
+				4F7E75AF25575F6200030809 /* Unconditional Jump Directive.swift in Sources */,
 				4F391DEB254A4B2F00945B7E /* Literal Lexical Unit.swift in Sources */,
 				4FA523DD21B423DD00BE1FF2 /* Directive.swift in Sources */,
 				4F87EFA8254E033500B3D9A7 /* Compilation Unit.swift in Sources */,
 				4FFEB7E5219C75DB0049D0A5 /* Arithmetic Command.swift in Sources */,
-				4FA523DF21B4263800BE1FF2 /* Macro.swift in Sources */,
+				4FA523DF21B4263800BE1FF2 /* Macro Definition.swift in Sources */,
 				4F0BFEE125128E3F00ECC4D2 /* Memory.swift in Sources */,
 				4F391DDF254A3D3000945B7E /* Lexical Unit.swift in Sources */,
 				4F3FFA772556FA3E00AF1DB9 /* Source Unit.swift in Sources */,

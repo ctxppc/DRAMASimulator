@@ -3,10 +3,12 @@
 import Foundation
 
 /// A directive that invokes a macro.
-struct InvocationDirective : Directive {
+struct InvocationDirective : Construct {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
+		guard let identifierUnit = parser.consume(IdentifierLexicalUnit.self) else { throw DirectiveError.nonapplicableTypeIdentifier }
+		self.macroName = identifierUnit.identifier
 		TODO.unimplemented
 	}
 	
@@ -20,12 +22,12 @@ struct InvocationDirective : Directive {
 	///
 	/// - Note: The preprocessor automatically removes the directive from the source, i.e., the source substring at `fullSourceRange` is replaced by the empty string.
 	func execute(on preprocessor: inout Preprocessor) throws {
-		fatalError("Unimplemented")	// TODO
+		TODO.unimplemented
 	}
 	
 	// See protocol.
 	func execute(on preprocessor: inout Preprocessor, in expansion: inout MacroExpansion) throws {
-		fatalError("Unimplemented")	// TODO
+		TODO.unimplemented
 	}
 	
 }

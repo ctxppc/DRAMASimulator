@@ -7,6 +7,9 @@ struct FailDirective : Directive {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
+		guard let instructionUnit = parser.consume(IdentifierLexicalUnit.self), instructionUnit.identifier == "MFOUT" else {
+			throw DirectiveError.nonapplicableTypeIdentifier
+		}
 		TODO.unimplemented
 	}
 	

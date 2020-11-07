@@ -2,23 +2,23 @@
 
 import Foundation
 
-/// A directive that performs a jump.
-struct JumpDirective : Directive {
+/// A directive that performs a jump if a condition holds.
+struct UnconditionalJumpDirective : Directive {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
+		guard let instructionUnit = parser.consume(IdentifierLexicalUnit.self), instructionUnit.identifier == "MSPR" else {
+			throw DirectiveError.nonapplicableTypeIdentifier
+		}
 		TODO.unimplemented
 	}
 	
 	/// The symbol of the destination directive.
 	let destinationSymbol: String
 	
-	/// The condition, or `nil` if the jump is unconditional.
-	let condition: Condition?
-	
 	// See protocol.
 	func execute(on preprocessor: inout Preprocessor, in expansion: inout MacroExpansion) throws {
-		fatalError("Unimplemented")	// TODO
+		TODO.unimplemented
 	}
 	
 }

@@ -2,22 +2,22 @@
 
 import Foundation
 
-/// A directive that assigns a value to a symbol.
-struct AssignmentDirective : Directive {
+/// A directive that performs a jump if a condition holds.
+struct ConditionalJumpDirective : Directive {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
-		guard let instructionUnit = parser.consume(IdentifierLexicalUnit.self), instructionUnit.identifier == "MEVA" else {
+		guard let instructionUnit = parser.consume(IdentifierLexicalUnit.self), instructionUnit.identifier == "MVSP" else {
 			throw DirectiveError.nonapplicableTypeIdentifier
 		}
 		TODO.unimplemented
 	}
 	
-	/// The symbol being assigned a value to.
-	let symbol: String
+	/// The symbol of the destination directive.
+	let destinationSymbol: String
 	
-	/// An expression that evaluates to the assigned value.
-	let expression: NSExpression
+	/// The condition.
+	let condition: Condition
 	
 	// See protocol.
 	func execute(on preprocessor: inout Preprocessor, in expansion: inout MacroExpansion) throws {

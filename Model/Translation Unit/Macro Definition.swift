@@ -3,10 +3,13 @@
 import Foundation
 
 /// A function-like template that can be invoked from source text, optionally from within another macro, and that expands in place.
-struct Macro : Directive {
+struct MacroDefinition : Directive {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
+		guard let instructionUnit = parser.consume(IdentifierLexicalUnit.self), instructionUnit.identifier == "MACRO" else {
+			throw DirectiveError.nonapplicableTypeIdentifier
+		}
 		TODO.unimplemented
 	}
 	

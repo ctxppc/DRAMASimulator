@@ -79,11 +79,4 @@ struct CompilationUnit : Construct {
 		
 	}
 	
-	/// The known statement types.
-	private static let statementTypes: [Statement.Type] = [
-		CommandStatement.self,
-		ValueStatement.self,
-		AllocationStatement.self
-	]
-	
 }
