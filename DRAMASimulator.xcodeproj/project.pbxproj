@@ -30,6 +30,7 @@
 		4F391DFB254A4ECC00945B7E /* Arithmetic Operator Lexical Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F391DFA254A4ECC00945B7E /* Arithmetic Operator Lexical Unit.swift */; };
 		4F3E7910219A2221008E3E9B /* Addressing Mode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E790F219A2221008E3E9B /* Addressing Mode.swift */; };
 		4F3E7916219A25B7008E3E9B /* Condition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3E7915219A25B7008E3E9B /* Condition.swift */; };
+		4F3FFA772556FA3E00AF1DB9 /* Source Unit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3FFA762556FA3E00AF1DB9 /* Source Unit.swift */; };
 		4F44C7F2219A4426003798AF /* Machine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F44C7F1219A4426003798AF /* Machine.swift */; };
 		4F44C7F4219A4BBE003798AF /* Machine Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F44C7F3219A4BBE003798AF /* Machine Word.swift */; };
 		4F44C7F6219A4C40003798AF /* Address Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F44C7F5219A4C40003798AF /* Address Word.swift */; };
@@ -121,6 +122,7 @@
 		4F3E790F219A2221008E3E9B /* Addressing Mode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Addressing Mode.swift"; sourceTree = "<group>"; };
 		4F3E7913219A2324008E3E9B /* Value Operand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Value Operand.swift"; sourceTree = "<group>"; };
 		4F3E7915219A25B7008E3E9B /* Condition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Condition.swift; sourceTree = "<group>"; };
+		4F3FFA762556FA3E00AF1DB9 /* Source Unit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Source Unit.swift"; sourceTree = "<group>"; };
 		4F44C7F1219A4426003798AF /* Machine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Machine.swift; sourceTree = "<group>"; };
 		4F44C7F3219A4BBE003798AF /* Machine Word.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Machine Word.swift"; sourceTree = "<group>"; };
 		4F44C7F5219A4C40003798AF /* Address Word.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Address Word.swift"; sourceTree = "<group>"; };
@@ -271,9 +273,10 @@
 				4F346B772199DBE700D6D8AD /* Document.swift */,
 				4FA5A4E621AB210000799084 /* Timeline.swift */,
 				4F58696D254EF6B40074B561 /* Script.swift */,
-				4F989D2D254A3C08009F42E7 /* Lexer */,
-				4FA523DB21B423C900BE1FF2 /* Preprocessor */,
-				4F6BAE4F21B6CD9200A952BB /* Parser */,
+				4F989D2D254A3C08009F42E7 /* Source Unit */,
+				4FA523DB21B423C900BE1FF2 /* Translation Unit */,
+				4F6BAE4F21B6CD9200A952BB /* Compilation Unit */,
+				4F67666325571E70008E66BF /* Parser */,
 				4F820F2E219AFF71004EE2C9 /* Command */,
 				4FA7EBA721A0895E00C52F98 /* Program.swift */,
 				4F0BFEDF25128E1D00ECC4D2 /* Machine */,
@@ -289,11 +292,18 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		4F6BAE4F21B6CD9200A952BB /* Parser */ = {
+		4F67666325571E70008E66BF /* Parser */ = {
 			isa = PBXGroup;
 			children = (
 				4F989D2A254A3C05009F42E7 /* Parser.swift */,
 				4F87EF8B254DB22C00B3D9A7 /* Construct.swift */,
+			);
+			path = Parser;
+			sourceTree = "<group>";
+		};
+		4F6BAE4F21B6CD9200A952BB /* Compilation Unit */ = {
+			isa = PBXGroup;
+			children = (
 				4F87EFA7254E033500B3D9A7 /* Compilation Unit.swift */,
 				4F053099254C9A7000DDDCB7 /* Statement.swift */,
 				4F87EF92254DE32900B3D9A7 /* Command Statement.swift */,
@@ -303,7 +313,7 @@
 				4F87EFAA254E045100B3D9A7 /* Label Construct.swift */,
 				4F391DF7254A4D7B00945B7E /* Arithmetic Operator.swift */,
 			);
-			path = Parser;
+			path = "Compilation Unit";
 			sourceTree = "<group>";
 		};
 		4F6BAE6421B6F4C300A952BB /* Protocols */ = {
@@ -349,9 +359,10 @@
 			path = "Script Editor";
 			sourceTree = "<group>";
 		};
-		4F989D2D254A3C08009F42E7 /* Lexer */ = {
+		4F989D2D254A3C08009F42E7 /* Source Unit */ = {
 			isa = PBXGroup;
 			children = (
+				4F3FFA762556FA3E00AF1DB9 /* Source Unit.swift */,
 				4F5C7841254A3AB200A9961B /* Lexer.swift */,
 				4F391DDE254A3D3000945B7E /* Lexical Unit.swift */,
 				4F391DE1254A406100945B7E /* Register Lexical Unit.swift */,
@@ -368,14 +379,14 @@
 				4FD3AC12254C781E00F17679 /* Comment Lexical Unit.swift */,
 				4FD3AC0F254C75D800F17679 /* Unrecognised Lexical Unit.swift */,
 			);
-			path = Lexer;
+			path = "Source Unit";
 			sourceTree = "<group>";
 		};
-		4FA523DB21B423C900BE1FF2 /* Preprocessor */ = {
+		4FA523DB21B423C900BE1FF2 /* Translation Unit */ = {
 			isa = PBXGroup;
 			children = (
-				4FA523E621B427B000BE1FF2 /* Preprocessor.swift */,
 				4F2DBCE6255071D200C9A2E4 /* Translation Unit.swift */,
+				4FA523E621B427B000BE1FF2 /* Preprocessor.swift */,
 				4FA523DE21B4263800BE1FF2 /* Macro.swift */,
 				4FFD1A5E21BEA27E00D51B49 /* Macro Expansion.swift */,
 				4FA523DC21B423DD00BE1FF2 /* Directive.swift */,
@@ -387,7 +398,7 @@
 				4FA523E421B4279700BE1FF2 /* Fail Directive.swift */,
 				4FA523EC21B429A600BE1FF2 /* Null Directive.swift */,
 			);
-			path = Preprocessor;
+			path = "Translation Unit";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -534,6 +545,7 @@
 				4FA523DF21B4263800BE1FF2 /* Macro.swift in Sources */,
 				4F0BFEE125128E3F00ECC4D2 /* Memory.swift in Sources */,
 				4F391DDF254A3D3000945B7E /* Lexical Unit.swift in Sources */,
+				4F3FFA772556FA3E00AF1DB9 /* Source Unit.swift in Sources */,
 				4FA5A4E721AB210000799084 /* Timeline.swift in Sources */,
 				4FFEB7DE219C6F060049D0A5 /* Condition Address Command.swift in Sources */,
 				4FFEB7DF219C72D50049D0A5 /* Load Command.swift in Sources */,

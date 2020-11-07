@@ -3,8 +3,6 @@
 import Foundation
 
 /// A command to the preprocessor.
-///
-/// Directives are removed from the text being processed but may output text at their location.
 protocol Directive {
 	
 	init?(from preprocessor: inout Preprocessor) throws

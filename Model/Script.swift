@@ -3,7 +3,7 @@
 import DepthKit
 import Foundation
 
-/// A source text, decomposed into its lexical units, preprocessed into a translation unit, parsed into a compilation unit, and compiled to a program.
+/// A source text compiled into a program through its intermediate steps.
 ///
 /// `Script` defines the recipe of converting a source text to a program through its intermediate steps.
 struct Script {
