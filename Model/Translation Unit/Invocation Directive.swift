@@ -6,11 +6,8 @@ import Foundation
 struct InvocationDirective : Directive {
 	
 	// See protocol.
-	static let regularExpression = NSRegularExpression()	// TODO
-	
-	// See protocol.
-	init(match: NSTextCheckingResult, in source: String) throws {
-		fatalError("Unimplemented")	// TODO
+	init(from parser: inout Parser) throws {
+		TODO.unimplemented
 	}
 	
 	/// The name of the macro to invoke.
@@ -18,15 +15,6 @@ struct InvocationDirective : Directive {
 	
 	/// The expressions of the arguments.
 	let argumentExpressions: [NSExpression]
-	
-	// See protocol.
-	let fullSourceRange: SourceRange
-	
-	/// The range in the unprocessed source where `macroName` is written.
-	let macroNameRange: SourceRange
-	
-	/// The ranges in the unprocessed source where the argument expressions are written.
-	let argumentExpressionRanges: [SourceRange]
 	
 	/// Executes the directive on given preprocessor, outside of any macro expansion.
 	///

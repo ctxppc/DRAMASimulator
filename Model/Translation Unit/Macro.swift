@@ -3,7 +3,12 @@
 import Foundation
 
 /// A function-like template that can be invoked from source text, optionally from within another macro, and that expands in place.
-struct Macro {
+struct Macro : Directive {
+	
+	// See protocol.
+	init(from parser: inout Parser) throws {
+		TODO.unimplemented
+	}
 	
 	/// The macro's name.
 	let name: Substring
@@ -19,17 +24,5 @@ struct Macro {
 	
 	/// A mapping from symbols to indices in the `directives` array.
 	let directiveIndicesBySymbol: [String : Int]
-	
-	/// The range in the unprocessed source where the macro is written.
-	let fullSourceRange: SourceRange
-	
-	/// The range in the unprocessed source where the name is written.
-	let nameSourceRange: SourceRange
-	
-	/// The range in the unprocessed source where the comma-separated parameters are written, or `nil` if the macro doesn't have parameters.
-	let parametersSourceRange: SourceRange?
-	
-	/// The range of the body, including leading and trailing whitespace.
-	let bodySourceRange: SourceRange
 	
 }

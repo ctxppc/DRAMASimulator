@@ -3,9 +3,7 @@
 import Foundation
 
 /// A command to the preprocessor.
-protocol Directive {
-	
-	init?(from preprocessor: inout Preprocessor) throws
+protocol Directive : Construct {
 	
 	// TODO
 	

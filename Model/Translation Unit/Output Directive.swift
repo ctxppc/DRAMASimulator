@@ -8,18 +8,12 @@ import Foundation
 struct OutputDirective : Directive {
 	
 	// See protocol.
-	static let regularExpression = NSRegularExpression()	// TODO
-	
-	// See protocol.
-	init(match: NSTextCheckingResult, in source: String) throws {
-		fatalError("Unimplemented")	// TODO
+	init(from parser: inout Parser) throws {
+		TODO.unimplemented
 	}
 	
 	/// The symbol of the variable whose value is output.
 	let symbol: String
-	
-	// See protocol.
-	let fullSourceRange: SourceRange
 	
 	// See protocol.
 	func execute(on preprocessor: inout Preprocessor, in expansion: inout MacroExpansion) throws {

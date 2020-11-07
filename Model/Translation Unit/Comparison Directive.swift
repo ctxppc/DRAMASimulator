@@ -6,11 +6,8 @@ import Foundation
 struct ComparisonDirective : Directive {
 	
 	// See protocol.
-	static let regularExpression = NSRegularExpression()	// TODO
-	
-	// See protocol.
-	init(match: NSTextCheckingResult, in source: String) throws {
-		fatalError("Unimplemented")	// TODO
+	init(from parser: inout Parser) throws {
+		TODO.unimplemented
 	}
 	
 	/// An expression of the first operand of the comparison.
@@ -18,18 +15,6 @@ struct ComparisonDirective : Directive {
 	
 	/// An expression of the second operand of the comparison.
 	let secondOperand: NSExpression
-	
-	// See protocol.
-	let fullSourceRange: SourceRange
-	
-	/// The range in the unprocessed source where the directive's instruction is written.
-	let instructionRange: SourceRange
-	
-	/// The range in the unprocessed source where `firstOperand` is written.
-	let firstOperandRange: SourceRange
-	
-	/// The range in the unprocessed source where `secondOperand` is written.
-	let secondOperandRange: SourceRange
 	
 	// See protocol.
 	func execute(on preprocessor: inout Preprocessor, in expansion: inout MacroExpansion) throws {

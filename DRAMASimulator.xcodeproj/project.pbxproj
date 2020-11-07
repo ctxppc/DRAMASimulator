@@ -387,9 +387,9 @@
 			children = (
 				4F2DBCE6255071D200C9A2E4 /* Translation Unit.swift */,
 				4FA523E621B427B000BE1FF2 /* Preprocessor.swift */,
+				4FA523DC21B423DD00BE1FF2 /* Directive.swift */,
 				4FA523DE21B4263800BE1FF2 /* Macro.swift */,
 				4FFD1A5E21BEA27E00D51B49 /* Macro Expansion.swift */,
-				4FA523DC21B423DD00BE1FF2 /* Directive.swift */,
 				4FA523E221B4278E00BE1FF2 /* Output Directive.swift */,
 				4FA523E821B4298200BE1FF2 /* Assignment Directive.swift */,
 				4FA523F021B42CF200BE1FF2 /* Comparison Directive.swift */,

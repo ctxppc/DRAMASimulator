@@ -6,11 +6,8 @@ import Foundation
 struct AssignmentDirective : Directive {
 	
 	// See protocol.
-	static let regularExpression = NSRegularExpression()	// TODO
-	
-	// See protocol.
-	init(match: NSTextCheckingResult, in source: String) throws {
-		fatalError("Unimplemented")	// TODO
+	init(from parser: inout Parser) throws {
+		TODO.unimplemented
 	}
 	
 	/// The symbol being assigned a value to.
@@ -18,18 +15,6 @@ struct AssignmentDirective : Directive {
 	
 	/// An expression that evaluates to the assigned value.
 	let expression: NSExpression
-	
-	// See protocol.
-	let fullSourceRange: SourceRange
-	
-	/// The range in the unprocessed source where the directive's instruction is written.
-	let instructionRange: SourceRange
-	
-	/// The range in the unprocessed source where `symbol` is written.
-	let symbolRange: SourceRange
-	
-	/// The range in the unprocessed source where `expression` is written.
-	let expressionRange: SourceRange
 	
 	// See protocol.
 	func execute(on preprocessor: inout Preprocessor, in expansion: inout MacroExpansion) throws {
