@@ -13,6 +13,8 @@ struct Lexer {
 		RegisterLexicalUnit.self,
 		ConditionLexicalUnit.self,
 		LiteralLexicalUnit.self,
+		PreprocessorLabelLexicalUnit.self,
+		PreprocessorVariableAccessLexicalUnit.self,
 		IdentifierLexicalUnit.self,		// keep after other alphanumeric patterns!
 		AddressingModeLexicalUnit.self,
 		ArgumentSeparatorLexicalUnit.self,

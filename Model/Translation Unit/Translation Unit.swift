@@ -21,6 +21,7 @@ struct TranslationUnit : Construct {
 	// See protocol.
 	init(from parser: inout Parser) throws {
 		
+		var macroIdentifiers: Set<String> = []
 		var elements: [Element] = []
 		
 		func consumeIrrelevantLexicalUnits() {
@@ -28,27 +29,38 @@ struct TranslationUnit : Construct {
 			elements.append(contentsOf: lexicalUnits.map { .lexicalUnit($0) })
 		}
 		
+		func parseDirective<D>(ofType _: D.Type) -> Bool where D : Directive {
+			do {
+				elements.append(.directive(try parser.parse(D.self)))
+				return true
+			} catch {
+				return false
+			}
+		}
+		
+		func parseInvocationDirective() throws -> Bool {
+			var copy = parser
+			guard let unit = copy.consume(IdentifierLexicalUnit.self), macroIdentifiers.contains(unit.identifier) else { return false }
+			let directive = try parser.parse(InvocationDirective.self)
+			elements.append(.directive(directive))
+			macroIdentifiers.insert(directive.macroName)
+			return true
+		}
+		
 		consumeIrrelevantLexicalUnits()
 		
 		while parser.hasUnprocessedLexicalUnits {
 			
-			// TODO: Parse invocation directive (if identifier is known)
+			let extractedDirective = try parseInvocationDirective()
+				|| parseDirective(ofType: ValueDirective.self)
+				|| parseDirective(ofType: MacroDefinition.self)
+				|| parseDirective(ofType: AssignmentDirective.self)
+				|| parseDirective(ofType: ComparisonDirective.self)
+				|| parseDirective(ofType: ConditionalJumpDirective.self)
+				|| parseDirective(ofType: UnconditionalJumpDirective.self)
+				|| parseDirective(ofType: FailDirective.self)
 			
-			if let directive = try? parser.parse(ValueDirective.self) {
-				elements.append(.directive(directive))
-			} else if let directive = try? parser.parse(MacroDefinition.self) {
-				elements.append(.directive(directive))
-			} else if let directive = try? parser.parse(AssignmentDirective.self) {
-				elements.append(.directive(directive))
-			} else if let directive = try? parser.parse(ComparisonDirective.self) {
-				elements.append(.directive(directive))
-			} else if let directive = try? parser.parse(ConditionalJumpDirective.self) {
-				elements.append(.directive(directive))
-			} else if let directive = try? parser.parse(UnconditionalJumpDirective.self) {
-				elements.append(.directive(directive))
-			} else if let directive = try? parser.parse(FailDirective.self) {
-				elements.append(.directive(directive))
-			} else {
+			if !extractedDirective {
 				elements.append(.lexicalUnit(parser.consume(IdentifierLexicalUnit.self) !! "Expected preprocessor lexical units to be processed"))
 			}
 			

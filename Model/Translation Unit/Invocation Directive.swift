@@ -3,7 +3,7 @@
 import Foundation
 
 /// A directive that invokes a macro.
-struct InvocationDirective : Construct {
+struct InvocationDirective : Directive {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
