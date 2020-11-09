@@ -41,7 +41,7 @@ struct DocumentView : View {
 	
 	// See protocol.
 	var body: some View {
-		SplitView(ratio: 0.4, range: 0.25...0.75) {
+		SplitView(ratio: 0.5, range: 0.25...0.75) {
 			ScriptEditor(script: $document.script, programCounter: $document.machine.programCounter)
 			MachineView(machine: document.machine)
 		}.overlay(statusBar, alignment: .top)
