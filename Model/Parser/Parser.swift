@@ -18,7 +18,6 @@ struct Parser {
 	init(lexicalUnits: LexicalUnits) {
 		self.lexicalUnits = lexicalUnits
 		self.consumedLexicalUnitsIndexRange = lexicalUnits.startIndex..<lexicalUnits.startIndex
-		self.lexicalUnitIndexOfDeepestError = lexicalUnits.startIndex
 	}
 	
 	/// The lexical units available to the parser.
@@ -30,6 +29,11 @@ struct Parser {
 	/// This collection is empty when the parser invokes the parsed construct type's `init(parser:)` initialiser. When the construct is done consuming lexical units, it can access this property to retrieve all lexical units consumed by it or any of its parsed subconstructs.
 	var consumedLexicalUnits: LexicalUnits.SubSequence {
 		lexicalUnits[consumedLexicalUnitsIndexRange]
+	}
+	
+	/// The lexical units that haven't been processed yet.
+	private var unprocessedLexicalUnits: LexicalUnits.SubSequence {
+		lexicalUnits[indexOfNextLexicalUnit...]
 	}
 	
 	/// The index range in `lexicalUnits` consumed by the currently parsed construct.
@@ -45,14 +49,8 @@ struct Parser {
 	
 	/// A Boolean value indicating whether the parser has unprocessed lexical units.
 	var hasUnprocessedLexicalUnits: Bool {
-		!lexicalUnits[indexOfNextLexicalUnit...].isEmpty
+		!unprocessedLexicalUnits.isEmpty
 	}
-	
-	/// The error thrown at the deepest location, or `nil` if no errors have been thrown.
-	private(set) var deepestError: Error?
-	
-	/// The index of the next consumable lexical unit when `deepestError` was thrown.
-	private var lexicalUnitIndexOfDeepestError: LexicalUnits.Index
 	
 	/// Parses a construct of given type.
 	///
@@ -60,7 +58,7 @@ struct Parser {
 	///
 	/// - Parameter type: The type of construct to parse.
 	///
-	/// - Throws: An error if no construct could be parsed.
+	/// - Throws: If no construct could be parsed, an `Error` containing the cause and location of the parse error.
 	///
 	/// - Returns: A construct.
 	mutating func parse<C : Construct>(_ type: C.Type) throws -> C {
@@ -70,12 +68,10 @@ struct Parser {
 			let construct = try C(from: &subparser)
 			self.indexOfNextLexicalUnit = subparser.indexOfNextLexicalUnit
 			return construct
-		} catch {
-			if deepestError == nil || lexicalUnitIndexOfDeepestError < indexOfNextLexicalUnit {
-				lexicalUnitIndexOfDeepestError = indexOfNextLexicalUnit
-				deepestError = error
-			}
+		} catch let error as Error {
 			throw error
+		} catch {
+			throw Error(cause: error, location: indexOfNextLexicalUnit)
 		}
 	}
 	
@@ -87,7 +83,7 @@ struct Parser {
 	///
 	/// - Returns: A lexical unit of type `Unit`, or `nil` if the next unit isn't of type `Unit` or if there is no unit available.
 	mutating func consume<Unit : LexicalUnit>(_ type: Unit.Type) -> Unit? {
-		guard let unit = lexicalUnits[indexOfNextLexicalUnit...].first as? Unit else { return nil }
+		guard let unit = unprocessedLexicalUnits.first as? Unit else { return nil }
 		lexicalUnits.formIndex(after: &indexOfNextLexicalUnit)
 		return unit
 	}
@@ -100,10 +96,36 @@ struct Parser {
 	///
 	/// - Returns: The consumed lexical units.
 	mutating func consume(until predicate: (LexicalUnit) -> Bool) -> LexicalUnits.SubSequence {
-		let indexOfFirstExcludedIndex = lexicalUnits[indexOfNextLexicalUnit...].firstIndex(where: predicate) ?? lexicalUnits.endIndex
+		let indexOfFirstExcludedIndex = unprocessedLexicalUnits.firstIndex(where: predicate) ?? lexicalUnits.endIndex
 		let consumed = lexicalUnits[indexOfNextLexicalUnit..<indexOfFirstExcludedIndex]
 		indexOfNextLexicalUnit = indexOfFirstExcludedIndex
 		return consumed
+	}
+	
+	/// An error thrown during parsing.
+	struct Error : LocalizedError, Comparable {
+		
+		/// The error that caused the parse to fail.
+		var cause: Swift.Error
+		
+		/// The location in the lexical unit stream where the error is thrown.
+		var location: LexicalUnits.Index
+		
+		// See protocol.
+		var errorDescription: String? {
+			(cause as? LocalizedError)?.errorDescription
+		}
+		
+		// See protocol.
+		static func == (first: Self, other: Self) -> Bool {
+			first.location == other.location
+		}
+		
+		// See protocol.
+		static func < (first: Self, other: Self) -> Bool {
+			first.location < other.location
+		}
+		
 	}
 	
 }

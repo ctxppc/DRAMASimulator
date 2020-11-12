@@ -9,41 +9,50 @@ import Foundation
 struct CompilationUnit : Construct {
 	
 	// See protocol.
-	init(from parser: inout Parser) {
+	init(from parser: inout Parser) throws {
 		
-		func parseNextElement() -> Element? {
-			
-			guard parser.hasUnprocessedLexicalUnits else { return nil }
+		func parseNextElement() throws -> Element {
 			
 			if parser.consume(StatementTerminatorLexicalUnit.self) != nil {
-				return parseNextElement()
-			}
-			
-			if let command = try? parser.parse(CommandStatement.self) {
-				return .statement(command)
-			} else if let valueStatement = try? parser.parse(ValueStatement.self) {
-				return .statement(valueStatement)
-			} else if let allocStatement = try? parser.parse(AllocationStatement.self) {
-				return .statement(allocStatement)
-			} else if let label = try? parser.parse(LabelConstruct.self) {
-				return .label(label)
+				return try parseNextElement()
 			} else if let comment = parser.consume(CommentLexicalUnit.self) {
 				return .comment(comment)
 			} else if let terminator = parser.consume(ProgramTerminatorLexicalUnit.self) {
 				return .programTerminator(terminator)
-			} else {
-				let error = parser.deepestError !! "Expected deepest error"
-				let units = parser.consume(until: {
-					$0 is CommentLexicalUnit || $0 is StatementTerminatorLexicalUnit || $0 is ProgramTerminatorLexicalUnit
-				})
-				return .unrecognisedSource(.init(lexicalUnits: units, error: error))
+			}
+			
+			do {
+				return .statement(try parser.parse(CommandStatement.self))
+			} catch let e1 as Parser.Error {
+				do {
+					do {
+						return .statement(try parser.parse(ValueStatement.self))
+					} catch let e2 as Parser.Error {
+						do {
+							do {
+								return .statement(try parser.parse(AllocationStatement.self))
+							} catch let e3 as Parser.Error {
+								do {
+									do {
+										return .label(try parser.parse(LabelConstruct.self))
+									} catch let e4 as Parser.Error {
+										let units = parser.consume(until: {
+											$0 is CommentLexicalUnit || $0 is StatementTerminatorLexicalUnit || $0 is ProgramTerminatorLexicalUnit
+										})
+										return .unrecognisedSource(.init(lexicalUnits: units, error: max(e1, e2, e3, e4)))
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 			
 		}
 		
 		var elements: [Element] = []
-		while let element = parseNextElement() {
-			elements.append(element)
+		while parser.hasUnprocessedLexicalUnits {
+			elements.append(try parseNextElement())
 		}
 		
 		self.init(elements: elements)
