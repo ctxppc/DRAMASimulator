@@ -11,7 +11,9 @@ struct CompilationUnit : Construct {
 	// See protocol.
 	init(from parser: inout Parser) throws {
 		
-		func parseNextElement() throws -> Element {
+		func parseNextElement() throws -> Element? {
+			
+			guard parser.hasUnprocessedLexicalUnits else { return nil }
 			
 			if parser.consume(StatementTerminatorLexicalUnit.self) != nil {
 				return try parseNextElement()
@@ -33,14 +35,12 @@ struct CompilationUnit : Construct {
 								return .statement(try parser.parse(AllocationStatement.self))
 							} catch let e3 as Parser.Error {
 								do {
-									do {
-										return .label(try parser.parse(LabelConstruct.self))
-									} catch let e4 as Parser.Error {
-										let units = parser.consume(until: {
-											$0 is CommentLexicalUnit || $0 is StatementTerminatorLexicalUnit || $0 is ProgramTerminatorLexicalUnit
-										})
-										return .unrecognisedSource(.init(lexicalUnits: units, error: max(e1, e2, e3, e4)))
-									}
+									return .label(try parser.parse(LabelConstruct.self))
+								} catch let e4 as Parser.Error {
+									let units = parser.consume(until: {
+										$0 is CommentLexicalUnit || $0 is StatementTerminatorLexicalUnit || $0 is ProgramTerminatorLexicalUnit
+									})
+									return .unrecognisedSource(.init(lexicalUnits: units, error: max(e1, e2, e3, e4)))
 								}
 							}
 						}
@@ -51,8 +51,8 @@ struct CompilationUnit : Construct {
 		}
 		
 		var elements: [Element] = []
-		while parser.hasUnprocessedLexicalUnits {
-			elements.append(try parseNextElement())
+		while let element = try parseNextElement() {	// sequence(state:next:) doesn't support throwing successor functions
+			elements.append(element)
 		}
 		
 		self.init(elements: elements)

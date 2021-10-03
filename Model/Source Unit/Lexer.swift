@@ -15,15 +15,15 @@ struct Lexer {
 		LiteralLexicalUnit.self,
 		PreprocessorLabelLexicalUnit.self,
 		PreprocessorVariableAccessLexicalUnit.self,
-		IdentifierLexicalUnit.self,		// keep after other alphanumeric patterns!
+		ProgramTerminatorLexicalUnit.self,
 		AddressingModeLexicalUnit.self,
 		ArgumentSeparatorLexicalUnit.self,
 		StatementTerminatorLexicalUnit.self,
-		ProgramTerminatorLexicalUnit.self,
 		LabelMarkerLexicalUnit.self,
 		ArithmeticOperatorLexicalUnit.self,
 		IndexRegisterScopeLexicalUnit.self,
 		CommentLexicalUnit.self,
+		IdentifierLexicalUnit.self,		// keep after other alphanumeric patterns!
 		UnrecognisedLexicalUnit.self	// always keep last!
 	]
 	

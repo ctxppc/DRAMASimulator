@@ -21,8 +21,16 @@ struct LabelConstruct : Construct {
 	let lexicalUnits: [LexicalUnit]
 	
 	/// An error during parsing.
-	enum Error : Swift.Error {
+	enum Error : LocalizedError {
+		
 		case noLabel
+		
+		var errorDescription: String? {
+			switch self {
+				case .noLabel:	return "Etiket verwacht"
+			}
+		}
+		
 	}
 	
 }
