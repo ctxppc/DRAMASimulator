@@ -2,8 +2,8 @@
 
 import Foundation
 
-/// A lexical unit for a symbol that scopes an index register, i.e., `(` or `)`.
-enum IndexRegisterScopeLexicalUnit : LexicalUnit {
+/// A lexeme for a symbol that scopes an index register, i.e., `(` or `)`.
+enum IndexRegisterScopeLexeme : Lexeme {
 	
 	// See protocol.
 	static let pattern = try! NSRegularExpression(pattern: #"[()]"#)

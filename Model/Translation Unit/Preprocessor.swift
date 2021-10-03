@@ -86,7 +86,7 @@ struct Preprocessor {
 	/// The preprocessor's condition state.
 	var conditionState: ConditionState = .zero
 	
-	/// Processes the next lexical unit or directive.
+	/// Processes the next lexeme or directive.
 	mutating func processNext() throws {
 		TODO.unimplemented
 	}

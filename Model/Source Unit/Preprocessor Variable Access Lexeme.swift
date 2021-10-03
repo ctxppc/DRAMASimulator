@@ -2,11 +2,11 @@
 
 import Foundation
 
-/// A lexical unit for a preprocessor label, e.g., `$ok`.
-struct PreprocessorLabelLexicalUnit : LexicalUnit {
+/// A lexeme for an accessed preprocessor variable, e.g., `<foo>`.
+struct PreprocessorVariableAccessLexeme : Lexeme {
 	
 	// See protocol.
-	static let pattern = try! NSRegularExpression(pattern: #"$([\w\d]+)"#, options: .caseInsensitive)
+	static let pattern = try! NSRegularExpression(pattern: #"<([\w\d]+)>"#, options: .caseInsensitive)
 	
 	// See protocol.
 	init(captures: [Substring], sourceRange: SourceRange) {
@@ -14,7 +14,7 @@ struct PreprocessorLabelLexicalUnit : LexicalUnit {
 		self.sourceRange = sourceRange
 	}
 	
-	/// The name of the label, without prefix.
+	/// The name of the variable, without angle brackets.
 	let identifier: String
 	
 	// See protocol.

@@ -2,8 +2,8 @@
 
 import Foundation
 
-/// A lexical unit for an arithmetic operator.
-struct ArithmeticOperatorLexicalUnit : LexicalUnit {
+/// A lexeme for an arithmetic operator.
+struct ArithmeticOperatorLexeme : Lexeme {
 	
 	// See protocol.
 	static let pattern = try! NSRegularExpression(pattern: #"[+\-*/]"#)

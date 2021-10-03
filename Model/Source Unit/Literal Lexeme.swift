@@ -2,8 +2,8 @@
 
 import Foundation
 
-/// A lexical unit for a literal value, e.g., `-50`.
-struct LiteralLexicalUnit : LexicalUnit {
+/// A lexeme for a literal value, e.g., `-50`.
+struct LiteralLexeme : Lexeme {
 	
 	// See protocol.
 	static let pattern = try! NSRegularExpression(pattern: #"-?\d+"#)

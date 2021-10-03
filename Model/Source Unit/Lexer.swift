@@ -3,40 +3,40 @@
 import DepthKit
 import Foundation
 
-/// A value that produces lexical units from a source text.
+/// A value that produces lexemes from a source text.
 ///
 /// The lexer ignores horizontal whitespace such as spaces or tabs but does not ignore line terminators such as newlines.
 struct Lexer {
 	
-	/// The known lexical unit types, in pattern matching order.
-	private static let lexicalUnitTypes: [LexicalUnit.Type] = [
-		RegisterLexicalUnit.self,
-		ConditionLexicalUnit.self,
-		LiteralLexicalUnit.self,
-		PreprocessorLabelLexicalUnit.self,
-		PreprocessorVariableAccessLexicalUnit.self,
-		ProgramTerminatorLexicalUnit.self,
-		AddressingModeLexicalUnit.self,
-		ArgumentSeparatorLexicalUnit.self,
-		StatementTerminatorLexicalUnit.self,
-		LabelMarkerLexicalUnit.self,
-		ArithmeticOperatorLexicalUnit.self,
-		IndexRegisterScopeLexicalUnit.self,
-		CommentLexicalUnit.self,
-		IdentifierLexicalUnit.self,		// keep after other alphanumeric patterns!
-		UnrecognisedLexicalUnit.self	// always keep last!
+	/// The known lexeme types, in pattern matching order.
+	private static let lexemeTypes: [Lexeme.Type] = [
+		RegisterLexeme.self,
+		ConditionLexeme.self,
+		LiteralLexeme.self,
+		PreprocessorLabelLexeme.self,
+		PreprocessorVariableAccessLexeme.self,
+		ProgramTerminatorLexeme.self,
+		AddressingModeLexeme.self,
+		ArgumentSeparatorLexeme.self,
+		StatementTerminatorLexeme.self,
+		LabelMarkerLexeme.self,
+		ArithmeticOperatorLexeme.self,
+		IndexRegisterScopeLexeme.self,
+		CommentLexeme.self,
+		IdentifierLexeme.self,	// keep after other alphanumeric patterns!
+		UnrecognisedLexeme.self	// always keep last!
 	]
 	
-	/// Decomposes given source text to its lexical units.
+	/// Decomposes given source text to its lexemes.
 	init(from sourceText: String) {
 		
 		self.sourceText = sourceText
 		self.indexOfNextCharacter = sourceText.startIndex
-		self.lexicalUnits = []
+		self.lexemes = []
 		
 		consumeHorizontalWhitespace()
 		while hasUnprocessedText {
-			lexicalUnits.append(extractUnit())
+			lexemes.append(extractUnit())
 		}
 		
 	}
@@ -44,8 +44,8 @@ struct Lexer {
 	/// The source text.
 	let sourceText: String
 	
-	/// The lexical units in the source.
-	private(set) var lexicalUnits: [LexicalUnit]
+	/// The lexemes in the source.
+	private(set) var lexemes: [Lexeme]
 	
 	/// An index to the next character in `sourceText` to be processed.
 	private var indexOfNextCharacter: String.Index
@@ -55,25 +55,25 @@ struct Lexer {
 		sourceText.indices.contains(indexOfNextCharacter)
 	}
 	
-	/// Extracts a lexical unit of some known type from the unprocessed source.
+	/// Extracts a lexeme of some known type from the unprocessed source.
 	///
 	/// - Requires: `hasUnprocessedText`.
-	private mutating func extractUnit() -> LexicalUnit {
+	private mutating func extractUnit() -> Lexeme {
 		
-		for type in Self.lexicalUnitTypes {
+		for type in Self.lexemeTypes {
 			if let unit = extractUnit(ofType: type) {
 				return unit
 			}
 		}
 		
-		preconditionFailure("Expected last lexical unit type to be UnrecognisedLexicalUnit, or for that type to match unrecognised unit")
+		preconditionFailure("Expected last lexeme type to be UnrecognisedLexeme, or for that lexeme to match the unrecognised source.")
 		
 	}
 	
-	/// Extracts a lexical unit of some given type from the unprocessed source.
+	/// Extracts a lexeme of some given type from the unprocessed source.
 	///
 	/// - Requires: `hasUnprocessedText`.
-	private mutating func extractUnit(ofType type: LexicalUnit.Type) -> LexicalUnit? {
+	private mutating func extractUnit(ofType type: Lexeme.Type) -> Lexeme? {
 		
 		let searchRange = NSRange(indexOfNextCharacter..., in: sourceText)
 		guard let match = type.pattern.firstMatch(in: sourceText, options: .anchored, range: searchRange) else { return nil }

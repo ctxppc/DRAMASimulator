@@ -9,8 +9,8 @@ struct ValueDirective : Directive {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
-		guard let lexicalUnit = parser.consume(PreprocessorVariableAccessLexicalUnit.self) else { throw DirectiveError.nonapplicableTypeIdentifier }
-		symbol = lexicalUnit.identifier
+		guard let lexeme = parser.consume(PreprocessorVariableAccessLexeme.self) else { throw DirectiveError.nonapplicableTypeIdentifier }
+		symbol = lexeme.identifier
 	}
 	
 	/// The symbol of the variable whose value is output.

@@ -7,25 +7,25 @@ struct AllocationStatement : Statement {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
-		guard let directiveUnit = parser.consume(IdentifierLexicalUnit.self), directiveUnit.identifier == "RESGR" else { throw Error.unrecognisedDirective }
-		guard let sizeUnit = parser.consume(LiteralLexicalUnit.self) else { throw Error.invalidSize }
+		guard let directiveUnit = parser.consume(IdentifierLexeme.self), directiveUnit.identifier == "RESGR" else { throw Error.unrecognisedDirective }
+		guard let sizeUnit = parser.consume(LiteralLexeme.self) else { throw Error.invalidSize }
 		self.size = sizeUnit.value
-		self.lexicalUnits = .init(parser.consumedLexicalUnits)
-		self.directiveLexicalUnit = directiveUnit
-		self.sizeLexicalUnit = sizeUnit
+		self.lexemes = .init(parser.consumedLexemes)
+		self.directiveLexeme = directiveUnit
+		self.sizeLexeme = sizeUnit
 	}
 	
 	/// The size to allocate.
 	let size: Int
 	
 	// See protocol.
-	let lexicalUnits: [LexicalUnit]
+	let lexemes: [Lexeme]
 	
-	/// The lexical unit representing the directive.
-	let directiveLexicalUnit: IdentifierLexicalUnit
+	/// The lexeme representing the directive.
+	let directiveLexeme: IdentifierLexeme
 	
-	/// The lexical unit representing the size argument.
-	let sizeLexicalUnit: LiteralLexicalUnit
+	/// The lexeme representing the size argument.
+	let sizeLexeme: LiteralLexeme
 	
 	// See protocol.
 	let wordCount = 1

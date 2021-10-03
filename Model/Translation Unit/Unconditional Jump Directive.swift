@@ -7,7 +7,7 @@ struct UnconditionalJumpDirective : Directive {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
-		guard let instructionUnit = parser.consume(IdentifierLexicalUnit.self), instructionUnit.identifier == "MSPR" else {
+		guard let instructionUnit = parser.consume(IdentifierLexeme.self), instructionUnit.identifier == "MSPR" else {
 			throw DirectiveError.nonapplicableTypeIdentifier
 		}
 		TODO.unimplemented

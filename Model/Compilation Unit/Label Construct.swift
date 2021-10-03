@@ -6,19 +6,19 @@ struct LabelConstruct : Construct {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
-		guard let symbolUnit = parser.consume(IdentifierLexicalUnit.self), let markerUnit = parser.consume(LabelMarkerLexicalUnit.self) else { throw Error.noLabel }
+		guard let symbolUnit = parser.consume(IdentifierLexeme.self), let markerUnit = parser.consume(LabelMarkerLexeme.self) else { throw Error.noLabel }
 		self.symbol = symbolUnit.identifier
-		self.lexicalUnits = [symbolUnit, markerUnit]
+		self.lexemes = [symbolUnit, markerUnit]
 	}
 	
 	/// The symbol.
 	let symbol: String
 	
-	/// The lexical units that form the statement, in source order.
+	/// The lexemes that form the statement, in source order.
 	///
-	/// - Invariant: `lexicalUnits` is nonempty.
-	/// - Invariant: Every unit in `lexicalUnits` has increasing and nonoverlapping source range.
-	let lexicalUnits: [LexicalUnit]
+	/// - Invariant: `lexemes` is nonempty.
+	/// - Invariant: Every lexeme in `lexemes` has increasing and nonoverlapping source range.
+	let lexemes: [Lexeme]
 	
 	/// An error during parsing.
 	enum Error : LocalizedError {

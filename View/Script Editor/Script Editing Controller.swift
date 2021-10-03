@@ -55,21 +55,21 @@ final class ScriptEditingController : UIViewController {
 		formattedText.beginEditing()
 		defer { formattedText.endEditing() }
 		
-		func applyAttribute<V>(_ attribute: NSAttributedString.Key, value: V, on unit: LexicalUnit) {
+		func applyAttribute<V>(_ attribute: NSAttributedString.Key, value: V, on unit: Lexeme) {
 			formattedText.addAttribute(attribute, value: value, range: NSRange(unit.sourceRange, in: script.sourceText))
 		}
 		
-		func applyAttribute<V, Units : Sequence>(_ attribute: NSAttributedString.Key, value: V, onAll units: Units) where Units.Element == LexicalUnit {
+		func applyAttribute<V, Units : Sequence>(_ attribute: NSAttributedString.Key, value: V, onAll units: Units) where Units.Element == Lexeme {
 			for unit in units {
 				applyAttribute(attribute, value: value, on: unit)
 			}
 		}
 		
-		func mark(unit: LexicalUnit, attribute: NSAttributedString.Key = .foregroundColor, colour: UIColor) {
+		func mark(unit: Lexeme, attribute: NSAttributedString.Key = .foregroundColor, colour: UIColor) {
 			applyAttribute(attribute, value: colour, on: unit)
 		}
 		
-		func mark<Units : Sequence>(units: Units, attribute: NSAttributedString.Key = .foregroundColor, colour: UIColor) where Units.Element == LexicalUnit {
+		func mark<Units : Sequence>(units: Units, attribute: NSAttributedString.Key = .foregroundColor, colour: UIColor) where Units.Element == Lexeme {
 			for unit in units {
 				mark(unit: unit, attribute: attribute, colour: colour)
 			}
@@ -79,21 +79,21 @@ final class ScriptEditingController : UIViewController {
 			switch element {
 				
 				case .statement(let statement as CommandStatement):
-				mark(unit: statement.instructionLexicalUnit, colour: .command)
-				mark(units: statement.argumentLexicalUnits, colour: .argument)
+				mark(unit: statement.instructionLexeme, colour: .command)
+				mark(units: statement.argumentLexemes, colour: .argument)
 					
 				case .statement(let statement as AllocationStatement):
-				mark(unit: statement.directiveLexicalUnit, colour: .command)
-				mark(unit: statement.sizeLexicalUnit, colour: .argument)
+				mark(unit: statement.directiveLexeme, colour: .command)
+				mark(unit: statement.sizeLexeme, colour: .argument)
 					
 				case .statement(let statement as ValueStatement):
-				mark(units: statement.lexicalUnits, colour: .argument)
+				mark(units: statement.lexemes, colour: .argument)
 					
 				case .statement:
 				break
 					
 				case .label(let label):
-				mark(units: label.lexicalUnits, colour: .label)
+				mark(units: label.lexemes, colour: .label)
 				
 				case .comment(let comment):
 				mark(unit: comment, colour: .comment)
@@ -102,8 +102,8 @@ final class ScriptEditingController : UIViewController {
 				mark(unit: terminator, colour: .comment)
 					
 				case .unrecognisedSource(let source):
-				applyAttribute(.underlineStyle, value: ([.single, .patternDot, .byWord] as NSUnderlineStyle).rawValue, onAll: source.lexicalUnits)
-				mark(units: source.lexicalUnits, attribute: .underlineColor, colour: .red)
+				applyAttribute(.underlineStyle, value: ([.single, .patternDot, .byWord] as NSUnderlineStyle).rawValue, onAll: source.lexemes)
+				mark(units: source.lexemes, attribute: .underlineColor, colour: .red)
 				
 			}
 		}

@@ -2,11 +2,11 @@
 
 import Foundation
 
-/// A marker lexical unit for a label, i.e.., `:`.
-struct LabelMarkerLexicalUnit : LexicalUnit {
+/// A lexeme representing the end of a program, i.e., `EINDPR`.
+struct ProgramTerminatorLexeme : Lexeme {
 	
 	// See protocol.
-	static let pattern = try! NSRegularExpression(pattern: #":"#)
+	static let pattern = try! NSRegularExpression(pattern: #"EINDPR.*"#, options: .dotMatchesLineSeparators)
 	
 	// See protocol.
 	init(captures: [Substring], sourceRange: SourceRange) {

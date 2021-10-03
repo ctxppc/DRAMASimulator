@@ -2,7 +2,7 @@
 
 import Foundation
 
-/// A value that parses a construct from lexical units.
+/// A value that parses a construct from lexemes.
 ///
 /// Parsing is done in a top-down fashion, with any subconstructs parsed by subparsers and attempting multiple construct types in contexts where multiple are possible.
 ///
@@ -11,45 +11,45 @@ struct Parser {
 	
 	/// Creates a parser from given source text.
 	init(from sourceText: String) {
-		self.init(lexicalUnits: Lexer(from: sourceText).lexicalUnits)
+		self.init(lexemes: Lexer(from: sourceText).lexemes)
 	}
 	
-	/// Creates a parser with given lexical units.
-	init(lexicalUnits: LexicalUnits) {
-		self.lexicalUnits = lexicalUnits
-		self.consumedLexicalUnitsIndexRange = lexicalUnits.startIndex..<lexicalUnits.startIndex
+	/// Creates a parser with given lexemes.
+	init(lexemes: Lexemes) {
+		self.lexemes = lexemes
+		self.consumedLexemesIndexRange = lexemes.startIndex..<lexemes.startIndex
 	}
 	
-	/// The lexical units available to the parser.
-	let lexicalUnits: LexicalUnits
-	typealias LexicalUnits = [LexicalUnit]
+	/// The lexemes available to the parser.
+	let lexemes: Lexemes
+	typealias Lexemes = [Lexeme]
 	
-	/// The lexical units consumed by the currently parsed construct.
+	/// The lexemes consumed by the currently parsed construct.
 	///
-	/// This collection is empty when the parser invokes the parsed construct type's `init(parser:)` initialiser. When the construct is done consuming lexical units, it can access this property to retrieve all lexical units consumed by it or any of its parsed subconstructs.
-	var consumedLexicalUnits: LexicalUnits.SubSequence {
-		lexicalUnits[consumedLexicalUnitsIndexRange]
+	/// This collection is empty when the parser invokes the parsed construct type's `init(parser:)` initialiser. When the construct is done consuming lexemes, it can access this property to retrieve all lexemes consumed by it or any of its parsed subconstructs.
+	var consumedLexemes: Lexemes.SubSequence {
+		lexemes[consumedLexemesIndexRange]
 	}
 	
-	/// The lexical units that haven't been processed yet.
-	private var unprocessedLexicalUnits: LexicalUnits.SubSequence {
-		lexicalUnits[indexOfNextLexicalUnit...]
+	/// The lexemes that haven't been processed yet.
+	private var unprocessedLexemes: Lexemes.SubSequence {
+		lexemes[indexOfNextLexeme...]
 	}
 	
-	/// The index range in `lexicalUnits` consumed by the currently parsed construct.
+	/// The index range in `lexemes` consumed by the currently parsed construct.
 	///
-	/// The range's lower bound is the index of the first lexical unit consumed or consumable by the currently parsed construct. The range's upper bound is the index of the next lexical unit consumable by the construct. The open range represents the lexical units consumed by the currently parsed construct.
-	private var consumedLexicalUnitsIndexRange: Range<LexicalUnits.Index>
+	/// The range's lower bound is the index of the first lexeme consumed or consumable by the currently parsed construct. The range's upper bound is the index of the next lexeme consumable by the construct. The open range represents the lexemes consumed by the currently parsed construct.
+	private var consumedLexemesIndexRange: Range<Lexemes.Index>
 	
-	/// The index of the next consumable lexical unit, or the end index if all units have been consumed.
-	private var indexOfNextLexicalUnit: LexicalUnits.Index {
-		get { consumedLexicalUnitsIndexRange.upperBound }
-		set { consumedLexicalUnitsIndexRange = consumedLexicalUnitsIndexRange.lowerBound..<newValue }
+	/// The index of the next consumable lexeme, or the end index if all units have been consumed.
+	private var indexOfNextLexeme: Lexemes.Index {
+		get { consumedLexemesIndexRange.upperBound }
+		set { consumedLexemesIndexRange = consumedLexemesIndexRange.lowerBound..<newValue }
 	}
 	
-	/// A Boolean value indicating whether the parser has unprocessed lexical units.
-	var hasUnprocessedLexicalUnits: Bool {
-		!unprocessedLexicalUnits.isEmpty
+	/// A Boolean value indicating whether the parser has unprocessed lexemes.
+	var hasUnprocessedLexemes: Bool {
+		!unprocessedLexemes.isEmpty
 	}
 	
 	/// Parses a construct of given type.
@@ -64,41 +64,41 @@ struct Parser {
 	mutating func parse<C : Construct>(_ type: C.Type) throws -> C {
 		do {
 			var subparser = self
-			subparser.consumedLexicalUnitsIndexRange = indexOfNextLexicalUnit..<indexOfNextLexicalUnit
+			subparser.consumedLexemesIndexRange = indexOfNextLexeme..<indexOfNextLexeme
 			let construct = try C(from: &subparser)
-			self.indexOfNextLexicalUnit = subparser.indexOfNextLexicalUnit
+			self.indexOfNextLexeme = subparser.indexOfNextLexeme
 			return construct
 		} catch let error as Error {
 			throw error
 		} catch {
-			throw Error(cause: error, location: indexOfNextLexicalUnit)
+			throw Error(cause: error, location: indexOfNextLexeme)
 		}
 	}
 	
-	/// Consumes and returns a lexical unit of given type.
+	/// Consumes and returns a lexeme of given type.
 	///
-	/// The parser is unaffected if the next lexical unit is not of type `Unit` or if there is no unit available.
+	/// The parser is unaffected if the next lexeme is not of type `Unit` or if there is no unit available.
 	///
-	/// - Parameter type: The type of lexical unit.
+	/// - Parameter type: The type of lexeme.
 	///
-	/// - Returns: A lexical unit of type `Unit`, or `nil` if the next unit isn't of type `Unit` or if there is no unit available.
-	mutating func consume<Unit : LexicalUnit>(_ type: Unit.Type) -> Unit? {
-		guard let unit = unprocessedLexicalUnits.first as? Unit else { return nil }
-		lexicalUnits.formIndex(after: &indexOfNextLexicalUnit)
+	/// - Returns: A lexeme of type `Unit`, or `nil` if the next unit isn't of type `Unit` or if there is no unit available.
+	mutating func consume<Unit : Lexeme>(_ type: Unit.Type) -> Unit? {
+		guard let unit = unprocessedLexemes.first as? Unit else { return nil }
+		lexemes.formIndex(after: &indexOfNextLexeme)
 		return unit
 	}
 	
-	/// Consumes lexical units until a lexical unit is reached for which the given predicate returns `true`.
+	/// Consumes lexemes until a lexeme is reached for which the given predicate returns `true`.
 	///
-	/// The lexical unit for which `predicate` returns `true` is not consumed.
+	/// The lexeme for which `predicate` returns `true` is not consumed.
 	///
-	/// - Parameter predicate: A function that determines whether to consume the given lexical unit and continue.
+	/// - Parameter predicate: A function that determines whether to consume the given lexeme and continue.
 	///
-	/// - Returns: The consumed lexical units.
-	mutating func consume(until predicate: (LexicalUnit) -> Bool) -> LexicalUnits.SubSequence {
-		let indexOfFirstExcludedIndex = unprocessedLexicalUnits.firstIndex(where: predicate) ?? lexicalUnits.endIndex
-		let consumed = lexicalUnits[indexOfNextLexicalUnit..<indexOfFirstExcludedIndex]
-		indexOfNextLexicalUnit = indexOfFirstExcludedIndex
+	/// - Returns: The consumed lexemes.
+	mutating func consume(until predicate: (Lexeme) -> Bool) -> Lexemes.SubSequence {
+		let indexOfFirstExcludedIndex = unprocessedLexemes.firstIndex(where: predicate) ?? lexemes.endIndex
+		let consumed = lexemes[indexOfNextLexeme..<indexOfFirstExcludedIndex]
+		indexOfNextLexeme = indexOfFirstExcludedIndex
 		return consumed
 	}
 	
@@ -108,8 +108,8 @@ struct Parser {
 		/// The error that caused the parse to fail.
 		var cause: Swift.Error
 		
-		/// The location in the lexical unit stream where the error is thrown.
-		var location: LexicalUnits.Index
+		/// The location in the lexeme stream where the error is thrown.
+		var location: Lexemes.Index
 		
 		// See protocol.
 		var errorDescription: String? {

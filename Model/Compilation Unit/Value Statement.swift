@@ -7,16 +7,16 @@ struct ValueStatement : Statement {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
-		guard let unit = parser.consume(LiteralLexicalUnit.self) else { throw Error.invalidFormat }
+		guard let unit = parser.consume(LiteralLexeme.self) else { throw Error.invalidFormat }
 		self.word = .init(wrapping: unit.value)
-		self.lexicalUnits = .init(parser.consumedLexicalUnits)
+		self.lexemes = .init(parser.consumedLexemes)
 	}
 	
 	/// The stored word.
 	let word: MachineWord
 	
 	// See protocol.
-	let lexicalUnits: [LexicalUnit]
+	let lexemes: [Lexeme]
 	
 	// See protocol.
 	let wordCount = 1

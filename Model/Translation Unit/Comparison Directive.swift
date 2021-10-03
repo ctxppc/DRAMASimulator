@@ -7,7 +7,7 @@ struct ComparisonDirective : Directive {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
-		guard let instructionUnit = parser.consume(IdentifierLexicalUnit.self), instructionUnit.identifier == "MVGL" else {
+		guard let instructionUnit = parser.consume(IdentifierLexeme.self), instructionUnit.identifier == "MVGL" else {
 			throw DirectiveError.nonapplicableTypeIdentifier
 		}
 		TODO.unimplemented

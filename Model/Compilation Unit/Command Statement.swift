@@ -8,31 +8,31 @@ struct CommandStatement : Statement {
 	// See protocol.
 	init(from parser: inout Parser) throws {
 		
-		guard let instructionUnit = parser.consume(IdentifierLexicalUnit.self) else { throw Error.missingInstruction }
+		guard let instructionUnit = parser.consume(IdentifierLexeme.self) else { throw Error.missingInstruction }
 		let mnemonic = instructionUnit.identifier
 		guard let instruction = Instruction(rawValue: mnemonic) ?? Instruction(rawValue: mnemonic.uppercased())
 				?? Instruction(rawValue: mnemonic.lowercased()) else { throw Error.unknownInstruction(mnemonic: mnemonic) }
 		self.instruction = instruction
 		
-		self.addressingMode = parser.consume(AddressingModeLexicalUnit.self)?.addressingMode
+		self.addressingMode = parser.consume(AddressingModeLexeme.self)?.addressingMode
 		
-		var argumentLexicalUnits: [LexicalUnit] = []
+		var argumentLexemes: [Lexeme] = []
 		if let firstArgument = try? parser.parse(Argument.self) {
 			var arguments = [firstArgument]
-			argumentLexicalUnits.append(contentsOf: firstArgument.lexicalUnits)
-			while parser.consume(ArgumentSeparatorLexicalUnit.self) != nil {
+			argumentLexemes.append(contentsOf: firstArgument.lexemes)
+			while parser.consume(ArgumentSeparatorLexeme.self) != nil {
 				let argument = try parser.parse(Argument.self)
 				arguments.append(argument)
-				argumentLexicalUnits.append(contentsOf: argument.lexicalUnits)
+				argumentLexemes.append(contentsOf: argument.lexemes)
 			}
 			self.arguments = arguments
 		} else {
 			self.arguments = []
 		}
 		
-		self.lexicalUnits = .init(parser.consumedLexicalUnits)
-		self.instructionLexicalUnit = instructionUnit
-		self.argumentLexicalUnits = argumentLexicalUnits
+		self.lexemes = .init(parser.consumedLexemes)
+		self.instructionLexeme = instructionUnit
+		self.argumentLexemes = argumentLexemes
 		
 	}
 	
@@ -46,13 +46,13 @@ struct CommandStatement : Statement {
 	let arguments: [Argument]
 	
 	// See protocol.
-	let lexicalUnits: [LexicalUnit]
+	let lexemes: [Lexeme]
 	
-	/// The lexical unit representing the instruction.
-	let instructionLexicalUnit: IdentifierLexicalUnit
+	/// The lexeme representing the instruction.
+	let instructionLexeme: IdentifierLexeme
 	
-	/// The lexical units representing the arguments.
-	let argumentLexicalUnits: [LexicalUnit]
+	/// The lexemes representing the arguments.
+	let argumentLexemes: [Lexeme]
 	
 	// See protocol.
 	let wordCount = 1
@@ -69,9 +69,9 @@ struct CommandStatement : Statement {
 			}
 			
 			case 1:
-			if case .register(let register, lexicalUnit: _) = arguments[0], let type = type as? UnaryRegisterCommand.Type {
+			if case .register(let register, lexeme: _) = arguments[0], let type = type as? UnaryRegisterCommand.Type {
 				return try type.init(instruction: instruction, register: register)
-			} else if case .address(let address, lexicalUnits: _) = arguments[0], let type = type as? AddressCommand.Type {
+			} else if case .address(let address, lexemes: _) = arguments[0], let type = type as? AddressCommand.Type {
 				return try type.init(
 					instruction:	instruction,
 					addressingMode:	addressingMode,
@@ -83,12 +83,12 @@ struct CommandStatement : Statement {
 			}
 				
 			case 2:
-			if case .register(let first, lexicalUnit: _) = arguments[0],
-			   case .register(let second, lexicalUnit: _) = arguments[1],
+			if case .register(let first, lexeme: _) = arguments[0],
+			   case .register(let second, lexeme: _) = arguments[1],
 			   let type = type as? BinaryRegisterCommand.Type {
 				return try type.init(instruction: instruction, primaryRegister: first, secondaryRegister: second)
-			} else if case .register(let register, lexicalUnit: _) = arguments[0],
-					  case .address(let address, lexicalUnits: _) = arguments[1],
+			} else if case .register(let register, lexeme: _) = arguments[0],
+					  case .address(let address, lexemes: _) = arguments[1],
 					  let type = type as? RegisterAddressCommand.Type {
 				return try type.init(
 					instruction:	instruction,
@@ -99,8 +99,8 @@ struct CommandStatement : Statement {
 						index:	ValueOperand.Index(from: address.indexRegister)
 					)
 				)
-			} else if case .condition(let condition, lexicalUnit: _) = arguments[0],
-					  case .address(let address, lexicalUnits: _) = arguments[1],
+			} else if case .condition(let condition, lexeme: _) = arguments[0],
+					  case .address(let address, lexemes: _) = arguments[1],
 					  let type = type as? ConditionAddressCommand.Type {
 				return try type.init(
 					instruction:	instruction,

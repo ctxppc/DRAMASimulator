@@ -3,26 +3,26 @@
 import DepthKit
 import Foundation
 
-/// A sequence of lexical units, produced from a source text by a lexer.
+/// A sequence of lexemes, produced from a source text by a lexer.
 struct SourceUnit {
 	
 	/// Produces a source unit from a source text.
 	init(from sourceText: String) throws {
-		self.init(lexicalUnits: Lexer(from: sourceText).lexicalUnits)
+		self.init(lexemes: Lexer(from: sourceText).lexemes)
 	}
 	
-	/// Creates a source unit with given lexical units.
-	init(lexicalUnits: [LexicalUnit]) {
-		self.lexicalUnits = lexicalUnits
+	/// Creates a source unit with given lexemes.
+	init(lexemes: [Lexeme]) {
+		self.lexemes = lexemes
 	}
 	
-	/// The lexical units in the source.
-	let lexicalUnits: LexicalUnits
-	typealias LexicalUnits = [LexicalUnit]
+	/// The lexemes in the source.
+	let lexemes: Lexemes
+	typealias Lexemes = [Lexeme]
 	
-	/// Accesses a lexical unit.
-	subscript (index: LexicalUnits.Index) -> LexicalUnit {
-		lexicalUnits[index]
+	/// Accesses a lexeme.
+	subscript (index: Lexemes.Index) -> Lexeme {
+		lexemes[index]
 	}
 	
 }

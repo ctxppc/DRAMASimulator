@@ -2,8 +2,8 @@
 
 import Foundation
 
-/// A lexical unit for an addressing mode, e.g., `.w`.
-struct AddressingModeLexicalUnit : LexicalUnit {
+/// A lexeme for an addressing mode, e.g., `.w`.
+struct AddressingModeLexeme : Lexeme {
 	
 	// See protocol.
 	static let pattern = try! NSRegularExpression(pattern: #"\.(\w+)"#, options: .caseInsensitive)

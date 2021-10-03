@@ -5,11 +5,11 @@ import Foundation
 /// A construct that represents a command or some other value to be stored in memory.
 protocol Statement : Construct {
 	
-	/// The lexical units that form the statement, in source order.
+	/// The lexemes that form the statement, in source order.
 	///
-	/// - Invariant: `lexicalUnits` is nonempty.
-	/// - Invariant: Every unit in `lexicalUnits` has increasing and nonoverlapping source range.
-	var lexicalUnits: [LexicalUnit] { get }
+	/// - Invariant: `lexemes` is nonempty.
+	/// - Invariant: Every lexeme in `lexemes` has increasing and nonoverlapping source range.
+	var lexemes: [Lexeme] { get }
 	
 	/// The number of machine words used by the statement.
 	var wordCount: Int { get }
@@ -31,7 +31,7 @@ extension Statement {
 	
 	/// The source range forming the statement.
 	var sourceRange: SourceRange {
-		guard let first = lexicalUnits.first, let last = lexicalUnits.last else { preconditionFailure("Statement with no lexical units") }
+		guard let first = lexemes.first, let last = lexemes.last else { preconditionFailure("Statement with no lexemes") }
 		return first.sourceRange.lowerBound..<last.sourceRange.upperBound
 	}
 	

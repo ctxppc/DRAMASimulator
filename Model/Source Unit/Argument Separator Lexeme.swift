@@ -2,8 +2,8 @@
 
 import Foundation
 
-/// A lexical unit separating arguments to a command or directive.
-struct ArgumentSeparatorLexicalUnit : LexicalUnit {
+/// A lexeme separating arguments to a command or directive.
+struct ArgumentSeparatorLexeme : Lexeme {
 	
 	// See protocol.
 	static let pattern = try! NSRegularExpression(pattern: #","#)

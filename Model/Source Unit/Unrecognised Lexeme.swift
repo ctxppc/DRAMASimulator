@@ -2,8 +2,8 @@
 
 import Foundation
 
-/// A lexical unit representing a substring of source that cannot be mapped to a lexical unit.
-struct UnrecognisedLexicalUnit : LexicalUnit {
+/// A lexeme representing a substring of source that cannot be mapped to a lexeme.
+struct UnrecognisedLexeme : Lexeme {
 	
 	// See protocol.
 	static let pattern = try! NSRegularExpression(pattern: #".+"#)
@@ -14,7 +14,7 @@ struct UnrecognisedLexicalUnit : LexicalUnit {
 		self.sourceRange = sourceRange
 	}
 	
-	/// The source that could not be mapped to a lexical unit.
+	/// The source that could not be mapped to a lexeme.
 	let source: Substring
 	
 	// See protocol.

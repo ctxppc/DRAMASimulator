@@ -2,8 +2,8 @@
 
 import Foundation
 
-/// A lexical unit for a condition, e.g., `KLG`.
-struct ConditionLexicalUnit : LexicalUnit {
+/// A lexeme for a condition, e.g., `KLG`.
+struct ConditionLexeme : Lexeme {
 	
 	// See protocol.
 	static let pattern = try! NSRegularExpression(pattern: #"\w+"#)

@@ -8,13 +8,13 @@ extension CommandStatement {
 	enum Argument {
 		
 		/// A register argument.
-		case register(Register, lexicalUnit: RegisterLexicalUnit)
+		case register(Register, lexeme: RegisterLexeme)
 		
 		/// An address argument.
-		case address(Address, lexicalUnits: [LexicalUnit])
+		case address(Address, lexemes: [Lexeme])
 		
 		/// A condition argument.
-		case condition(Condition, lexicalUnit: ConditionLexicalUnit)
+		case condition(Condition, lexeme: ConditionLexeme)
 		
 		/// An address argument to a command.
 		struct Address {
@@ -52,12 +52,12 @@ extension CommandStatement {
 			
 		}
 		
-		/// The lexical units forming the argument.
-		var lexicalUnits: [LexicalUnit] {
+		/// The lexemes forming the argument.
+		var lexemes: [Lexeme] {
 			switch self {
-				case .register(_, lexicalUnit: let unit):	return [unit]
-				case .address(_, lexicalUnits: let units):	return units
-				case .condition(_, lexicalUnit: let unit):	return [unit]
+				case .register(_, lexeme: let unit):	return [unit]
+				case .address(_, lexemes: let units):	return units
+				case .condition(_, lexeme: let unit):	return [unit]
 			}
 		}
 		
@@ -93,13 +93,13 @@ extension CommandStatement.Argument.Address {
 
 extension CommandStatement.Argument : Construct {
 	init(from parser: inout Parser) throws {
-		if let unit = parser.consume(RegisterLexicalUnit.self) {
-			self = .register(unit.register, lexicalUnit: unit)
-		} else if let unit = parser.consume(ConditionLexicalUnit.self) {
-			self = .condition(unit.condition, lexicalUnit: unit)
+		if let unit = parser.consume(RegisterLexeme.self) {
+			self = .register(unit.register, lexeme: unit)
+		} else if let unit = parser.consume(ConditionLexeme.self) {
+			self = .condition(unit.condition, lexeme: unit)
 		} else {
 			let address = try parser.parse(Address.self)
-			self = .address(address, lexicalUnits: .init(parser.consumedLexicalUnits))
+			self = .address(address, lexemes: .init(parser.consumedLexemes))
 		}
 	}
 }
@@ -109,7 +109,7 @@ extension CommandStatement.Argument.Address : Construct {
 		
 		func parseNextTerm() throws -> Term? {
 			
-			guard let operatorUnit = parser.consume(ArithmeticOperatorLexicalUnit.self) else { return nil }
+			guard let operatorUnit = parser.consume(ArithmeticOperatorLexeme.self) else { return nil }
 			
 			let positive: Bool
 			switch operatorUnit.arithmeticOperator {
@@ -132,13 +132,13 @@ extension CommandStatement.Argument.Address : Construct {
 		}()
 		
 		let indexRegister: IndexRegister
-		if let openUnit = parser.consume(IndexRegisterScopeLexicalUnit.self) {
+		if let openUnit = parser.consume(IndexRegisterScopeLexeme.self) {
 			
 			guard case .open = openUnit else { throw CommandStatement.Error.invalidAddressFormat }
 			
-			let preoperatorUnit = parser.consume(ArithmeticOperatorLexicalUnit.self)
-			guard let registerUnit = parser.consume(RegisterLexicalUnit.self) else { throw CommandStatement.Error.invalidAddressFormat }
-			let postoperatorUnit = parser.consume(ArithmeticOperatorLexicalUnit.self)
+			let preoperatorUnit = parser.consume(ArithmeticOperatorLexeme.self)
+			guard let registerUnit = parser.consume(RegisterLexeme.self) else { throw CommandStatement.Error.invalidAddressFormat }
+			let postoperatorUnit = parser.consume(ArithmeticOperatorLexeme.self)
 			
 			switch (preoperatorUnit?.arithmeticOperator, postoperatorUnit?.arithmeticOperator) {
 				case (nil, nil):			indexRegister = .reading(registerUnit.register)
@@ -149,7 +149,7 @@ extension CommandStatement.Argument.Address : Construct {
 				default:					throw CommandStatement.Error.disallowedIndexRegisterOperator
 			}
 			
-			guard case .close = parser.consume(IndexRegisterScopeLexicalUnit.self) else { throw CommandStatement.Error.invalidAddressFormat }
+			guard case .close = parser.consume(IndexRegisterScopeLexeme.self) else { throw CommandStatement.Error.invalidAddressFormat }
 			
 		} else {
 			indexRegister = .none
@@ -162,9 +162,9 @@ extension CommandStatement.Argument.Address : Construct {
 
 extension CommandStatement.Argument.Address.Term : Construct {
 	init(from parser: inout Parser) throws {
-		if let symbolUnit = parser.consume(IdentifierLexicalUnit.self) {
+		if let symbolUnit = parser.consume(IdentifierLexeme.self) {
 			self = .symbol(name: symbolUnit.identifier, positive: true)
-		} else if let literalUnit = parser.consume(LiteralLexicalUnit.self) {
+		} else if let literalUnit = parser.consume(LiteralLexeme.self) {
 			self = .literal(literalUnit.value)
 		} else {
 			throw CommandStatement.Error.invalidAddressFormat

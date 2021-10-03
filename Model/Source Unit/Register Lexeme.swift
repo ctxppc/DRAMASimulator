@@ -2,8 +2,8 @@
 
 import Foundation
 
-/// A lexical unit for a register, e.g., `R3`.
-struct RegisterLexicalUnit : LexicalUnit {
+/// A lexeme for a register, e.g., `R3`.
+struct RegisterLexeme : Lexeme {
 	
 	// See protocol.
 	static let pattern = try! NSRegularExpression(pattern: #"R(\d+)"#, options: .caseInsensitive)

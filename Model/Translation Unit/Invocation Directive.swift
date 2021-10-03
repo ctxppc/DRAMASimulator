@@ -7,7 +7,7 @@ struct InvocationDirective : Directive {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
-		guard let identifierUnit = parser.consume(IdentifierLexicalUnit.self) else { throw DirectiveError.nonapplicableTypeIdentifier }
+		guard let identifierUnit = parser.consume(IdentifierLexeme.self) else { throw DirectiveError.nonapplicableTypeIdentifier }
 		self.macroName = identifierUnit.identifier
 		TODO.unimplemented
 	}

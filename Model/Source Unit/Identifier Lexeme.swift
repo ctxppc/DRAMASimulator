@@ -2,8 +2,8 @@
 
 import Foundation
 
-/// A lexical unit for an identifier, e.g., `HIA`, `RESGR`, or `endIf`.
-struct IdentifierLexicalUnit : LexicalUnit {
+/// A lexeme for an identifier, e.g., `HIA`, `RESGR`, or `endIf`.
+struct IdentifierLexeme : Lexeme {
 	
 	// See protocol.
 	static let pattern = try! NSRegularExpression(pattern: #"\w[\w\d]*"#, options: .caseInsensitive)

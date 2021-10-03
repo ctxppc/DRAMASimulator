@@ -7,7 +7,7 @@ struct NullDirective : Directive {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
-		guard let instructionUnit = parser.consume(IdentifierLexicalUnit.self), instructionUnit.identifier == "MNTS" else {
+		guard let instructionUnit = parser.consume(IdentifierLexeme.self), instructionUnit.identifier == "MNTS" else {
 			throw DirectiveError.nonapplicableTypeIdentifier
 		}
 		TODO.unimplemented

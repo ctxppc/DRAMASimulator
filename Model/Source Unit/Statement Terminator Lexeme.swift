@@ -2,14 +2,18 @@
 
 import Foundation
 
-/// A lexical unit representing a comment.
-struct CommentLexicalUnit : LexicalUnit {
+/// A lexeme representing the end of a statement.
+struct StatementTerminatorLexeme : Lexeme {
 	
 	// See protocol.
-	static let pattern = try! NSRegularExpression(pattern: #"\|.*"#)
+	static let pattern = try! NSRegularExpression(pattern: #"\n|,|;"#)
 	
 	// See protocol.
 	init(captures: [Substring], sourceRange: SourceRange) {
+		self.init(sourceRange: sourceRange)
+	}
+	
+	init(sourceRange: SourceRange) {
 		self.sourceRange = sourceRange
 	}
 	

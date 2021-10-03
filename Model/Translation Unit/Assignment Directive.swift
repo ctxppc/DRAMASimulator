@@ -7,7 +7,7 @@ struct AssignmentDirective : Directive {
 	
 	// See protocol.
 	init(from parser: inout Parser) throws {
-		guard let instructionUnit = parser.consume(IdentifierLexicalUnit.self), instructionUnit.identifier == "MEVA" else {
+		guard let instructionUnit = parser.consume(IdentifierLexeme.self), instructionUnit.identifier == "MEVA" else {
 			throw DirectiveError.nonapplicableTypeIdentifier
 		}
 		TODO.unimplemented

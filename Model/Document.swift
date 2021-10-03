@@ -7,7 +7,7 @@ import UniformTypeIdentifiers
 struct Document : FileDocument {
 	
 	// See protocol.
-	static let readableContentTypes = [UTType("me.ctxppc.drama.script") !! "Expected registered UTI"]
+	static let readableContentTypes = [UTType("eu.tsarouhas.DRAMASimulator.script") !! "Expected registered UTI"]
 	
 	/// Creates a document with given script and machine.
 	init(script: Script = .init(from: "")) {

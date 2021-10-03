@@ -12,9 +12,9 @@ struct Script {
 	init(from sourceText: String) {
 		
 		self.sourceText = sourceText
-		self.lexicalUnits = Lexer(from: sourceText).lexicalUnits
+		self.lexemes = Lexer(from: sourceText).lexemes
 		
-		var parser = Parser(lexicalUnits: lexicalUnits)
+		var parser = Parser(lexemes: lexemes)
 		self.compilationUnit = (try? parser.parse(CompilationUnit.self)) !! "Compilation unit parsing shouldn't fail completely"
 		
 		var statements: [Statement] = []
@@ -56,10 +56,10 @@ struct Script {
 	/// The source text.
 	let sourceText: String
 	
-	/// The script's lexical units.
-	let lexicalUnits: [LexicalUnit]
+	/// The script's lexemes.
+	let lexemes: [Lexeme]
 	
-	/// The compilation unit encoded by the script's lexical units.
+	/// The compilation unit encoded by the script's lexemes.
 	let compilationUnit: CompilationUnit
 	
 	/// The script's statements.
