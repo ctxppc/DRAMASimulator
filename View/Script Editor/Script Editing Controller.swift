@@ -1,4 +1,4 @@
-// DRAMASimulator © 2018–2020 Constantino Tsarouhas
+// DRAMASimulator © 2018–2021 Constantino Tsarouhas
 
 import DepthKit
 import UIKit
@@ -209,7 +209,7 @@ fileprivate extension String {
 
 let indentationPattern = try! NSRegularExpression(pattern: #"^([ \t]*)"#, options: .anchorsMatchLines)
 
-protocol ScriptEditingControllerDelegate : class {
+protocol ScriptEditingControllerDelegate : AnyObject {
 	
 	/// Notifies the delegate that the source text has been modified.
 	func sourceTextDidChange(on controller: ScriptEditingController)

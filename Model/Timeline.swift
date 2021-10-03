@@ -1,4 +1,4 @@
-// DRAMASimulator © 2018–2020 Constantino Tsarouhas
+// DRAMASimulator © 2018–2021 Constantino Tsarouhas
 
 import Foundation
 import os

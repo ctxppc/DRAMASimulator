@@ -1,4 +1,4 @@
-// DRAMASimulator © 2018–2020 Constantino Tsarouhas
+// DRAMASimulator © 2018–2021 Constantino Tsarouhas
 
 /// A command that can be stated with only two register arguments.
 protocol BinaryRegisterCommand : Command {
