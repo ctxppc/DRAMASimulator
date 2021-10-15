@@ -1,7 +1,7 @@
 // DRAMASimulator © 2018–2021 Constantino Tsarouhas
 
 /// A value representing a virtual DRAMA machine in some state.
-struct Machine {
+struct Machine : Equatable {
 	
 	/// Initialises a machine with given registers, memory cells, program counter, and condition state.
 	///
@@ -119,7 +119,7 @@ struct Machine {
 	
 	/// The general state of the machine.
 	var state: State = .ready
-	enum State {
+	enum State : Equatable {
 		
 		/// The machine can perform the next command.
 		case ready
@@ -167,6 +167,18 @@ struct Machine {
 			}
 		}
 		
+		static func == (first: Self, other: Self) -> Bool {
+			switch (first, other) {
+				
+				case (.ready, .ready), (.waitingForInput, .waitingForInput), (.crashed, .crashed), (.halted, .halted):
+				return true
+				
+				default:
+				return false
+				
+			}
+		}
+		
 	}
 	
 	/// Provides input to the machine (in register 0).
@@ -186,7 +198,7 @@ struct Machine {
 	
 	/// The messages inputted into or outputted by the machine.
 	private(set) var ioMessages = [IOMessage]()
-	enum IOMessage {
+	enum IOMessage : Equatable {
 		case input(MachineWord)
 		case output(MachineWord)
 	}
